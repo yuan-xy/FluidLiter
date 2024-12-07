@@ -18,6 +18,14 @@ FluidLite keeps very minimal functionalities (settings and synth),
 therefore MIDI file reading, realtime MIDI events and audio output must be
 implemented externally.
 
+## Quick Start
+
+~~~
+$ cmake -S . -B Debug -DCMAKE_BUILD_TYPE=Debug
+$ cmake --build Debug/
+
+~~~
+
 ## Configuration
 
 By default SF3 support is disabled. To enable it use `-DENABLE_SF3=YES` with cmake.
