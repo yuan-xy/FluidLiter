@@ -29,6 +29,10 @@ $ cmake --build Debug/
 
 To build the example:
 ~~~
+$ gcc example/src/main.c -Iinclude -IDebug -LDebug -lfluidlite -lm -o fluidlite-test
+~~~
+or
+~~~
 $ cd example/
 $ cmake -S ./ -B ./Debug -DCMAKE_BUILD_TYPE=Debug
 $ cmake --build Debug/
@@ -36,7 +40,7 @@ $ cmake --build Debug/
 
 To run the example:
 ~~~
-$ ./Debug/fluidlite-test <some soundfile> output.pcm
+$ fluidlite-test <some soundfile> output.pcm
 ~~~
 
 Maybe your media player can't play pcm file, so you can transform the pcm file to wav file:

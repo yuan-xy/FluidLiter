@@ -3,3 +3,6 @@ out/
 *.pcm
 Debug
 Release
+a.out
+fluidlite-test
+massif.out.*
