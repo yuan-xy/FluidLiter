@@ -2566,10 +2566,6 @@ fluid_synth_sfload(fluid_synth_t* synth, const char* filename, int reset_presets
   fluid_list_t* list;
   fluid_sfloader_t* loader;
 
-#if defined(MACOS9)
-  fluid_synth_sfunload_macos9(synth);
-#endif
-
   if (filename == NULL) {
     FLUID_LOG(FLUID_ERR, "Invalid filename");
     return FLUID_FAILED;
@@ -2596,26 +2592,7 @@ fluid_synth_sfload(fluid_synth_t* synth, const char* filename, int reset_presets
 }
 
 
-/*
- * fluid_synth_sfunload_macos9
- */
-void fluid_synth_sfunload_macos9(fluid_synth_t* synth)
-{
-#if defined(MACOS9)
-  fluid_list_t *list, *next;
-  fluid_sfont_t* sfont;
 
-  list = synth->unloading;
-  while (list) {
-    next = fluid_list_next(list);
-    sfont = (fluid_sfont_t*) fluid_list_get(list);
-    if (delete_fluid_sfont(sfont) == 0) {
-      synth->unloading = fluid_list_remove(synth->unloading, sfont);
-    }
-    list = next;
-  }
-#endif
-}
 
 /*
  * fluid_synth_sfunload
@@ -2624,10 +2601,6 @@ int
 fluid_synth_sfunload(fluid_synth_t* synth, unsigned int id, int reset_presets)
 {
   fluid_sfont_t* sfont = fluid_synth_get_sfont_by_id(synth, id);
-
-#if defined(MACOS9)
-  fluid_synth_sfunload_macos9(synth);
-#endif
 
   if (!sfont) {
     FLUID_LOG(FLUID_ERR, "No SoundFont with id = %d", id);
@@ -2645,14 +2618,10 @@ fluid_synth_sfunload(fluid_synth_t* synth, unsigned int id, int reset_presets)
   }
 
   if (delete_fluid_sfont(sfont) != 0) {
-#if defined(MACOS9)
-    synth->unloading = fluid_list_prepend(synth->unloading, sfont);
-#else
-  int r = delete_fluid_sfont(sfont);
-  if (r == 0) {
-    FLUID_LOG(FLUID_DBG,"Unloaded SoundFont");
-  }
-#endif
+    int r = delete_fluid_sfont(sfont);
+    if (r == 0) {
+      FLUID_LOG(FLUID_DBG,"Unloaded SoundFont");
+    }
   }
 
   return FLUID_OK;

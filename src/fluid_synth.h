@@ -105,10 +105,6 @@ struct _fluid_synth_t
   unsigned int sfont_id;
   fluid_list_t* bank_offsets;       /** the offsets of the soundfont banks */
 
-#if defined(MACOS9)
-  fluid_list_t* unloading;            /** the soundfonts that need to be unloaded */
-#endif
-
   double gain;                        /** master gain */
   fluid_channel_t** channel;          /** the channels */
   int num_channels;                   /** the number of channels */
@@ -176,7 +172,6 @@ int fluid_synth_damp_voices(fluid_synth_t* synth, int chan);
 int fluid_synth_kill_voice(fluid_synth_t* synth, fluid_voice_t * voice);
 void fluid_synth_kill_by_exclusive_class(fluid_synth_t* synth, fluid_voice_t* voice);
 void fluid_synth_release_voice_on_same_note(fluid_synth_t* synth, int chan, int key);
-void fluid_synth_sfunload_macos9(fluid_synth_t* synth);
 
 void fluid_synth_print_voice(fluid_synth_t* synth);
 
