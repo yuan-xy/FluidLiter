@@ -19,12 +19,31 @@ therefore MIDI file reading, realtime MIDI events and audio output must be
 implemented externally.
 
 ## Quick Start
-
+To build the libfluidlite.a file:
 ~~~
 $ cmake -S . -B Debug -DCMAKE_BUILD_TYPE=Debug
 $ cmake --build Debug/
 
 ~~~
+
+To build the example:
+~~~
+$ cd example/
+$ cmake -S ./ -B ./Debug -DCMAKE_BUILD_TYPE=Debug
+$ cmake --build Debug/
+~~~
+
+To run the example:
+~~~
+$ ./Debug/fluidlite-test <some soundfile> output.pcm
+~~~
+
+Maybe your media player can't play pcm file, so you can transform the pcm file to wav file:
+~~~
+$ ffmpeg -f s16le -ar 44100 -ac 2 -i output.pcm output.wav
+~~~
+
+
 
 ## Configuration
 
