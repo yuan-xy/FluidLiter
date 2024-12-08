@@ -556,6 +556,8 @@ fluid_defsfont_load_sampledata(fluid_defsfont_t* sfont, fluid_fileapi_t* fapi)
     return FLUID_FAILED;
   }
   sfont->sampledata = (short*) FLUID_MALLOC(sfont->samplesize);
+  FLUID_LOG(FLUID_INFO, "sfont->samplesize %d\n", sfont->samplesize);
+
   if (sfont->sampledata == NULL) {
     FLUID_LOG(FLUID_ERR, "Out of memory");
     return FLUID_FAILED;

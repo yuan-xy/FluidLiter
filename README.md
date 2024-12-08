@@ -29,7 +29,7 @@ $ cmake --build Debug/
 
 To build the example:
 ~~~
-$ gcc example/src/main.c -Iinclude -IDebug -LDebug -lfluidlite -lm -o fluidlite-test
+$ gcc example/src/main.c -g -Iinclude -IDebug -LDebug -lfluidlite -lm -o fluidlite-test
 ~~~
 or
 ~~~
