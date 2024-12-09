@@ -16,6 +16,8 @@ int main(int argc, char *argv[]) {
     }
 
     fluid_settings_t* settings = new_fluid_settings();
+    //fluid_settings_setstr(settings, "synth.verbose", "yes"); //在新版本中"synth.verbose"是int型
+    
 /**
 $ gdb --args fluidlite-test /mnt/c/tools/fluidsynth/bin/GeneralUser-GS.sf2 out.pcm
 (gdb) break new_fluid_synth

@@ -40,7 +40,7 @@ $ cmake --build Debug/
 
 To run the example:
 ~~~
-$ fluidlite-test <some soundfile> output.pcm
+$ ./fluidlite-test <some soundfile> output.pcm
 ~~~
 
 Maybe your media player can't play pcm file, so you can transform the pcm file to wav file:
