@@ -1,12 +1,14 @@
 #include <stdlib.h>
+#include <stdint.h>
 #include <stdio.h>
 
 #include "fluidlite.h"
 
 #define SAMPLE_RATE 44100
-#define SAMPLE_SIZE sizeof(float)
-#define NUM_FRAMES SAMPLE_RATE
-#define NUM_CHANNELS 2
+#define SAMPLE_SIZE sizeof(int16_t) //s16
+#define DURATION 2 //second
+#define NUM_FRAMES SAMPLE_RATE*DURATION
+#define NUM_CHANNELS 1
 #define NUM_SAMPLES (NUM_FRAMES * NUM_CHANNELS)
 
 int main(int argc, char *argv[]) {
@@ -16,7 +18,7 @@ int main(int argc, char *argv[]) {
     }
 
     fluid_settings_t* settings = new_fluid_settings();
-    //fluid_settings_setstr(settings, "synth.verbose", "yes"); //在新版本中"synth.verbose"是int型
+    fluid_settings_setstr(settings, "synth.verbose", "yes"); //在新版本中"synth.verbose"是int型
     
 /**
 $ gdb --args fluidlite-test /mnt/c/tools/fluidsynth/bin/GeneralUser-GS.sf2 out.pcm
@@ -54,17 +56,18 @@ $10 = {data = 0x5555556a33c0, id = 0, free = 0x555555566f0e <fluid_defsfont_sfon
 */
 
 
-    float* buffer = calloc(SAMPLE_SIZE, NUM_SAMPLES);
+    int16_t *buffer = calloc(SAMPLE_SIZE, NUM_SAMPLES);
 
     FILE* file = argc > 2 ? fopen(argv[2], "wb") : stdout;
 
     fluid_synth_noteon(synth, 0, 60, 127);
-    fluid_synth_write_float(synth, NUM_FRAMES, buffer, 0, NUM_CHANNELS, buffer, 1, NUM_CHANNELS);
+    fluid_synth_write_s16(synth, NUM_FRAMES, buffer, 0, NUM_CHANNELS, buffer, 1, NUM_CHANNELS);
     fwrite(buffer, SAMPLE_SIZE, NUM_SAMPLES, file);
 
+
     fluid_synth_noteoff(synth, 0, 60);
-    fluid_synth_write_float(synth, NUM_FRAMES, buffer, 0, NUM_CHANNELS, buffer, 1, NUM_CHANNELS);
-    fwrite(buffer, SAMPLE_SIZE, NUM_SAMPLES, file);
+    fluid_synth_write_s16(synth, NUM_FRAMES/10, buffer, 0, NUM_CHANNELS, buffer, 1, NUM_CHANNELS);
+    fwrite(buffer, SAMPLE_SIZE, NUM_SAMPLES/10, file);
 
     fclose(file);
 
