@@ -286,6 +286,5 @@ void fluid_dsp_float_config (void);
 int fluid_dsp_float_interpolate_none (fluid_voice_t *voice);
 int fluid_dsp_float_interpolate_linear (fluid_voice_t *voice);
 int fluid_dsp_float_interpolate_4th_order (fluid_voice_t *voice);
-int fluid_dsp_float_interpolate_7th_order (fluid_voice_t *voice);
 
 #endif /* _FLUID_VOICE_H */
