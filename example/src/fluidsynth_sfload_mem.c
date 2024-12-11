@@ -144,7 +144,7 @@ int main(int argc, char *argv[]) {
     const void *pointer_to_sf2_in_mem = &example_sf2;
     sprintf(abused_filename, "&%p", pointer_to_sf2_in_mem);
 
-    int id = fluid_synth_sfload(synth, abused_filename, 0);
+    int id = fluid_synth_sfload(synth, abused_filename, 1); //这里必须用1, 否则没有prog设置，也没有pcm输出    
     /* now my_open() will be called with abused_filename and should have opened the memory region */
 
     if(id == FLUID_FAILED)
@@ -163,7 +163,7 @@ int main(int argc, char *argv[]) {
 
     int16_t *buffer = calloc(SAMPLE_SIZE, NUM_SAMPLES);
 
-    FILE* file = argc > 2 ? fopen(argv[2], "wb") : stdout;
+    FILE* file = argc > 1 ? fopen(argv[1], "wb") : stdout;
 
     fluid_synth_noteon(synth, 0, 60, 127);
     fluid_synth_write_s16(synth, NUM_FRAMES, buffer, 0, NUM_CHANNELS, buffer, 1, NUM_CHANNELS);
