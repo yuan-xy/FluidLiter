@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <time.h>
 
 #include "fluidlite.h"
 
@@ -60,8 +61,16 @@ $10 = {data = 0x5555556a33c0, id = 0, free = 0x555555566f0e <fluid_defsfont_sfon
 
     FILE* file = argc > 2 ? fopen(argv[2], "wb") : stdout;
 
+    clock_t start, end;
+    double cpu_time_used;
+    start = clock(); 
     fluid_synth_noteon(synth, 0, 60, 127);
     fluid_synth_write_s16(synth, NUM_FRAMES, buffer, 0, NUM_CHANNELS, buffer, 1, NUM_CHANNELS);
+    end = clock();
+    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+    printf("code exec time: %f seconds", cpu_time_used);
+
+
     fwrite(buffer, SAMPLE_SIZE, NUM_SAMPLES, file);
 
 
@@ -70,7 +79,6 @@ $10 = {data = 0x5555556a33c0, id = 0, free = 0x555555566f0e <fluid_defsfont_sfon
     fwrite(buffer, SAMPLE_SIZE, NUM_SAMPLES/10, file);
 
     fclose(file);
-
     free(buffer);
 
     delete_fluid_synth(synth);
