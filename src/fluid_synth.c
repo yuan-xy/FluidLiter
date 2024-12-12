@@ -105,7 +105,7 @@ void fluid_synth_settings(fluid_settings_t* settings)
   fluid_settings_register_str(settings, "synth.verbose", "no", 0, NULL, NULL);
   fluid_settings_register_str(settings, "synth.dump", "no", 0, NULL, NULL);
   fluid_settings_register_str(settings, "synth.reverb.active", "yes", 0, NULL, NULL);
-  fluid_settings_register_str(settings, "synth.chorus.active", "yes", 0, NULL, NULL);
+  fluid_settings_register_str(settings, "synth.chorus.active", "no", 0, NULL, NULL);
   fluid_settings_register_str(settings, "synth.ladspa.active", "no", 0, NULL, NULL);
   fluid_settings_register_str(settings, "midi.portname", "", 0, NULL, NULL);
   fluid_settings_register_str(settings, "synth.drums-channel.active", "yes", 0, NULL, NULL);
@@ -350,7 +350,7 @@ new_fluid_synth(fluid_settings_t *settings)
   synth->settings = settings;
 
   synth->with_reverb = fluid_settings_str_equal(settings, "synth.reverb.active", "yes");
-  synth->with_chorus = fluid_settings_str_equal(settings, "synth.chorus.active", "yes");
+  synth->with_chorus = fluid_settings_str_equal(settings, "synth.chorus.active", "no");
   synth->verbose = fluid_settings_str_equal(settings, "synth.verbose", "yes");
   synth->dump = fluid_settings_str_equal(settings, "synth.dump", "yes");
 
@@ -552,26 +552,6 @@ new_fluid_synth(fluid_settings_t *settings)
   return NULL;
 }
 
-/**
- * Set sample rate of the synth.
- * NOTE: This function is currently experimental and should only be
- * used when no voices or notes are active, and before any rendering calls.
- * @param synth FluidSynth instance
- * @param sample_rate New sample rate (Hz)
- * @since 1.1.2
- */
-void
-fluid_synth_set_sample_rate(fluid_synth_t* synth, float sample_rate)
-{
-    int i;
-    for (i = 0; i < synth->nvoice; i++) {
-      delete_fluid_voice(synth->voice[i]);
-      synth->voice[i] = new_fluid_voice(synth->sample_rate);
-    }
-
-    delete_fluid_chorus(synth->chorus);
-    synth->chorus = new_fluid_chorus(synth->sample_rate);
-}
 
 /*
  * delete_fluid_synth
@@ -1873,9 +1853,7 @@ void fluid_synth_set_reverb(fluid_synth_t* synth, double roomsize, double dampin
   fluid_revmodel_setlevel(synth->reverb, level);
 }
 
-/*
- * fluid_synth_set_chorus
- */
+
 void fluid_synth_set_chorus(fluid_synth_t* synth, int nr, double level,
 			   double speed, double depth_ms, int type)
 {
