@@ -158,10 +158,6 @@ fluid_synth_init()
 {
   fluid_synth_initialized++;
 
-  fluid_conversion_config();
-
-  fluid_dsp_float_config();
-
   fluid_sys_config();
 
   /* SF2.01 page 53 section 8.4.1: MIDI Note-On Velocity to Initial Attenuation */

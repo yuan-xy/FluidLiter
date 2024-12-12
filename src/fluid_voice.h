@@ -282,7 +282,6 @@ fluid_real_t fluid_voice_gen_value(fluid_voice_t* voice, int num);
 
 /* defined in fluid_dsp_float.c */
 
-void fluid_dsp_float_config (void);
 int fluid_dsp_float_interpolate_none (fluid_voice_t *voice);
 int fluid_dsp_float_interpolate_linear (fluid_voice_t *voice);
 int fluid_dsp_float_interpolate_4th_order (fluid_voice_t *voice);
