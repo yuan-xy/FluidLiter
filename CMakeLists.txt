@@ -43,7 +43,6 @@ list(APPEND SCOPED_HEADERS
     include/fluidlite/settings.h
     include/fluidlite/synth.h
     include/fluidlite/sfont.h
-    include/fluidlite/ramsfont.h
     include/fluidlite/log.h
     include/fluidlite/misc.h
     include/fluidlite/mod.h
@@ -63,7 +62,6 @@ list(APPEND SOURCES
     src/fluid_hash.c
     src/fluid_list.c
     src/fluid_mod.c
-    src/fluid_ramsfont.c
     src/fluid_rev.c
     src/fluid_settings.c
     src/fluid_synth.c
