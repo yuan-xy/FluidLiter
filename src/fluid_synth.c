@@ -106,7 +106,6 @@ void fluid_synth_settings(fluid_settings_t* settings)
   fluid_settings_register_str(settings, "synth.dump", "no", 0, NULL, NULL);
   fluid_settings_register_str(settings, "synth.reverb.active", "yes", 0, NULL, NULL);
   fluid_settings_register_str(settings, "synth.chorus.active", "no", 0, NULL, NULL);
-  fluid_settings_register_str(settings, "synth.ladspa.active", "no", 0, NULL, NULL);
   fluid_settings_register_str(settings, "midi.portname", "", 0, NULL, NULL);
   fluid_settings_register_str(settings, "synth.drums-channel.active", "yes", 0, NULL, NULL);
 
@@ -412,17 +411,11 @@ new_fluid_synth(fluid_settings_t *settings)
 
 
   /* The number of buffers is determined by the higher number of nr
-   * groups / nr audio channels.  If LADSPA is unused, they should be
-   * the same. */
+   * groups / nr audio channels. */
   synth->nbuf = synth->audio_channels;
   if (synth->audio_groups > synth->nbuf) {
     synth->nbuf = synth->audio_groups;
   }
-
-#ifdef LADSPA
-  /* Create and initialize the Fx unit.*/
-  synth->LADSPA_FxUnit = new_fluid_LADSPA_FxUnit(synth);
-#endif
 
   /* as soon as the synth is created it starts playing. */
   synth->state = FLUID_SYNTH_PLAYING;
@@ -685,12 +678,6 @@ delete_fluid_synth(fluid_synth_t* synth)
     }
     FLUID_FREE(synth->tuning);
   }
-
-#ifdef LADSPA
-  /* Release the LADSPA Fx unit */
-  fluid_LADSPA_shutdown(synth->LADSPA_FxUnit);
-  FLUID_FREE(synth->LADSPA_FxUnit);
-#endif
 
   //fluid_mutex_destroy(synth->busy);
 
@@ -2141,9 +2128,7 @@ fluid_synth_one_block(fluid_synth_t* synth, int do_not_mix_fx_to_out)
     if (_PLAYING(voice)) {
       /* The output associated with a MIDI channel is wrapped around
        * using the number of audio groups as modulo divider.  This is
-       * typically the number of output channels on the 'sound card',
-       * as long as the LADSPA Fx unit is not used. In case of LADSPA
-       * unit, think of it as subgroups on a mixer.
+       * typically the number of output channels on the 'sound card'.
        *
        * For example: Assume that the number of groups is set to 2.
        * Then MIDI channel 1, 3, 5, 7 etc. go to output 1, channels 2,
@@ -2192,13 +2177,6 @@ fluid_synth_one_block(fluid_synth_t* synth, int do_not_mix_fx_to_out)
 			     synth->left_buf[0], synth->right_buf[0]);
     }
   }
-
-
-#ifdef LADSPA
-  /* Run the signal through the LADSPA Fx unit */
-  fluid_LADSPA_run(synth->LADSPA_FxUnit, synth->left_buf, synth->right_buf, synth->fx_left_buf, synth->fx_right_buf);
-  fluid_check_fpe("LADSPA");
-#endif
 
   synth->ticks += FLUID_BUFSIZE;
 
