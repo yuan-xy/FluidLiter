@@ -396,7 +396,7 @@ fluid_voice_write(fluid_voice_t* voice,
     /* the envelope is in the attack section: ramp linearly to max value.
      * A positive modlfo_to_vol should increase volume (negative attenuation).
      */
-    target_amp = fluid_atten2amp (voice->attenuation)
+    target_amp = fluid_cb2amp (voice->attenuation)
       * fluid_cb2amp (voice->modlfo_val * -voice->modlfo_to_vol)
       * voice->volenv_val;
   }
@@ -405,7 +405,7 @@ fluid_voice_write(fluid_voice_t* voice,
     fluid_real_t amplitude_that_reaches_noise_floor;
     fluid_real_t amp_max;
 
-    target_amp = fluid_atten2amp (voice->attenuation)
+    target_amp = fluid_cb2amp (voice->attenuation)
       * fluid_cb2amp (960.0f * (1.0f - voice->volenv_val)
 		      + voice->modlfo_val * -voice->modlfo_to_vol);
 
@@ -432,7 +432,7 @@ fluid_voice_write(fluid_voice_t* voice,
      * volenv_val can only drop):
      */
 
-    amp_max = fluid_atten2amp (voice->min_attenuation_cB) * voice->volenv_val;
+    amp_max = fluid_cb2amp (voice->min_attenuation_cB) * voice->volenv_val;
 
     /* And if amp_max is already smaller than the known amplitude,
      * which will attenuate the sample below the noise floor, then we
@@ -1006,8 +1006,6 @@ fluid_voice_update_param(fluid_voice_t* voice, int gen)
   fluid_real_t x;
   fluid_real_t y;
   unsigned int count;
-  // Alternate attenuation scale used by EMU10K1 cards when setting the attenuation at the preset or instrument level within the SoundFont bank.
-  static const float ALT_ATTENUATION_SCALE = 0.4;
 
   switch (gen) {
 
@@ -1019,8 +1017,7 @@ fluid_voice_update_param(fluid_voice_t* voice, int gen)
     break;
 
   case GEN_ATTENUATION:
-    voice->attenuation = ((fluid_real_t)(voice)->gen[GEN_ATTENUATION].val*ALT_ATTENUATION_SCALE) +
-    (fluid_real_t)(voice)->gen[GEN_ATTENUATION].mod + (fluid_real_t)(voice)->gen[GEN_ATTENUATION].nrpn;
+    voice->attenuation = fluid_voice_gen_value(voice, gen);
 
     /* Range: SF2.01 section 8.1.3 # 48
      * Motivation for range checking:

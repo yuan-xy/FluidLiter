@@ -24,7 +24,6 @@
 /* conversion tables */
 fluid_real_t fluid_ct2hz_tab[FLUID_CENTS_HZ_SIZE];
 fluid_real_t fluid_cb2amp_tab[FLUID_CB_AMP_SIZE];
-fluid_real_t fluid_atten2amp_tab[FLUID_ATTEN_AMP_SIZE];
 fluid_real_t fluid_posbp_tab[128];
 fluid_real_t fluid_concave_tab[128];
 fluid_real_t fluid_convex_tab[128];
@@ -52,16 +51,6 @@ fluid_conversion_config(void)
    */
   for (i = 0; i < FLUID_CB_AMP_SIZE; i++) {
     fluid_cb2amp_tab[i] = (fluid_real_t) pow(10.0, (double) i / -200.0);
-  }
-
-  /* NOTE: EMU8k and EMU10k devices don't conform to the SoundFont
-   * specification in regards to volume attenuation.  The below calculation
-   * is an approx. equation for generating a table equivelant to the
-   * cb_to_amp_table[] in tables.c of the TiMidity++ source, which I'm told
-   * was generated from device testing.  By the spec this should be centibels.
-   */
-  for (i = 0; i < FLUID_ATTEN_AMP_SIZE; i++) {
-    fluid_atten2amp_tab[i] = (fluid_real_t) pow(10.0, (double) i / FLUID_ATTEN_POWER_FACTOR);
   }
 
   /* initialize the conversion tables (see fluid_mod.c
@@ -147,7 +136,7 @@ fluid_ct2hz(fluid_real_t cents)
 /*
  * fluid_cb2amp
  *
- * in: a value between 0 and 960, 0 is no attenuation
+ * in: a value between 0 and 1440, 0 is no attenuation
  * out: a value between 1 and 0
  */
 fluid_real_t
@@ -169,22 +158,6 @@ fluid_cb2amp(fluid_real_t cb)
   return fluid_cb2amp_tab[(int) cb];
 }
 
-/*
- * fluid_atten2amp
- *
- * in: a value between 0 and 1440, 0 is no attenuation
- * out: a value between 1 and 0
- *
- * Note: Volume attenuation is supposed to be centibels but EMU8k/10k don't
- * follow this.  Thats the reason for separate fluid_cb2amp and fluid_atten2amp.
- */
-fluid_real_t
-fluid_atten2amp(fluid_real_t atten)
-{
-  if (atten < 0) return 1.0;
-  else if (atten >= FLUID_ATTEN_AMP_SIZE) return 0.0;
-  else return fluid_atten2amp_tab[(int) atten];
-}
 
 /*
  * fluid_tc2sec_delay
