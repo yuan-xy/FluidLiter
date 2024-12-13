@@ -60,9 +60,7 @@ enum fluid_voice_envelope_index_t{
 	FLUID_VOICE_ENVLAST
 };
 
-/*
- * fluid_voice_t
- */
+
 struct _fluid_voice_t
 {
 	unsigned int id;                /* the id is incremented for every new noteon.

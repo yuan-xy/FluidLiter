@@ -30,9 +30,8 @@ static void fluid_voice_effects (fluid_voice_t *voice, int count,
 				        fluid_real_t* dsp_left_buf,
 				        fluid_real_t* dsp_right_buf,
 				        fluid_real_t* dsp_reverb_buf);
-/*
- * new_fluid_voice
- */
+
+
 fluid_voice_t*
 new_fluid_voice(fluid_real_t output_rate)
 {

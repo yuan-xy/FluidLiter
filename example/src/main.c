@@ -20,6 +20,7 @@ int main(int argc, char *argv[]) {
 
     fluid_settings_t* settings = new_fluid_settings();
     fluid_settings_setstr(settings, "synth.verbose", "yes"); //在新版本中"synth.verbose"是int型
+    fluid_settings_setint(settings, "synth.polyphony", 5); 
     
 /**
 $ gdb --args fluidlite-test /mnt/c/tools/fluidsynth/bin/GeneralUser-GS.sf2 out.pcm
