@@ -43,7 +43,8 @@ $4 = {settings = 0x5555555852a0, polyphony = 256, with_reverb = 1 '\001', with_c
  **/
 
 
-    fluid_synth_sfload(synth, argv[1], 1);
+    int sfont = fluid_synth_sfload(synth, argv[1], 1);
+    fluid_synth_program_select(synth, 0, sfont, 0, 0);
 /**
 (gdb) p *loader
 $8 = {data = 0x0, free = 0x555555566dda <delete_fluid_defsfloader>, load = 0x555555566e04 <fluid_defsfloader_load>,
@@ -65,7 +66,9 @@ $10 = {data = 0x5555556a33c0, id = 0, free = 0x555555566f0e <fluid_defsfont_sfon
     clock_t start, end;
     double cpu_time_used;
     start = clock(); 
-    fluid_synth_noteon(synth, 0, 60, 127);
+    fluid_synth_noteon(synth, 0, 60, 50);
+    fluid_synth_noteon(synth, 0, 67, 80);
+    fluid_synth_noteon(synth, 0, 76, 100);
     fluid_synth_write_s16(synth, NUM_FRAMES, buffer, 0, NUM_CHANNELS, buffer, 1, NUM_CHANNELS);
     end = clock();
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
@@ -76,6 +79,8 @@ $10 = {data = 0x5555556a33c0, id = 0, free = 0x555555566f0e <fluid_defsfont_sfon
 
 
     fluid_synth_noteoff(synth, 0, 60);
+    fluid_synth_noteoff(synth, 0, 67);
+    fluid_synth_noteoff(synth, 0, 76);
     fluid_synth_write_s16(synth, NUM_FRAMES/10, buffer, 0, NUM_CHANNELS, buffer, 1, NUM_CHANNELS);
     fwrite(buffer, SAMPLE_SIZE, NUM_SAMPLES/10, file);
 
