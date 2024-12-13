@@ -209,11 +209,6 @@ typedef enum
 }
 Gen_Unit;
 
-/* global data */
-
-extern unsigned short badgen[]; 	/* list of bad generators */
-extern unsigned short badpgen[]; 	/* list of bad preset generators */
-
 /* functions */
 void sfont_init_chunks (void);
 
