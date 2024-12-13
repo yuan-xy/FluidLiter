@@ -311,44 +311,6 @@ FLUIDSYNTH_API double fluid_synth_get_reverb_width(fluid_synth_t* synth);
 #define FLUID_REVERB_DEFAULT_LEVEL 0.9f
 
 
-
-  /*
-   * 
-   * Chorus 
-   *
-   */
-
-enum fluid_chorus_mod {
-  FLUID_CHORUS_MOD_SINE = 0,
-  FLUID_CHORUS_MOD_TRIANGLE = 1
-};
-
-  /** Set up the chorus. It should be turned on with fluid_synth_set_chorus_on.
-   * If faulty parameters are given, all new settings are discarded.
-   * Keep in mind, that the needed CPU time is proportional to 'nr'.
-   */
-FLUIDSYNTH_API void fluid_synth_set_chorus(fluid_synth_t* synth, int nr, double level, 
-					 double speed, double depth_ms, int type);
-
-  /** Turn on (1) / off (0) the built-in chorus unit */
-FLUIDSYNTH_API void fluid_synth_set_chorus_on(fluid_synth_t* synth, int on);
-
-  /** Query the current state of the chorus. */
-FLUIDSYNTH_API int fluid_synth_get_chorus_nr(fluid_synth_t* synth);
-FLUIDSYNTH_API double fluid_synth_get_chorus_level(fluid_synth_t* synth);
-FLUIDSYNTH_API double fluid_synth_get_chorus_speed_Hz(fluid_synth_t* synth);
-FLUIDSYNTH_API double fluid_synth_get_chorus_depth_ms(fluid_synth_t* synth);
-FLUIDSYNTH_API int fluid_synth_get_chorus_type(fluid_synth_t* synth); /* see fluid_chorus_mod */
-
-  /* Those are the default settings for the chorus. */
-#define FLUID_CHORUS_DEFAULT_N 3
-#define FLUID_CHORUS_DEFAULT_LEVEL 2.0f
-#define FLUID_CHORUS_DEFAULT_SPEED 0.3f
-#define FLUID_CHORUS_DEFAULT_DEPTH 8.0f
-#define FLUID_CHORUS_DEFAULT_TYPE FLUID_CHORUS_MOD_SINE 
-
-
-
   /*
    * 
    * Audio and MIDI channels 

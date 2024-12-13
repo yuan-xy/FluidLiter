@@ -1,23 +1,3 @@
-/* FluidSynth - A Software Synthesizer
- *
- * Copyright (C) 2003  Peter Hanappe and others.
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Library General Public License
- * as published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Library General Public License for more details.
- *
- * You should have received a copy of the GNU Library General Public
- * License along with this library; if not, write to the Free
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
- * 02111-1307, USA
- */
-
 #include <math.h>
 
 #include "fluid_synth.h"
@@ -79,7 +59,6 @@ fluid_mod_t default_att_mod;            /* SF2.01 section 8.4.5  */
 fluid_mod_t default_pan_mod;            /* SF2.01 section 8.4.6  */
 fluid_mod_t default_expr_mod;           /* SF2.01 section 8.4.7  */
 fluid_mod_t default_reverb_mod;         /* SF2.01 section 8.4.8  */
-fluid_mod_t default_chorus_mod;         /* SF2.01 section 8.4.9  */
 fluid_mod_t default_pitch_bend_mod;     /* SF2.01 section 8.4.10 */
 
 /* reverb presets */
@@ -105,7 +84,6 @@ void fluid_synth_settings(fluid_settings_t* settings)
   fluid_settings_register_str(settings, "synth.verbose", "no", 0, NULL, NULL);
   fluid_settings_register_str(settings, "synth.dump", "no", 0, NULL, NULL);
   fluid_settings_register_str(settings, "synth.reverb.active", "yes", 0, NULL, NULL);
-  fluid_settings_register_str(settings, "synth.chorus.active", "no", 0, NULL, NULL);
   fluid_settings_register_str(settings, "midi.portname", "", 0, NULL, NULL);
   fluid_settings_register_str(settings, "synth.drums-channel.active", "yes", 0, NULL, NULL);
 
@@ -277,20 +255,6 @@ fluid_synth_init()
   fluid_mod_set_amount(&default_reverb_mod, 200);                /* Amount: 200 ('tenths of a percent') */
 
 
-
-  /* SF2.01 page 55 section 8.4.9: MIDI continuous controller 93 to Reverb send */
-  fluid_mod_set_source1(&default_chorus_mod, 93,                 /* index=93 */
-		       FLUID_MOD_CC                              /* CC=1 */
-		       | FLUID_MOD_LINEAR                        /* type=0 */
-		       | FLUID_MOD_UNIPOLAR                      /* P=0 */
-		       | FLUID_MOD_POSITIVE                      /* D=0 */
-		       );
-  fluid_mod_set_source2(&default_chorus_mod, 0, 0);              /* No second source */
-  fluid_mod_set_dest(&default_chorus_mod, GEN_CHORUSSEND);       /* Target: Chorus */
-  fluid_mod_set_amount(&default_chorus_mod, 200);                /* Amount: 200 ('tenths of a percent') */
-
-
-
   /* SF2.01 page 57 section 8.4.10 MIDI Pitch Wheel to Initial Pitch ... */
   fluid_mod_set_source1(&default_pitch_bend_mod, FLUID_MOD_PITCHWHEEL, /* Index=14 */
 		       FLUID_MOD_GC                              /* CC =0 */
@@ -349,7 +313,6 @@ new_fluid_synth(fluid_settings_t *settings)
   synth->settings = settings;
 
   synth->with_reverb = fluid_settings_str_equal(settings, "synth.reverb.active", "yes");
-  synth->with_chorus = fluid_settings_str_equal(settings, "synth.chorus.active", "no");
   synth->verbose = fluid_settings_str_equal(settings, "synth.verbose", "yes");
   synth->dump = fluid_settings_str_equal(settings, "synth.dump", "yes");
 
@@ -528,13 +491,6 @@ new_fluid_synth(fluid_settings_t *settings)
 			FLUID_REVERB_DEFAULT_WIDTH,
 			FLUID_REVERB_DEFAULT_LEVEL);
 
-  /* allocate the chorus module */
-  synth->chorus = new_fluid_chorus(synth->sample_rate);
-  if (synth->chorus == NULL) {
-    FLUID_LOG(FLUID_ERR, "Out of memory");
-    goto error_recovery;
-  }
-
   if(fluid_settings_str_equal(settings, "synth.drums-channel.active", "yes"))
       fluid_synth_bank_select(synth,9,DRUM_INST_BANK);
 
@@ -657,11 +613,6 @@ delete_fluid_synth(fluid_synth_t* synth)
   /* release the reverb module */
   if (synth->reverb != NULL) {
     delete_fluid_revmodel(synth->reverb);
-  }
-
-  /* release the chorus module */
-  if (synth->chorus != NULL) {
-    delete_fluid_chorus(synth->chorus);
   }
 
   /* free the tunings, if any */
@@ -1187,7 +1138,6 @@ fluid_synth_system_reset(fluid_synth_t* synth)
     fluid_channel_reset(synth->channel[i]);
   }
 
-  fluid_chorus_reset(synth->chorus);
   fluid_revmodel_reset(synth->reverb);
 
   return FLUID_OK;
@@ -1841,72 +1791,6 @@ void fluid_synth_set_reverb(fluid_synth_t* synth, double roomsize, double dampin
 }
 
 
-void fluid_synth_set_chorus(fluid_synth_t* synth, int nr, double level,
-			   double speed, double depth_ms, int type)
-{
-/*   fluid_mutex_lock(synth->busy); /\* Don't interfere with the audio thread *\/ */
-/*   fluid_mutex_unlock(synth->busy); */
-
-  fluid_chorus_set_nr(synth->chorus, nr);
-  fluid_chorus_set_level(synth->chorus, (fluid_real_t)level);
-  fluid_chorus_set_speed_Hz(synth->chorus, (fluid_real_t)speed);
-  fluid_chorus_set_depth_ms(synth->chorus, (fluid_real_t)depth_ms);
-  fluid_chorus_set_type(synth->chorus, type);
-  fluid_chorus_update(synth->chorus);
-}
-
-/******************************************************
-
-#define COMPRESS      1
-#define COMPRESS_X1   4.0
-#define COMPRESS_Y1   0.6
-#define COMPRESS_X2   10.0
-#define COMPRESS_Y2   1.0
-
-  len2 = 2 * len;
-  alpha1 = COMPRESS_Y1 / COMPRESS_X1;
-  alpha2 = (COMPRESS_Y2 - COMPRESS_Y1) / (COMPRESS_X2 - COMPRESS_X1);
-  if (COMPRESS_X1 == COMPRESS_Y1) {
-    for (j = 0; j < len2; j++) {
-      if (buf[j] > COMPRESS_X1) {
-	if (buf[j] > COMPRESS_X2) {
-	  buf[j] = COMPRESS_Y2;
-	} else {
-	  buf[j] = COMPRESS_Y1 + alpha2 * (buf[j] - COMPRESS_X1);
-	}
-      } else if (buf[j] < -COMPRESS_X1) {
-	if (buf[j] < -COMPRESS_X2) {
-	  buf[j] = -COMPRESS_Y2;
-	} else {
-	  buf[j] = -COMPRESS_Y1 + alpha2 * (buf[j] + COMPRESS_X1);
-	}
-      }
-    }
-  } else {
-    for (j = 0; j < len2; j++) {
-      if ((buf[j] >= -COMPRESS_X1) && (buf[j] <= COMPRESS_X1)) {
-	buf[j] *= alpha1;
-      } else if (buf[j] > COMPRESS_X1) {
-	if (buf[j] > COMPRESS_X2) {
-	  buf[j] = COMPRESS_Y2;
-	} else {
-	  buf[j] = COMPRESS_Y1 + alpha2 * (buf[j] - COMPRESS_X1);
-	}
-      } else {
-	if (buf[j] < -COMPRESS_X2) {
-	  buf[j] = -COMPRESS_Y2;
-	} else {
-	  buf[j] = -COMPRESS_Y1 + alpha2 * (buf[j] + COMPRESS_X1);
-	}
-      }
-    }
-  }
-
-***************************************************/
-
-/*
- *  fluid_synth_nwrite_float
- */
 int
 fluid_synth_nwrite_float(fluid_synth_t* synth, int len,
 			 float** left, float** right,
@@ -2098,7 +1982,6 @@ fluid_synth_one_block(fluid_synth_t* synth, int do_not_mix_fx_to_out)
   fluid_real_t* left_buf;
   fluid_real_t* right_buf;
   fluid_real_t* reverb_buf;
-  fluid_real_t* chorus_buf;
   int byte_size = FLUID_BUFSIZE * sizeof(fluid_real_t);
 
 /*   fluid_mutex_lock(synth->busy); /\* Here comes the audio thread. Lock the synth. *\/ */
@@ -2114,12 +1997,11 @@ fluid_synth_one_block(fluid_synth_t* synth, int do_not_mix_fx_to_out)
     FLUID_MEMSET(synth->fx_right_buf[i], 0, byte_size);
   }
 
-  /* Set up the reverb / chorus buffers only, when the effect is
+  /* Set up the reverb only, when the effect is
    * enabled on synth level.  Nonexisting buffers are detected in the
-   * DSP loop. Not sending the reverb / chorus signal saves some time
+   * DSP loop. Not sending the reverb signal saves some time
    * in that case. */
   reverb_buf = synth->with_reverb ? synth->fx_left_buf[0] : NULL;
-  chorus_buf = synth->with_chorus ? synth->fx_left_buf[1] : NULL;
 
   /* call all playing synthesis processes */
   for (i = 0; i < synth->polyphony; i++) {
@@ -2141,11 +2023,11 @@ fluid_synth_one_block(fluid_synth_t* synth, int do_not_mix_fx_to_out)
       left_buf = synth->left_buf[auchan];
       right_buf = synth->right_buf[auchan];
 
-      fluid_voice_write(voice, left_buf, right_buf, reverb_buf, chorus_buf);
+      fluid_voice_write(voice, left_buf, right_buf, reverb_buf);
     }
   }
 
-  /* if multi channel output, don't mix the output of the chorus and
+  /* if multi channel output, don't mix the output of the
      reverb in the final output. The effects outputs are send
      separately. */
 
@@ -2157,24 +2039,12 @@ fluid_synth_one_block(fluid_synth_t* synth, int do_not_mix_fx_to_out)
 				   synth->fx_left_buf[0], synth->fx_right_buf[0]);
     }
 
-    /* send to chorus */
-    if (chorus_buf) {
-      fluid_chorus_processreplace(synth->chorus, chorus_buf,
-				 synth->fx_left_buf[1], synth->fx_right_buf[1]);
-    }
-
   } else {
 
     /* send to reverb */
     if (reverb_buf) {
       fluid_revmodel_processmix(synth->reverb, reverb_buf,
 			       synth->left_buf[0], synth->right_buf[0]);
-    }
-
-    /* send to chorus */
-    if (chorus_buf) {
-      fluid_chorus_processmix(synth->chorus, chorus_buf,
-			     synth->left_buf[0], synth->right_buf[0]);
     }
   }
 
@@ -2342,7 +2212,6 @@ fluid_synth_alloc_voice(fluid_synth_t* synth, fluid_sample_t* sample, int chan, 
   fluid_voice_add_mod(voice, &default_pan_mod, FLUID_VOICE_DEFAULT);        /* SF2.01 $8.4.6  */
   fluid_voice_add_mod(voice, &default_expr_mod, FLUID_VOICE_DEFAULT);       /* SF2.01 $8.4.7  */
   fluid_voice_add_mod(voice, &default_reverb_mod, FLUID_VOICE_DEFAULT);     /* SF2.01 $8.4.8  */
-  fluid_voice_add_mod(voice, &default_chorus_mod, FLUID_VOICE_DEFAULT);     /* SF2.01 $8.4.9  */
   fluid_voice_add_mod(voice, &default_pitch_bend_mod, FLUID_VOICE_DEFAULT); /* SF2.01 $8.4.10 */
 
   return voice;
@@ -2701,39 +2570,6 @@ void fluid_synth_set_reverb_on(fluid_synth_t* synth, int on)
   synth->with_reverb = on;
 }
 
-/* Purpose:
- * Turns on / off the chorus unit in the synth */
-void fluid_synth_set_chorus_on(fluid_synth_t* synth, int on)
-{
-  synth->with_chorus = on;
-}
-
-/* Purpose:
- * Reports the current setting of the chorus unit. */
-int fluid_synth_get_chorus_nr(fluid_synth_t* synth)
-{
-    return fluid_chorus_get_nr(synth->chorus);
-}
-
-double fluid_synth_get_chorus_level(fluid_synth_t* synth)
-{
-    return (double)fluid_chorus_get_level(synth->chorus);
-}
-
-double fluid_synth_get_chorus_speed_Hz(fluid_synth_t* synth)
-{
-    return (double)fluid_chorus_get_speed_Hz(synth->chorus);
-}
-
-double fluid_synth_get_chorus_depth_ms(fluid_synth_t* synth)
-{
-    return (double)fluid_chorus_get_depth_ms(synth->chorus);
-}
-
-int fluid_synth_get_chorus_type(fluid_synth_t* synth)
-{
-    return fluid_chorus_get_type(synth->chorus);
-}
 
 /* Purpose:
  * Returns the current settings_old of the reverb unit */

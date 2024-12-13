@@ -1,24 +1,3 @@
-/* FluidSynth - A Software Synthesizer
- *
- * Copyright (C) 2003  Peter Hanappe and others.
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Library General Public License
- * as published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Library General Public License for more details.
- *
- * You should have received a copy of the GNU Library General Public
- * License along with this library; if not, write to the Free
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
- * 02111-1307, USA
- */
-
-
 #ifndef _FLUID_SYNTH_H
 #define _FLUID_SYNTH_H
 
@@ -33,7 +12,6 @@
 #include "fluid_list.h"
 #include "fluid_rev.h"
 #include "fluid_voice.h"
-#include "fluid_chorus.h"
 #include "fluid_sys.h"
 
 /***************************************************************
@@ -78,17 +56,12 @@ struct _fluid_bank_offset_t {
 };
 
 
-/*
- * fluid_synth_t
- */
-
 struct _fluid_synth_t
 {
   /* fluid_settings_old_t settings_old;  the old synthesizer settings */
   fluid_settings_t* settings;         /** the synthesizer settings */
   int polyphony;                     /** maximum polyphony */
   char with_reverb;                  /** Should the synth use the built-in reverb unit? */
-  char with_chorus;                  /** Should the synth use the built-in chorus unit? */
   char verbose;                      /** Turn verbose mode on? */
   char dump;                         /** Dump events to stdout to hook up a user interface? */
   double sample_rate;                /** The sample rate */
@@ -120,7 +93,6 @@ struct _fluid_synth_t
   fluid_real_t** fx_right_buf;
 
   fluid_revmodel_t* reverb;
-  fluid_chorus_t* chorus;
   int cur;                           /** the current sample in the audio buffers to be output */
 
   char outbuf[256];                  /** buffer for message output */
