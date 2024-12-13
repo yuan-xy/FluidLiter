@@ -325,10 +325,6 @@ FLUIDSYNTH_API int fluid_synth_count_midi_channels(fluid_synth_t* synth);
       internally */
 FLUIDSYNTH_API int fluid_synth_count_audio_channels(fluid_synth_t* synth);
 
-  /** Returns the number of audio groups that the synthesizer uses
-      internally. This is usually identical to audio_channels. */
-FLUIDSYNTH_API int fluid_synth_count_audio_groups(fluid_synth_t* synth);
-
   /** Returns the number of effects channels that the synthesizer uses
       internally */
 FLUIDSYNTH_API int fluid_synth_count_effects_channels(fluid_synth_t* synth);

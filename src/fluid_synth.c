@@ -320,7 +320,6 @@ new_fluid_synth(fluid_settings_t *settings)
   fluid_settings_getnum(settings, "synth.sample-rate", &synth->sample_rate);
   fluid_settings_getint(settings, "synth.midi-channels", &synth->midi_channels);
   fluid_settings_getint(settings, "synth.audio-channels", &synth->audio_channels);
-  fluid_settings_getint(settings, "synth.audio-groups", &synth->audio_groups);
   fluid_settings_getint(settings, "synth.effects-channels", &synth->effects_channels);
   fluid_settings_getnum(settings, "synth.gain", &synth->gain);
   fluid_settings_getint(settings, "synth.min-note-length", &i);
@@ -356,16 +355,6 @@ new_fluid_synth(fluid_settings_t *settings)
     synth->audio_channels = 128;
   }
 
-  if (synth->audio_groups < 1) {
-    FLUID_LOG(FLUID_WARN, "Requested number of audio groups is smaller than 1. "
-	     "Changing this setting to 1.");
-    synth->audio_groups = 1;
-  } else if (synth->audio_groups > 128) {
-    FLUID_LOG(FLUID_WARN, "Requested number of audio groups is too big (%d). "
-	     "Limiting this setting to 128.", synth->audio_groups);
-    synth->audio_groups = 128;
-  }
-
   if (synth->effects_channels != 2) {
     FLUID_LOG(FLUID_WARN, "Invalid number of effects channels (%d)."
 	     "Setting effects channels to 2.", synth->effects_channels);
@@ -376,9 +365,6 @@ new_fluid_synth(fluid_settings_t *settings)
   /* The number of buffers is determined by the higher number of nr
    * groups / nr audio channels. */
   synth->nbuf = synth->audio_channels;
-  if (synth->audio_groups > synth->nbuf) {
-    synth->nbuf = synth->audio_groups;
-  }
 
   /* as soon as the synth is created it starts playing. */
   synth->state = FLUID_SYNTH_PLAYING;
@@ -425,7 +411,7 @@ new_fluid_synth(fluid_settings_t *settings)
   /* Allocate the sample buffers */
   synth->left_buf = NULL;
   synth->right_buf = NULL;
-  synth->fx_left_buf = NULL;
+  synth->fx_left_buf = NULL;  //TODO: remove
   synth->fx_right_buf = NULL;
 
   /* Left and right audio buffers */
@@ -1977,7 +1963,7 @@ fluid_synth_write_s16(fluid_synth_t* synth, int len,
 int
 fluid_synth_one_block(fluid_synth_t* synth, int do_not_mix_fx_to_out)
 {
-  int i, auchan;
+  int i;
   fluid_voice_t* voice;
   fluid_real_t* left_buf;
   fluid_real_t* right_buf;
@@ -2008,20 +1994,8 @@ fluid_synth_one_block(fluid_synth_t* synth, int do_not_mix_fx_to_out)
     voice = synth->voice[i];
 
     if (_PLAYING(voice)) {
-      /* The output associated with a MIDI channel is wrapped around
-       * using the number of audio groups as modulo divider.  This is
-       * typically the number of output channels on the 'sound card'.
-       *
-       * For example: Assume that the number of groups is set to 2.
-       * Then MIDI channel 1, 3, 5, 7 etc. go to output 1, channels 2,
-       * 4, 6, 8 etc to output 2.  Or assume 3 groups: Then MIDI
-       * channels 1, 4, 7, 10 etc go to output 1; 2, 5, 8, 11 etc to
-       * output 2, 3, 6, 9, 12 etc to output 3.
-       */
-      auchan = fluid_channel_get_num(fluid_voice_get_channel(voice));
-      auchan %= synth->audio_groups;
-      left_buf = synth->left_buf[auchan];
-      right_buf = synth->right_buf[auchan];
+      left_buf = synth->left_buf[0];
+      right_buf = synth->right_buf[0];
 
       fluid_voice_write(voice, left_buf, right_buf, reverb_buf);
     }
@@ -2655,15 +2629,6 @@ int
 fluid_synth_count_audio_channels(fluid_synth_t* synth)
 {
   return synth->audio_channels;
-}
-
-/* Purpose:
- * Returns the number of allocated audio channels
- */
-int
-fluid_synth_count_audio_groups(fluid_synth_t* synth)
-{
-  return synth->audio_groups;
 }
 
 /* Purpose:

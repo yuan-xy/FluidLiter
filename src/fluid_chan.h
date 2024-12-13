@@ -10,7 +10,7 @@
  */
 struct _fluid_channel_t
 {
-  int channum;
+  int channum;                          /**< MIDI channel number */
   unsigned int sfontnum;
   unsigned int banknum;
   unsigned int prognum;

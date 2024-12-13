@@ -67,8 +67,6 @@ struct _fluid_synth_t
   double sample_rate;                /** The sample rate */
   int midi_channels;                 /** the number of MIDI channels (>= 16) */
   int audio_channels;                /** the number of audio channels (1 channel=left+right) */
-  int audio_groups;                  /** the number of (stereo) 'sub'groups from the synth.
-					 Typically equal to audio_channels. */
   int effects_channels;              /** the number of effects channels (= 2) */
   unsigned int state;                /** the synthesizer state */
   unsigned int ticks;                /** the number of audio samples since the start */
