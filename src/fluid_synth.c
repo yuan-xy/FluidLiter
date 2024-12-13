@@ -319,7 +319,6 @@ new_fluid_synth(fluid_settings_t *settings)
   fluid_settings_getint(settings, "synth.polyphony", &synth->polyphony);
   fluid_settings_getnum(settings, "synth.sample-rate", &synth->sample_rate);
   fluid_settings_getint(settings, "synth.midi-channels", &synth->midi_channels);
-  fluid_settings_getint(settings, "synth.audio-channels", &synth->audio_channels);
   fluid_settings_getint(settings, "synth.effects-channels", &synth->effects_channels);
   fluid_settings_getnum(settings, "synth.gain", &synth->gain);
   fluid_settings_getint(settings, "synth.min-note-length", &i);
@@ -345,26 +344,13 @@ new_fluid_synth(fluid_settings_t *settings)
 	     "I'll increase the number of channels to the next multiple.");
   }
 
-  if (synth->audio_channels < 1) {
-    FLUID_LOG(FLUID_WARN, "Requested number of audio channels is smaller than 1. "
-	     "Changing this setting to 1.");
-    synth->audio_channels = 1;
-  } else if (synth->audio_channels > 128) {
-    FLUID_LOG(FLUID_WARN, "Requested number of audio channels is too big (%d). "
-	     "Limiting this setting to 128.", synth->audio_channels);
-    synth->audio_channels = 128;
-  }
-
   if (synth->effects_channels != 2) {
     FLUID_LOG(FLUID_WARN, "Invalid number of effects channels (%d)."
 	     "Setting effects channels to 2.", synth->effects_channels);
     synth->effects_channels = 2;
   }
 
-
-  /* The number of buffers is determined by the higher number of nr
-   * groups / nr audio channels. */
-  synth->nbuf = synth->audio_channels;
+  synth->nbuf = 1; //set audio channels always 1
 
   /* as soon as the synth is created it starts playing. */
   synth->state = FLUID_SYNTH_PLAYING;
@@ -1800,7 +1786,7 @@ fluid_synth_nwrite_float(fluid_synth_t* synth, int len,
     num = (available > len)? len : available;
     bytes = num * sizeof(float);
 
-    for (i = 0; i < synth->audio_channels; i++) {
+    for (i = 0; i < synth->nbuf; i++) {
       FLUID_MEMCPY(left[i], left_in[i] + synth->cur, bytes);
       FLUID_MEMCPY(right[i], right_in[i] + synth->cur, bytes);
     }
@@ -1815,7 +1801,7 @@ fluid_synth_nwrite_float(fluid_synth_t* synth, int len,
     num = (FLUID_BUFSIZE > len - count)? len - count : FLUID_BUFSIZE;
     bytes = num * sizeof(float);
 
-    for (i = 0; i < synth->audio_channels; i++) {
+    for (i = 0; i < synth->nbuf; i++) {
       FLUID_MEMCPY(left[i] + count, left_in[i], bytes);
       FLUID_MEMCPY(right[i] + count, right_in[i], bytes);
     }
@@ -2620,15 +2606,6 @@ int
 fluid_synth_count_midi_channels(fluid_synth_t* synth)
 {
   return synth->midi_channels;
-}
-
-/* Purpose:
- * Returns the number of allocated audio channels
- */
-int
-fluid_synth_count_audio_channels(fluid_synth_t* synth)
-{
-  return synth->audio_channels;
 }
 
 /* Purpose:

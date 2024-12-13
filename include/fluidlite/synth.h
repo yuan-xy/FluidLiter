@@ -310,20 +310,9 @@ FLUIDSYNTH_API double fluid_synth_get_reverb_width(fluid_synth_t* synth);
 #define FLUID_REVERB_DEFAULT_WIDTH 0.5f
 #define FLUID_REVERB_DEFAULT_LEVEL 0.9f
 
-
-  /*
-   * 
-   * Audio and MIDI channels 
-   *
-   */
-
   /** Returns the number of MIDI channels that the synthesizer uses
       internally */
 FLUIDSYNTH_API int fluid_synth_count_midi_channels(fluid_synth_t* synth);
-
-  /** Returns the number of audio channels that the synthesizer uses
-      internally */
-FLUIDSYNTH_API int fluid_synth_count_audio_channels(fluid_synth_t* synth);
 
   /** Returns the number of effects channels that the synthesizer uses
       internally */
