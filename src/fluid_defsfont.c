@@ -1984,7 +1984,7 @@ static int fixup_pgen (SFData * sf);
 static int fixup_igen (SFData * sf);
 static int fixup_sample (SFData * sf);
 
-char idlist[] = {
+const static char idlist[] = {
   "RIFFLISTsfbkINFOsdtapdtaifilisngINAMiromiverICRDIENGIPRD"
     "ICOPICMTISFTsnamsmplphdrpbagpmodpgeninstibagimodigenshdr"
 };

@@ -292,9 +292,6 @@ typedef struct _SFShdr
 }
 SFShdr;
 
-/* data */
-extern char idlist[];
-
 /* functions */
 SFData *sfload_file (const char * fname, fluid_fileapi_t * fileapi);
 
