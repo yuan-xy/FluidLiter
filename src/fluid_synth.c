@@ -83,7 +83,7 @@ fluid_mod_t default_chorus_mod;         /* SF2.01 section 8.4.9  */
 fluid_mod_t default_pitch_bend_mod;     /* SF2.01 section 8.4.10 */
 
 /* reverb presets */
-static fluid_revmodel_presets_t revmodel_preset[] = {
+const static fluid_revmodel_presets_t revmodel_preset[] = {
   /* name */    /* roomsize */ /* damp */ /* width */ /* level */
   { "Test 1",          0.2f,      0.0f,       0.5f,       0.9f },
   { "Test 2",          0.4f,      0.2f,       0.5f,       0.8f },
