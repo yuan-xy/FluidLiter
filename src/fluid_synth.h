@@ -82,7 +82,6 @@ struct _fluid_synth_t
   fluid_voice_t** voice;              /** the synthesis processes */
   unsigned int noteid;                /** the id is incremented for every new note. it's used for noteoff's  */
   unsigned int storeid;
-  int nbuf;                           /** How many audio buffers are used? (depends on nr of audio channels / groups)*/
 
   fluid_real_t** left_buf;
   fluid_real_t** right_buf;

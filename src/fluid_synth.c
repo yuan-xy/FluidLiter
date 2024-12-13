@@ -7,6 +7,8 @@
 #include "fluid_settings.h"
 #include "fluid_sfont.h"
 
+#define NBUF 1 //nr of audio channels
+
 fluid_sfloader_t* new_fluid_defsfloader(void);
 
 /************************************************************************
@@ -350,8 +352,6 @@ new_fluid_synth(fluid_settings_t *settings)
     synth->effects_channels = 2;
   }
 
-  synth->nbuf = 1; //set audio channels always 1
-
   /* as soon as the synth is created it starts playing. */
   synth->state = FLUID_SYNTH_PLAYING;
   synth->sfont = NULL;
@@ -402,18 +402,18 @@ new_fluid_synth(fluid_settings_t *settings)
 
   /* Left and right audio buffers */
 
-  synth->left_buf = FLUID_ARRAY(fluid_real_t*, synth->nbuf);
-  synth->right_buf = FLUID_ARRAY(fluid_real_t*, synth->nbuf);
+  synth->left_buf = FLUID_ARRAY(fluid_real_t*, NBUF);
+  synth->right_buf = FLUID_ARRAY(fluid_real_t*, NBUF);
 
   if ((synth->left_buf == NULL) || (synth->right_buf == NULL)) {
     FLUID_LOG(FLUID_ERR, "Out of memory");
     goto error_recovery;
   }
 
-  FLUID_MEMSET(synth->left_buf, 0, synth->nbuf * sizeof(fluid_real_t*));
-  FLUID_MEMSET(synth->right_buf, 0, synth->nbuf * sizeof(fluid_real_t*));
+  FLUID_MEMSET(synth->left_buf, 0, NBUF * sizeof(fluid_real_t*));
+  FLUID_MEMSET(synth->right_buf, 0, NBUF * sizeof(fluid_real_t*));
 
-  for (i = 0; i < synth->nbuf; i++) {
+  for (i = 0; i < NBUF; i++) {
 
     synth->left_buf[i] = FLUID_ARRAY(fluid_real_t, FLUID_BUFSIZE);
     synth->right_buf[i] = FLUID_ARRAY(fluid_real_t, FLUID_BUFSIZE);
@@ -547,7 +547,7 @@ delete_fluid_synth(fluid_synth_t* synth)
 
   /* free all the sample buffers */
   if (synth->left_buf != NULL) {
-    for (i = 0; i < synth->nbuf; i++) {
+    for (i = 0; i < NBUF; i++) {
       if (synth->left_buf[i] != NULL) {
 	FLUID_FREE(synth->left_buf[i]);
       }
@@ -556,7 +556,7 @@ delete_fluid_synth(fluid_synth_t* synth)
   }
 
   if (synth->right_buf != NULL) {
-    for (i = 0; i < synth->nbuf; i++) {
+    for (i = 0; i < NBUF; i++) {
       if (synth->right_buf[i] != NULL) {
 	FLUID_FREE(synth->right_buf[i]);
       }
@@ -1786,7 +1786,7 @@ fluid_synth_nwrite_float(fluid_synth_t* synth, int len,
     num = (available > len)? len : available;
     bytes = num * sizeof(float);
 
-    for (i = 0; i < synth->nbuf; i++) {
+    for (i = 0; i < NBUF; i++) {
       FLUID_MEMCPY(left[i], left_in[i] + synth->cur, bytes);
       FLUID_MEMCPY(right[i], right_in[i] + synth->cur, bytes);
     }
@@ -1801,7 +1801,7 @@ fluid_synth_nwrite_float(fluid_synth_t* synth, int len,
     num = (FLUID_BUFSIZE > len - count)? len - count : FLUID_BUFSIZE;
     bytes = num * sizeof(float);
 
-    for (i = 0; i < synth->nbuf; i++) {
+    for (i = 0; i < NBUF; i++) {
       FLUID_MEMCPY(left[i] + count, left_in[i], bytes);
       FLUID_MEMCPY(right[i] + count, right_in[i], bytes);
     }
@@ -1959,7 +1959,7 @@ fluid_synth_one_block(fluid_synth_t* synth, int do_not_mix_fx_to_out)
 /*   fluid_mutex_lock(synth->busy); /\* Here comes the audio thread. Lock the synth. *\/ */
 
   /* clean the audio buffers */
-  for (i = 0; i < synth->nbuf; i++) {
+  for (i = 0; i < NBUF; i++) {
     FLUID_MEMSET(synth->left_buf[i], 0, byte_size);
     FLUID_MEMSET(synth->right_buf[i], 0, byte_size);
   }
