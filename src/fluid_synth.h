@@ -83,8 +83,8 @@ struct _fluid_synth_t
   unsigned int noteid;                /** the id is incremented for every new note. it's used for noteoff's  */
   unsigned int storeid;
 
-  fluid_real_t** left_buf;
-  fluid_real_t** right_buf;
+  fluid_real_t* left_buf;
+  fluid_real_t* right_buf;
   fluid_real_t** fx_left_buf;
   fluid_real_t** fx_right_buf;
 

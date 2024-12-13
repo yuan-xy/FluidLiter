@@ -580,29 +580,6 @@ FLUIDSYNTH_API int fluid_synth_write_float(fluid_synth_t* synth, int len,
 					 void* lout, int loff, int lincr, 
 					 void* rout, int roff, int rincr);
 
-FLUIDSYNTH_API int fluid_synth_nwrite_float(fluid_synth_t* synth, int len, 
-					  float** left, float** right, 
-					  float** fx_left, float** fx_right);
-
-  /** Generate a number of samples. This function implements the
-   *  default interface defined in fluidsynth/audio.h. This function
-   *  ignores the input buffers and expects at least two output
-   *  buffer.
-   *
-   *  \param synth The synthesizer
-   *  \param len The number of samples to generate
-   *  \param nin The number of input buffers
-   *  \param in The array of input buffers
-   *  \param nout The number of output buffers
-   *  \param out The array of output buffers
-   *  \returns 0 if no error occured, non-zero otherwise
-   */
-
-FLUIDSYNTH_API int fluid_synth_process(fluid_synth_t* synth, int len,
-				     int nin, float** in, 
-				     int nout, float** out);
-
-
 
   /* Type definition of the synthesizer's audio callback function. */
 typedef int (*fluid_audio_callback_t)(fluid_synth_t* synth, int len, 

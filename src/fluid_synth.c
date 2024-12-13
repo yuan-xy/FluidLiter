@@ -7,8 +7,6 @@
 #include "fluid_settings.h"
 #include "fluid_sfont.h"
 
-#define NBUF 1 //nr of audio channels
-
 fluid_sfloader_t* new_fluid_defsfloader(void);
 
 /************************************************************************
@@ -402,27 +400,16 @@ new_fluid_synth(fluid_settings_t *settings)
 
   /* Left and right audio buffers */
 
-  synth->left_buf = FLUID_ARRAY(fluid_real_t*, NBUF);
-  synth->right_buf = FLUID_ARRAY(fluid_real_t*, NBUF);
+  synth->left_buf = FLUID_ARRAY(fluid_real_t, FLUID_BUFSIZE);
+  synth->right_buf = FLUID_ARRAY(fluid_real_t, FLUID_BUFSIZE);
 
   if ((synth->left_buf == NULL) || (synth->right_buf == NULL)) {
     FLUID_LOG(FLUID_ERR, "Out of memory");
     goto error_recovery;
   }
 
-  FLUID_MEMSET(synth->left_buf, 0, NBUF * sizeof(fluid_real_t*));
-  FLUID_MEMSET(synth->right_buf, 0, NBUF * sizeof(fluid_real_t*));
-
-  for (i = 0; i < NBUF; i++) {
-
-    synth->left_buf[i] = FLUID_ARRAY(fluid_real_t, FLUID_BUFSIZE);
-    synth->right_buf[i] = FLUID_ARRAY(fluid_real_t, FLUID_BUFSIZE);
-
-    if ((synth->left_buf[i] == NULL) || (synth->right_buf[i] == NULL)) {
-      FLUID_LOG(FLUID_ERR, "Out of memory");
-      goto error_recovery;
-    }
-  }
+  FLUID_MEMSET(synth->left_buf, 0, sizeof(fluid_real_t));
+  FLUID_MEMSET(synth->right_buf, 0, sizeof(fluid_real_t));
 
   /* Effects audio buffers */
 
@@ -434,8 +421,8 @@ new_fluid_synth(fluid_settings_t *settings)
     goto error_recovery;
   }
 
-  FLUID_MEMSET(synth->fx_left_buf, 0, 2 * sizeof(fluid_real_t*));
-  FLUID_MEMSET(synth->fx_right_buf, 0, 2 * sizeof(fluid_real_t*));
+  FLUID_MEMSET(synth->fx_left_buf, 0, 2 * sizeof(fluid_real_t*));  //TODO: 2 is effects_channels？看来不是
+  FLUID_MEMSET(synth->fx_right_buf, 0, 2 * sizeof(fluid_real_t*)); //没看懂这两行代码
 
   for (i = 0; i < synth->effects_channels; i++) {
     synth->fx_left_buf[i] = FLUID_ARRAY(fluid_real_t, FLUID_BUFSIZE);
@@ -547,20 +534,10 @@ delete_fluid_synth(fluid_synth_t* synth)
 
   /* free all the sample buffers */
   if (synth->left_buf != NULL) {
-    for (i = 0; i < NBUF; i++) {
-      if (synth->left_buf[i] != NULL) {
-	FLUID_FREE(synth->left_buf[i]);
-      }
-    }
     FLUID_FREE(synth->left_buf);
   }
 
   if (synth->right_buf != NULL) {
-    for (i = 0; i < NBUF; i++) {
-      if (synth->right_buf[i] != NULL) {
-	FLUID_FREE(synth->right_buf[i]);
-      }
-    }
     FLUID_FREE(synth->right_buf);
   }
 
@@ -1763,84 +1740,6 @@ void fluid_synth_set_reverb(fluid_synth_t* synth, double roomsize, double dampin
 }
 
 
-int
-fluid_synth_nwrite_float(fluid_synth_t* synth, int len,
-			 float** left, float** right,
-       float** fx_left, float** fx_right)
-{
-  fluid_real_t** left_in = synth->left_buf;
-  fluid_real_t** right_in = synth->right_buf;
-  int i, num, available, count, bytes;
-
-  /* make sure we're playing */
-  if (synth->state != FLUID_SYNTH_PLAYING) {
-    return 0;
-  }
-
-  /* First, take what's still available in the buffer */
-  count = 0;
-  num = synth->cur;
-  if (synth->cur < FLUID_BUFSIZE) {
-    available = FLUID_BUFSIZE - synth->cur;
-
-    num = (available > len)? len : available;
-    bytes = num * sizeof(float);
-
-    for (i = 0; i < NBUF; i++) {
-      FLUID_MEMCPY(left[i], left_in[i] + synth->cur, bytes);
-      FLUID_MEMCPY(right[i], right_in[i] + synth->cur, bytes);
-    }
-    count += num;
-    num += synth->cur; /* if we're now done, num becomes the new synth->cur below */
-  }
-
-  /* Then, run one_block() and copy till we have 'len' samples  */
-  while (count < len) {
-    fluid_synth_one_block(synth, 1);
-
-    num = (FLUID_BUFSIZE > len - count)? len - count : FLUID_BUFSIZE;
-    bytes = num * sizeof(float);
-
-    for (i = 0; i < NBUF; i++) {
-      FLUID_MEMCPY(left[i] + count, left_in[i], bytes);
-      FLUID_MEMCPY(right[i] + count, right_in[i], bytes);
-    }
-
-    count += num;
-  }
-
-  synth->cur = num;
-
-/*   printf("CPU: %.2f\n", synth->cpu_load); */
-
-  return 0;
-}
-
-
-int fluid_synth_process(fluid_synth_t* synth, int len,
-		       int nin, float** in,
-		       int nout, float** out)
-{
-  if (nout==2) {
-    return fluid_synth_write_float(synth, len, out[0], 0, 1, out[1], 0, 1);
-  }
-  else {
-    float **left, **right;
-    int i;
-    left = FLUID_ARRAY(float*, nout/2);
-    right = FLUID_ARRAY(float*, nout/2);
-    for(i=0; i<nout/2; i++) {
-      left[i] = out[2*i];
-      right[i] = out[2*i+1];
-    }
-    fluid_synth_nwrite_float(synth, len, left, right, NULL, NULL);
-    FLUID_FREE(left);
-    FLUID_FREE(right);
-    return 0;
-  }
-}
-
-
 /*
  *  fluid_synth_write_float
  */
@@ -1852,8 +1751,8 @@ fluid_synth_write_float(fluid_synth_t* synth, int len,
   int i, j, k, l;
   float* left_out = (float*) lout;
   float* right_out = (float*) rout;
-  fluid_real_t* left_in = synth->left_buf[0];
-  fluid_real_t* right_in = synth->right_buf[0];
+  fluid_real_t* left_in = synth->left_buf;
+  fluid_real_t* right_in = synth->right_buf;
 
   /* make sure we're playing */
   if (synth->state != FLUID_SYNTH_PLAYING) {
@@ -1902,8 +1801,8 @@ fluid_synth_write_s16(fluid_synth_t* synth, int len,
   int i, j, k, cur;
   signed short* left_out = (signed short*) lout;
   signed short* right_out = (signed short*) rout;
-  fluid_real_t* left_in = synth->left_buf[0];
-  fluid_real_t* right_in = synth->right_buf[0];
+  fluid_real_t* left_in = synth->left_buf;
+  fluid_real_t* right_in = synth->right_buf;
   fluid_real_t left_sample;
   fluid_real_t right_sample;
 
@@ -1958,11 +1857,8 @@ fluid_synth_one_block(fluid_synth_t* synth, int do_not_mix_fx_to_out)
 
 /*   fluid_mutex_lock(synth->busy); /\* Here comes the audio thread. Lock the synth. *\/ */
 
-  /* clean the audio buffers */
-  for (i = 0; i < NBUF; i++) {
-    FLUID_MEMSET(synth->left_buf[i], 0, byte_size);
-    FLUID_MEMSET(synth->right_buf[i], 0, byte_size);
-  }
+    FLUID_MEMSET(synth->left_buf, 0, byte_size);
+    FLUID_MEMSET(synth->right_buf, 0, byte_size);
 
   for (i = 0; i < synth->effects_channels; i++) {
     FLUID_MEMSET(synth->fx_left_buf[i], 0, byte_size);
@@ -1980,10 +1876,7 @@ fluid_synth_one_block(fluid_synth_t* synth, int do_not_mix_fx_to_out)
     voice = synth->voice[i];
 
     if (_PLAYING(voice)) {
-      left_buf = synth->left_buf[0];
-      right_buf = synth->right_buf[0];
-
-      fluid_voice_write(voice, left_buf, right_buf, reverb_buf);
+      fluid_voice_write(voice, synth->left_buf, synth->right_buf, reverb_buf);
     }
   }
 
@@ -2004,7 +1897,7 @@ fluid_synth_one_block(fluid_synth_t* synth, int do_not_mix_fx_to_out)
     /* send to reverb */
     if (reverb_buf) {
       fluid_revmodel_processmix(synth->reverb, reverb_buf,
-			       synth->left_buf[0], synth->right_buf[0]);
+			       synth->left_buf, synth->right_buf);
     }
   }
 
