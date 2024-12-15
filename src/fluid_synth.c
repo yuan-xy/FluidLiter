@@ -94,10 +94,6 @@ void fluid_synth_settings(fluid_settings_t* settings)
   fluid_settings_register_num(settings, "synth.gain",
 			     0.2f, 0.0f, 10.0f,
 			     0, NULL, NULL);
-  fluid_settings_register_int(settings, "synth.audio-channels",
-			     1, 1, 256, 0, NULL, NULL);
-  fluid_settings_register_int(settings, "synth.audio-groups",
-			     1, 1, 256, 0, NULL, NULL);
   fluid_settings_register_int(settings, "synth.effects-channels",
 			     2, 2, 2, 0, NULL, NULL);
   fluid_settings_register_num(settings, "synth.sample-rate",
