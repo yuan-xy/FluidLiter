@@ -48,8 +48,8 @@ int fluid_settings_register_num(fluid_settings_t* settings, const char* name, do
 
 /** returns 0 if the value has been resgister correctly, non-zero
     otherwise */
-int fluid_settings_register_int(fluid_settings_t* settings, const char* name, int min, int max,
-			       int def, int hints, fluid_int_update_t fun, void* data);
-
+int fluid_settings_register_int(fluid_settings_t* settings, const char* name, int def,
+			       int min, int max, int hints,
+			       fluid_int_update_t fun, void* data);
 
 #endif /* _FLUID_SETTINGS_H */
