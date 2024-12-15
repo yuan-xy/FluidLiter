@@ -1790,8 +1790,26 @@ roundi (float x)
     return (int)(x-0.5f);
 }
 
-/*
- *  fluid_synth_write_s16
+
+/**
+ * Synthesize a block of 16 bit audio samples to audio buffers.
+ * @param synth FluidSynth instance
+ * @param len Count of audio frames to synthesize
+ * @param lout Array of 16 bit words to store left channel of audio
+ * @param loff Offset index in 'lout' for first sample
+ * @param lincr Increment between samples stored to 'lout'
+ * @param rout Array of 16 bit words to store right channel of audio
+ * @param roff Offset index in 'rout' for first sample
+ * @param rincr Increment between samples stored to 'rout'
+ * @return #FLUID_OK on success, #FLUID_FAILED otherwise
+ *
+ * Useful for storing interleaved stereo (lout = rout, loff = 0, roff = 1,
+ * lincr = 2, rincr = 2).
+ *
+ * @note Should only be called from synthesis thread.
+ * @note Reverb and Chorus are mixed to \c lout resp. \c rout.
+ * @note Dithering is performed when converting from internal floating point to
+ * 16 bit audio.
  */
 int
 fluid_synth_write_s16(fluid_synth_t* synth, int len,

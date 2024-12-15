@@ -9,7 +9,7 @@
 #define SAMPLE_SIZE sizeof(int16_t) //s16
 #define DURATION 2 //second
 #define NUM_FRAMES SAMPLE_RATE*DURATION
-#define NUM_CHANNELS 1
+#define NUM_CHANNELS 2
 #define NUM_SAMPLES (NUM_FRAMES * NUM_CHANNELS)
 
 int main(int argc, char *argv[]) {
