@@ -560,6 +560,7 @@ FLUIDSYNTH_API int fluid_synth_write_s16(fluid_synth_t* synth, int len,
 				       void* lout, int loff, int lincr, 
 				       void* rout, int roff, int rincr);
 
+FLUIDSYNTH_API int fluid_synth_write_s16_mono(fluid_synth_t* synth, int len, void* out);
 
   /** Generate a number of samples. This function expects two floating
    *  point buffers (left and right channel) that will be filled with

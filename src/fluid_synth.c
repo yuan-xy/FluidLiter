@@ -1769,13 +1769,10 @@ fluid_synth_write_float(fluid_synth_t* synth, int len,
       }
 
       left_out[j] = (float) left_in[l];
-      right_out[k] = (float) right_in[l];
+      if(right_out != NULL) right_out[k] = (float) right_in[l];
   }
 
   synth->cur = l;
-
-/*   printf("CPU: %.2f\n", synth->cpu_load); */
-
   return 0;
 }
 
@@ -1790,6 +1787,13 @@ roundi (float x)
     return (int)(x-0.5f);
 }
 
+
+int
+fluid_synth_write_s16_mono(fluid_synth_t* synth, int len,
+		     void* lout)
+{
+  return fluid_synth_write_s16(synth, len, lout, 0, 1, NULL, 0, 0);
+}
 
 /**
  * Synthesize a block of 16 bit audio samples to audio buffers.
@@ -1849,13 +1853,10 @@ fluid_synth_write_s16(fluid_synth_t* synth, int len,
     if (right_sample < -32768.0f) right_sample = -32768.0f;
 
     left_out[j] = (signed short) left_sample;
-    right_out[k] = (signed short) right_sample;
+    if(right_out != NULL) right_out[k] = (signed short) right_sample;
   }
 
   synth->cur = cur;
-
-/*   printf("CPU: %.2f\n", synth->cpu_load); */
-
   return 0;
 }
 
@@ -1876,7 +1877,7 @@ fluid_synth_one_block(fluid_synth_t* synth, int do_not_mix_fx_to_out)
 /*   fluid_mutex_lock(synth->busy); /\* Here comes the audio thread. Lock the synth. *\/ */
 
     FLUID_MEMSET(synth->left_buf, 0, byte_size);
-    FLUID_MEMSET(synth->right_buf, 0, byte_size);
+    if(synth->right_buf != NULL) FLUID_MEMSET(synth->right_buf, 0, byte_size);
 
   for (i = 0; i < synth->effects_channels; i++) {
     FLUID_MEMSET(synth->fx_left_buf[i], 0, byte_size);

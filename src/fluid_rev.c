@@ -474,7 +474,7 @@ fluid_revmodel_processmix(fluid_revmodel_t* rev, fluid_real_t *in,
 
     /* Calculate output MIXING with anything already there */
     left_out[k] += outL * rev->wet1 + outR * rev->wet2;
-    right_out[k] += outR * rev->wet1 + outL * rev->wet2;
+    if(right_out != NULL) right_out[k] += outR * rev->wet1 + outL * rev->wet2;
   }
 }
 
