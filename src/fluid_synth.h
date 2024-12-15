@@ -65,7 +65,7 @@ struct _fluid_synth_t
   char verbose;                      /** Turn verbose mode on? */
   char dump;                         /** Dump events to stdout to hook up a user interface? */
   double sample_rate;                /** The sample rate */
-  int midi_channels;                 /** the number of MIDI channels (>= 16) */
+  int midi_channels;                 /** the number of MIDI channels */
   int effects_channels;              /** the number of effects channels (= 2) */
   unsigned int state;                /** the synthesizer state */
   unsigned int ticks;                /** the number of audio samples since the start */
@@ -77,7 +77,6 @@ struct _fluid_synth_t
 
   double gain;                        /** master gain */
   fluid_channel_t** channel;          /** the channels */
-  int num_channels;                   /** the number of channels */
   int nvoice;                         /** the length of the synthesis process array */
   fluid_voice_t** voice;              /** the synthesis processes */
   unsigned int noteid;                /** the id is incremented for every new note. it's used for noteoff's  */

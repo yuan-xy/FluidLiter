@@ -90,7 +90,7 @@ void fluid_synth_settings(fluid_settings_t* settings)
   fluid_settings_register_int(settings, "synth.polyphony",
 			     256, 16, 4096, 0, NULL, NULL);
   fluid_settings_register_int(settings, "synth.midi-channels",
-			     16, 16, 256, 0, NULL, NULL);
+			     16, 1, 256, 0, NULL, NULL);
   fluid_settings_register_num(settings, "synth.gain",
 			     0.2f, 0.0f, 10.0f,
 			     0, NULL, NULL);
@@ -329,14 +329,6 @@ new_fluid_synth(fluid_settings_t *settings)
                               synth);
 
   /* do some basic sanity checking on the settings */
-
-  if (synth->midi_channels % 16 != 0) {
-    int n = synth->midi_channels / 16;
-    synth->midi_channels = (n + 1) * 16;
-    fluid_settings_setint(settings, "synth.midi-channels", synth->midi_channels);
-    FLUID_LOG(FLUID_WARN, "Requested number of MIDI channels is not a multiple of 16. "
-	     "I'll increase the number of channels to the next multiple.");
-  }
 
   if (synth->effects_channels != 2) {
     FLUID_LOG(FLUID_WARN, "Invalid number of effects channels (%d)."
