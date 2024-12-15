@@ -66,7 +66,6 @@ struct _fluid_synth_t
   char dump;                         /** Dump events to stdout to hook up a user interface? */
   double sample_rate;                /** The sample rate */
   int midi_channels;                 /** the number of MIDI channels */
-  int effects_channels;              /** the number of effects channels (= 2) */
   unsigned int state;                /** the synthesizer state */
   unsigned int ticks;                /** the number of audio samples since the start */
 
@@ -84,8 +83,8 @@ struct _fluid_synth_t
 
   fluid_real_t* left_buf;
   fluid_real_t* right_buf;
-  fluid_real_t** fx_left_buf;
-  fluid_real_t** fx_right_buf;
+  fluid_real_t* fx_left_buf;
+  fluid_real_t* fx_right_buf;
 
   fluid_revmodel_t* reverb;
   int cur;                           /** the current sample in the audio buffers to be output */

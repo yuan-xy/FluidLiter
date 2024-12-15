@@ -94,8 +94,6 @@ void fluid_synth_settings(fluid_settings_t* settings)
   fluid_settings_register_num(settings, "synth.gain",
 			     0.2f, 0.0f, 10.0f,
 			     0, NULL, NULL);
-  fluid_settings_register_int(settings, "synth.effects-channels",
-			     2, 2, 2, 0, NULL, NULL);
   fluid_settings_register_num(settings, "synth.sample-rate",
 			     44100.0f, 22050.0f, 96000.0f,
 			     0, NULL, NULL);
@@ -313,7 +311,6 @@ new_fluid_synth(fluid_settings_t *settings)
   fluid_settings_getint(settings, "synth.polyphony", &synth->polyphony);
   fluid_settings_getnum(settings, "synth.sample-rate", &synth->sample_rate);
   fluid_settings_getint(settings, "synth.midi-channels", &synth->midi_channels);
-  fluid_settings_getint(settings, "synth.effects-channels", &synth->effects_channels);
   fluid_settings_getnum(settings, "synth.gain", &synth->gain);
   fluid_settings_getint(settings, "synth.min-note-length", &i);
   synth->min_note_length_ticks = (unsigned int) (i*synth->sample_rate/1000.0f);
@@ -327,14 +324,6 @@ new_fluid_synth(fluid_settings_t *settings)
 			      synth->polyphony, 16, 4096, 0,
 			      (fluid_int_update_t) fluid_synth_update_polyphony,
                               synth);
-
-  /* do some basic sanity checking on the settings */
-
-  if (synth->effects_channels != 2) {
-    FLUID_LOG(FLUID_WARN, "Invalid number of effects channels (%d)."
-	     "Setting effects channels to 2.", synth->effects_channels);
-    synth->effects_channels = 2;
-  }
 
   /* as soon as the synth is created it starts playing. */
   synth->state = FLUID_SYNTH_PLAYING;
@@ -381,7 +370,7 @@ new_fluid_synth(fluid_settings_t *settings)
   /* Allocate the sample buffers */
   synth->left_buf = NULL;
   synth->right_buf = NULL;
-  synth->fx_left_buf = NULL;  //TODO: remove
+  synth->fx_left_buf = NULL;
   synth->fx_right_buf = NULL;
 
   /* Left and right audio buffers */
@@ -394,31 +383,21 @@ new_fluid_synth(fluid_settings_t *settings)
     goto error_recovery;
   }
 
-  FLUID_MEMSET(synth->left_buf, 0, sizeof(fluid_real_t));
-  FLUID_MEMSET(synth->right_buf, 0, sizeof(fluid_real_t));
+  FLUID_MEMSET(synth->left_buf, 0, FLUID_BUFSIZE*sizeof(fluid_real_t));
+  FLUID_MEMSET(synth->right_buf, 0, FLUID_BUFSIZE*sizeof(fluid_real_t));
 
   /* Effects audio buffers */
-
-  synth->fx_left_buf = FLUID_ARRAY(fluid_real_t*, synth->effects_channels);
-  synth->fx_right_buf = FLUID_ARRAY(fluid_real_t*, synth->effects_channels);
+  synth->fx_left_buf = FLUID_ARRAY(fluid_real_t, FLUID_BUFSIZE);
+  synth->fx_right_buf = FLUID_ARRAY(fluid_real_t, FLUID_BUFSIZE);
 
   if ((synth->fx_left_buf == NULL) || (synth->fx_right_buf == NULL)) {
     FLUID_LOG(FLUID_ERR, "Out of memory");
     goto error_recovery;
   }
 
-  FLUID_MEMSET(synth->fx_left_buf, 0, 2 * sizeof(fluid_real_t*));  //TODO: 2 is effects_channels？看来不是
-  FLUID_MEMSET(synth->fx_right_buf, 0, 2 * sizeof(fluid_real_t*)); //没看懂这两行代码
+  FLUID_MEMSET(synth->fx_left_buf, 0, FLUID_BUFSIZE*sizeof(fluid_real_t));
+  FLUID_MEMSET(synth->fx_right_buf, 0, FLUID_BUFSIZE*sizeof(fluid_real_t));
 
-  for (i = 0; i < synth->effects_channels; i++) {
-    synth->fx_left_buf[i] = FLUID_ARRAY(fluid_real_t, FLUID_BUFSIZE);
-    synth->fx_right_buf[i] = FLUID_ARRAY(fluid_real_t, FLUID_BUFSIZE);
-
-    if ((synth->fx_left_buf[i] == NULL) || (synth->fx_right_buf[i] == NULL)) {
-      FLUID_LOG(FLUID_ERR, "Out of memory");
-      goto error_recovery;
-    }
-  }
 
 
   synth->cur = FLUID_BUFSIZE;
@@ -528,20 +507,10 @@ delete_fluid_synth(fluid_synth_t* synth)
   }
 
   if (synth->fx_left_buf != NULL) {
-    for (i = 0; i < 2; i++) {
-      if (synth->fx_left_buf[i] != NULL) {
-	FLUID_FREE(synth->fx_left_buf[i]);
-      }
-    }
     FLUID_FREE(synth->fx_left_buf);
   }
 
   if (synth->fx_right_buf != NULL) {
-    for (i = 0; i < 2; i++) {
-      if (synth->fx_right_buf[i] != NULL) {
-	FLUID_FREE(synth->fx_right_buf[i]);
-      }
-    }
     FLUID_FREE(synth->fx_right_buf);
   }
 
@@ -1835,16 +1804,14 @@ fluid_synth_one_block(fluid_synth_t* synth, int do_not_mix_fx_to_out)
   FLUID_MEMSET(synth->left_buf, 0, byte_size);
   if(synth->right_buf != NULL) FLUID_MEMSET(synth->right_buf, 0, byte_size);
 
-  for (i = 0; i < synth->effects_channels; i++) {
-    FLUID_MEMSET(synth->fx_left_buf[i], 0, byte_size);
-    FLUID_MEMSET(synth->fx_right_buf[i], 0, byte_size);
-  }
+  FLUID_MEMSET(synth->fx_left_buf, 0, byte_size);
+  FLUID_MEMSET(synth->fx_right_buf, 0, byte_size);
 
   /* Set up the reverb only, when the effect is
    * enabled on synth level.  Nonexisting buffers are detected in the
    * DSP loop. Not sending the reverb signal saves some time
    * in that case. */
-  reverb_buf = synth->with_reverb ? synth->fx_left_buf[0] : NULL;
+  reverb_buf = synth->with_reverb ? synth->fx_left_buf : NULL;
 
   /* call all playing synthesis processes */
   for (i = 0; i < synth->polyphony; i++) {
@@ -1864,7 +1831,7 @@ fluid_synth_one_block(fluid_synth_t* synth, int do_not_mix_fx_to_out)
     /* send to reverb */
     if (reverb_buf) {
       fluid_revmodel_processreplace(synth->reverb, reverb_buf,
-				   synth->fx_left_buf[0], synth->fx_right_buf[0]);
+				   synth->fx_left_buf, synth->fx_right_buf);
     }
 
   } else {
@@ -2456,14 +2423,6 @@ fluid_synth_count_midi_channels(fluid_synth_t* synth)
   return synth->midi_channels;
 }
 
-/* Purpose:
- * Returns the number of allocated effects channels
- */
-int
-fluid_synth_count_effects_channels(fluid_synth_t* synth)
-{
-  return synth->effects_channels;
-}
 
 static fluid_tuning_t*
 fluid_synth_get_tuning(fluid_synth_t* synth, int bank, int prog)
