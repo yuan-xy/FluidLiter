@@ -308,8 +308,6 @@ new_fluid_synth(fluid_settings_t *settings)
   }
   FLUID_MEMSET(synth, 0, sizeof(fluid_synth_t));
 
-  //fluid_mutex_init(synth->busy);
-
   synth->settings = settings;
 
   synth->with_reverb = fluid_settings_str_equal(settings, "synth.reverb.active", "yes");
@@ -578,11 +576,7 @@ delete_fluid_synth(fluid_synth_t* synth)
     }
     FLUID_FREE(synth->tuning);
   }
-
-  //fluid_mutex_destroy(synth->busy);
-
   FLUID_FREE(synth);
-
   return FLUID_OK;
 }
 
@@ -646,8 +640,6 @@ fluid_synth_noteoff(fluid_synth_t* synth, int chan, int key)
   int i;
   fluid_voice_t* voice;
   int status = FLUID_FAILED;
-/*   fluid_mutex_lock(synth->busy); /\* Don't interfere with the audio thread *\/ */
-/*   fluid_mutex_unlock(synth->busy); */
 
   for (i = 0; i < synth->polyphony; i++) {
     voice = synth->voice[i];
@@ -682,9 +674,6 @@ fluid_synth_damp_voices(fluid_synth_t* synth, int chan)
   int i;
   fluid_voice_t* voice;
 
-/*   fluid_mutex_lock(synth->busy); /\* Don't interfere with the audio thread *\/ */
-/*   fluid_mutex_unlock(synth->busy); */
-
   for (i = 0; i < synth->polyphony; i++) {
     voice = synth->voice[i];
     if ((voice->chan == chan) && _SUSTAINED(voice)) {
@@ -702,9 +691,6 @@ fluid_synth_damp_voices(fluid_synth_t* synth, int chan)
 int
 fluid_synth_cc(fluid_synth_t* synth, int chan, int num, int val)
 {
-/*   fluid_mutex_lock(synth->busy); /\* Don't interfere with the audio thread *\/ */
-/*   fluid_mutex_unlock(synth->busy); */
-
   /* check the ranges of the arguments */
   if ((chan < 0) || (chan >= synth->midi_channels)) {
     FLUID_LOG(FLUID_WARN, "Channel out of range");
@@ -797,7 +783,6 @@ fluid_synth_sysex(fluid_synth_t *synth, const char *data, int len,
       //&& (data[1] == synth->device_id || data[1] == MIDI_SYSEX_DEVICE_ID_ALL) -> we don't handle device id
   {
     int result;
-    //fluid_synth_api_enter(synth); -> we don't handle mutex
     result = fluid_synth_sysex_midi_tuning (synth, data, len, response,
                         response_len, avail_response,
                         handled, dryrun);
@@ -1104,9 +1089,6 @@ fluid_synth_modulate_voices(fluid_synth_t* synth, int chan, int is_cc, int ctrl)
   int i;
   fluid_voice_t* voice;
 
-/*   fluid_mutex_lock(synth->busy); /\* Don't interfere with the audio thread *\/ */
-/*   fluid_mutex_unlock(synth->busy); */
-
   for (i = 0; i < synth->polyphony; i++) {
     voice = synth->voice[i];
     if (voice->chan == chan) {
@@ -1128,9 +1110,6 @@ fluid_synth_modulate_voices_all(fluid_synth_t* synth, int chan)
 {
   int i;
   fluid_voice_t* voice;
-
-/*   fluid_mutex_lock(synth->busy); /\* Don't interfere with the audio thread *\/ */
-/*   fluid_mutex_unlock(synth->busy); */
 
   for (i = 0; i < synth->polyphony; i++) {
     voice = synth->voice[i];
@@ -1154,9 +1133,6 @@ fluid_synth_modulate_voices_all(fluid_synth_t* synth, int chan)
 int
 fluid_synth_channel_pressure(fluid_synth_t* synth, int chan, int val)
 {
-
-/*   fluid_mutex_lock(synth->busy); /\* Don't interfere with the audio thread *\/ */
-/*   fluid_mutex_unlock(synth->busy); */
 
   /* check the ranges of the arguments */
   if ((chan < 0) || (chan >= synth->midi_channels)) {
@@ -1230,9 +1206,6 @@ fluid_synth_key_pressure(fluid_synth_t* synth, int chan, int key, int val)
 int
 fluid_synth_pitch_bend(fluid_synth_t* synth, int chan, int val)
 {
-
-/*   fluid_mutex_lock(synth->busy); /\* Don't interfere with the audio thread *\/ */
-/*   fluid_mutex_unlock(synth->busy); */
 
   /* check the ranges of the arguments */
   if ((chan < 0) || (chan >= synth->midi_channels)) {
@@ -1730,9 +1703,6 @@ int fluid_synth_set_reverb_preset(fluid_synth_t* synth, int num)
 void fluid_synth_set_reverb(fluid_synth_t* synth, double roomsize, double damping,
 			   double width, double level)
 {
-/*   fluid_mutex_lock(synth->busy); /\* Don't interfere with the audio thread *\/ */
-/*   fluid_mutex_unlock(synth->busy); */
-
   fluid_revmodel_setroomsize(synth->reverb, roomsize);
   fluid_revmodel_setdamp(synth->reverb, damping);
   fluid_revmodel_setwidth(synth->reverb, width);
@@ -1874,10 +1844,8 @@ fluid_synth_one_block(fluid_synth_t* synth, int do_not_mix_fx_to_out)
   fluid_real_t* reverb_buf;
   int byte_size = FLUID_BUFSIZE * sizeof(fluid_real_t);
 
-/*   fluid_mutex_lock(synth->busy); /\* Here comes the audio thread. Lock the synth. *\/ */
-
-    FLUID_MEMSET(synth->left_buf, 0, byte_size);
-    if(synth->right_buf != NULL) FLUID_MEMSET(synth->right_buf, 0, byte_size);
+  FLUID_MEMSET(synth->left_buf, 0, byte_size);
+  if(synth->right_buf != NULL) FLUID_MEMSET(synth->right_buf, 0, byte_size);
 
   for (i = 0; i < synth->effects_channels; i++) {
     FLUID_MEMSET(synth->fx_left_buf[i], 0, byte_size);
@@ -1921,14 +1889,6 @@ fluid_synth_one_block(fluid_synth_t* synth, int do_not_mix_fx_to_out)
   }
 
   synth->ticks += FLUID_BUFSIZE;
-
-  /* Testcase, that provokes a denormal floating point error */
-#if 0
-  {float num=1;while (num != 0){num*=0.5;};};
-#endif
-
-/*   fluid_mutex_unlock(synth->busy); /\* Allow other threads to touch the synth *\/ */
-
   return 0;
 }
 
@@ -1947,9 +1907,6 @@ fluid_synth_free_voice_by_kill(fluid_synth_t* synth)
   fluid_real_t this_voice_prio;
   fluid_voice_t* voice;
   int best_voice_index=-1;
-
-/*   fluid_mutex_lock(synth->busy); /\* Don't interfere with the audio thread *\/ */
-/*   fluid_mutex_unlock(synth->busy); */
 
   for (i = 0; i < synth->polyphony; i++) {
 
@@ -2025,9 +1982,6 @@ fluid_synth_alloc_voice(fluid_synth_t* synth, fluid_sample_t* sample, int chan, 
   int i, k;
   fluid_voice_t* voice = NULL;
   fluid_channel_t* channel = NULL;
-
-/*   fluid_mutex_lock(synth->busy); /\* Don't interfere with the audio thread *\/ */
-/*   fluid_mutex_unlock(synth->busy); */
 
   /* check if there's an available synthesis process */
   for (i = 0; i < synth->polyphony; i++) {
@@ -2156,9 +2110,6 @@ void fluid_synth_kill_by_exclusive_class(fluid_synth_t* synth, fluid_voice_t* ne
  */
 void fluid_synth_start_voice(fluid_synth_t* synth, fluid_voice_t* voice)
 {
-/*   fluid_mutex_lock(synth->busy); /\* Don't interfere with the audio thread *\/ */
-/*   fluid_mutex_unlock(synth->busy); */
-
   /* Find the exclusive class of this voice. If set, kill all voices
    * that match the exclusive class and are younger than the first
    * voice process created by this noteon event. */
@@ -2478,9 +2429,6 @@ double fluid_synth_get_reverb_width(fluid_synth_t* synth)
 void fluid_synth_release_voice_on_same_note(fluid_synth_t* synth, int chan, int key){
   int i;
   fluid_voice_t* voice;
-
-/*   fluid_mutex_lock(synth->busy); /\* Don't interfere with the audio thread *\/ */
-/*   fluid_mutex_unlock(synth->busy); */
 
   for (i = 0; i < synth->polyphony; i++) {
     voice = synth->voice[i];
@@ -2996,13 +2944,8 @@ int fluid_synth_start(fluid_synth_t* synth, unsigned int id, fluid_preset_t* pre
     return FLUID_FAILED;
   }
 
-  //mutex disabled, must render in a single thread
-  //fluid_mutex_lock(synth->busy); /* One at a time, please */
-
   synth->storeid = id;
   r = fluid_preset_noteon(preset, synth, midi_chan, key, vel);
-
-  //fluid_mutex_unlock(synth->busy);
 
   return r;
 }
