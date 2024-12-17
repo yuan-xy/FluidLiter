@@ -88,7 +88,7 @@ void fluid_synth_settings(fluid_settings_t* settings)
   fluid_settings_register_str(settings, "synth.drums-channel.active", "yes", 0, NULL, NULL);
 
   fluid_settings_register_int(settings, "synth.polyphony",
-			     256, 16, 4096, 0, NULL, NULL);
+			     256, 1, 4096, 0, NULL, NULL);
   fluid_settings_register_int(settings, "synth.midi-channels",
 			     16, 1, 256, 0, NULL, NULL);
   fluid_settings_register_num(settings, "synth.gain",
@@ -588,9 +588,7 @@ fluid_synth_noteon(fluid_synth_t* synth, int chan, int key, int vel)
   return fluid_synth_start(synth, synth->noteid++, channel->preset, 0, chan, key, vel);
 }
 
-/*
- * fluid_synth_noteoff
- */
+
 int
 fluid_synth_noteoff(fluid_synth_t* synth, int chan, int key)
 {
@@ -602,18 +600,18 @@ fluid_synth_noteoff(fluid_synth_t* synth, int chan, int key)
     voice = synth->voice[i];
     if (_ON(voice) && (voice->chan == chan) && (voice->key == key)) {
       if (synth->verbose) {
-	int used_voices = 0;
-	int k;
-	for (k = 0; k < synth->polyphony; k++) {
-	  if (!_AVAILABLE(synth->voice[k])) {
-	    used_voices++;
-	  }
-	}
-    FLUID_LOG(FLUID_INFO, "noteoff\t%d\t%d\t%d\t%05d\t%.3f\t\t%.3f\t%d",
-		 voice->chan, voice->key, 0, voice->id,
-		 (float) (voice->start_time + voice->ticks) / 44100.0f,
-		 (float) voice->ticks / 44100.0f,
-		 used_voices);
+        int used_voices = 0;
+        int k;
+        for (k = 0; k < synth->polyphony; k++) {
+          if (!_AVAILABLE(synth->voice[k])) {
+            used_voices++;
+          }
+        }
+        FLUID_LOG(FLUID_INFO, "noteoff\t%d\t%d\t%d\t%05d\t%.3f\t\t%.3f\t%d",
+		              voice->chan, voice->key, 0, voice->id,
+		              (float) (voice->start_time + voice->ticks) / 44100.0f,
+		              (float) voice->ticks / 44100.0f,
+		              used_voices);
       } /* if verbose */
       fluid_voice_noteoff(voice);
       status = FLUID_OK;

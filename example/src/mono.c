@@ -1,9 +1,12 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <time.h>
+#include <string.h>
+#include <assert.h>
 
 #include "fluidlite.h"
+#include "fluid_synth.h"
+
 
 #define SAMPLE_RATE 44100
 #define SAMPLE_SIZE sizeof(int16_t) //s16
@@ -22,7 +25,20 @@ int main(int argc, char *argv[]) {
     fluid_settings_setstr(settings, "synth.verbose", "yes"); //在新版本中"synth.verbose"是int型
     fluid_settings_setint(settings, "synth.polyphony", 5); 
     fluid_settings_setint(settings, "synth.midi-channels", 1); 
+    char *vb = "   ";
+    fluid_settings_getstr(settings, "synth.verbose", &vb);
+    assert(strcmp(vb, "yes") == 0);
+    int polyphony;
+    fluid_settings_getint(settings, "synth.polyphony", &polyphony);
+    assert(polyphony == 5);
+    int midi_channels;
+    fluid_settings_getint(settings, "synth.midi-channels", &midi_channels);
+    assert(midi_channels == 1);
+
     fluid_synth_t* synth = new_fluid_synth(settings);
+    assert(synth->verbose == 1);
+    assert(synth->polyphony == 5);
+    assert(synth->midi_channels == 1);
     int sfont = fluid_synth_sfload(synth, argv[1], 1);
     fluid_synth_program_select(synth, 0, sfont, 0, 0);
 
