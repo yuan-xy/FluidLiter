@@ -1958,8 +1958,8 @@ fluid_synth_alloc_voice(fluid_synth_t* synth, fluid_sample_t* sample, int chan, 
       }
     }
 
-    FLUID_LOG(FLUID_INFO, "noteon\t%d\t%d\t%d\t storeid:%05d\t ticks:%d\t k:%d",
-	     chan, key, vel, synth->storeid,
+    FLUID_LOG(FLUID_INFO, "noteon\t%d\t%d\t%d\t storeid:%d,noteid:%d\t ticks:%d\t k:%d",
+	     chan, key, vel, synth->storeid, synth->noteid,
 	     synth->ticks,
 	     k);
   }
