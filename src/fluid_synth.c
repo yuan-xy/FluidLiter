@@ -549,9 +549,7 @@ fluid_synth_error(fluid_synth_t* synth)
   return fluid_error();
 }
 
-/*
- * fluid_synth_noteon
- */
+
 int
 fluid_synth_noteon(fluid_synth_t* synth, int chan, int key, int vel)
 {
@@ -573,10 +571,8 @@ fluid_synth_noteon(fluid_synth_t* synth, int chan, int key, int vel)
   /* make sure this channel has a preset */
   if (channel->preset == NULL) {
     if (synth->verbose) {
-      FLUID_LOG(FLUID_INFO, "noteon\t%d\t%d\t%d\t%05d\t%.3f\t\t%.3f\t%d\t%s",
-	       chan, key, vel, 0,
-	       (float) synth->ticks / 44100.0f,
-	       0.0f, 0, "channel has no preset");
+      FLUID_LOG(FLUID_INFO, "noteon\t%d\t%d\t%d\t ticks:%d",
+	       chan, key, vel, synth->ticks, "channel has no preset");
     }
     return FLUID_FAILED;
   }
@@ -607,10 +603,10 @@ fluid_synth_noteoff(fluid_synth_t* synth, int chan, int key)
             used_voices++;
           }
         }
-        FLUID_LOG(FLUID_INFO, "noteoff\t%d\t%d\t%d\t%05d\t%.3f\t\t%.3f\t%d",
+        FLUID_LOG(FLUID_INFO, "noteoff\t%d\t%d\t%d\t voice_id:%05d\t time:%.3f\t  ticks:%d  used_voices:%d",
 		              voice->chan, voice->key, 0, voice->id,
 		              (float) (voice->start_time + voice->ticks) / 44100.0f,
-		              (float) voice->ticks / 44100.0f,
+		              voice->ticks,
 		              used_voices);
       } /* if verbose */
       fluid_voice_noteoff(voice);
@@ -1958,14 +1954,13 @@ fluid_synth_alloc_voice(fluid_synth_t* synth, fluid_sample_t* sample, int chan, 
     k = 0;
     for (i = 0; i < synth->polyphony; i++) {
       if (!_AVAILABLE(synth->voice[i])) {
-	k++;
+	      k++;
       }
     }
 
-    FLUID_LOG(FLUID_INFO, "noteon\t%d\t%d\t%d\t%05d\t%.3f\t\t%.3f\t%d",
+    FLUID_LOG(FLUID_INFO, "noteon\t%d\t%d\t%d\t storeid:%05d\t ticks:%d\t k:%d",
 	     chan, key, vel, synth->storeid,
-	     (float) synth->ticks / 44100.0f,
-	     0.0f,
+	     synth->ticks,
 	     k);
   }
 
