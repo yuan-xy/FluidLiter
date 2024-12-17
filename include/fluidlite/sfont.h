@@ -172,10 +172,6 @@ struct _fluid_sfont_t {
 #define fluid_sfont_get_id(_sf) ((_sf)->id)
 
 
-/*
- * fluid_preset_t
- */
-
 struct _fluid_preset_t {
   void* data;
   fluid_sfont_t* sfont;

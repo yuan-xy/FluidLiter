@@ -497,9 +497,7 @@ int fluid_defpreset_get_num(fluid_defpreset_t* preset);
 char* fluid_defpreset_get_name(fluid_defpreset_t* preset);
 int fluid_defpreset_noteon(fluid_defpreset_t* preset, fluid_synth_t* synth, int chan, int key, int vel);
 
-/*
- * fluid_preset_zone
- */
+
 struct _fluid_preset_zone_t
 {
   fluid_preset_zone_t* next;
@@ -520,9 +518,7 @@ int fluid_preset_zone_import_sfont(fluid_preset_zone_t* zone, SFZone* sfzone, fl
 int fluid_preset_zone_inside_range(fluid_preset_zone_t* zone, int key, int vel);
 fluid_inst_t* fluid_preset_zone_get_inst(fluid_preset_zone_t* zone);
 
-/*
- * fluid_inst_t
- */
+
 struct _fluid_inst_t
 {
   char name[21];
@@ -538,9 +534,7 @@ int fluid_inst_add_zone(fluid_inst_t* inst, fluid_inst_zone_t* zone);
 fluid_inst_zone_t* fluid_inst_get_zone(fluid_inst_t* inst);
 fluid_inst_zone_t* fluid_inst_get_global_zone(fluid_inst_t* inst);
 
-/*
- * fluid_inst_zone_t
- */
+
 struct _fluid_inst_zone_t
 {
   fluid_inst_zone_t* next;
