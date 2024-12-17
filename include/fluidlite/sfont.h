@@ -189,10 +189,6 @@ struct _fluid_preset_t {
 };
 
 
-/*
- * fluid_sample_t
- */
-
 struct _fluid_sample_t
 {
   char name[21];

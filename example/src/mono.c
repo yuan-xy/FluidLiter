@@ -53,8 +53,9 @@ int main(int argc, char *argv[]) {
     fluid_inst_zone_t *zone = inst->zone;
     fluid_inst_zone_t *cur_zone = zone;
     while(cur_zone != NULL){
-      printf("sample: %s, samplerate:%d, sampletype:%d\n", 
-            cur_zone->sample->name, cur_zone->sample->samplerate, cur_zone->sample->sampletype);
+      printf("sample: %s, samplerate:%d, sampletype:%d, origpitch:%d\n", 
+            cur_zone->sample->name, cur_zone->sample->samplerate,
+            cur_zone->sample->sampletype, cur_zone->sample->origpitch);
       cur_zone = cur_zone->next;
     }
     bool stereo_sample = zone->next !=NULL && (zone->sample->sampletype + zone->next->sample->sampletype == 2+4);
