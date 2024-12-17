@@ -15,4 +15,6 @@ gcc example/src/mono.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm -o mon
 # ffmpeg -f s16le -ar 44100 -ac 1 -i mono.pcm mono.wav
 # ffprobe -v quiet -print_format json -show_format -show_streams mono.wav
 
-
+rm instruments-test
+gcc example/src/instruments.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm -o instruments-test
+./instruments-test ./example/sf_/Boomwhacker.sf2

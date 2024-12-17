@@ -1960,7 +1960,7 @@ fluid_synth_alloc_voice(fluid_synth_t* synth, fluid_sample_t* sample, int chan, 
 
     FLUID_LOG(FLUID_INFO, "noteon\t%d\t%d\t%d\t storeid:%d,noteid:%d\t ticks:%d\t k:%d",
 	     chan, key, vel, synth->storeid, synth->noteid, synth->ticks, k);
-    FLUID_LOG(FLUID_INFO, "sample:%s\ttype:%d\trate:%d\torigpitch:%d\trefcount:%d",
+    FLUID_LOG(FLUID_INFO, "\t\t%s\ttype:%d\trate:%d\torigpitch:%d\trefcount:%d",
 	     sample->name, sample->sampletype, sample->samplerate, sample->origpitch, sample->refcount);
   }
 

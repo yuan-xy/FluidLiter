@@ -4,6 +4,6 @@ out/
 Debug
 Release
 a.out
-fluidlite-test
+*-test
 massif.out.*
 .vscode/
