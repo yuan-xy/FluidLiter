@@ -181,7 +181,6 @@ typedef FILE*  fluid_file;
 #define FLUID_STRCPY(_dst,_src)      strcpy(_dst,_src)
 #define FLUID_STRCHR(_s,_c)          strchr(_s,_c)
 #define FLUID_STRDUP(s)              FLUID_STRCPY((char*)FLUID_MALLOC(FLUID_STRLEN(s) + 1), s)
-#define FLUID_SPRINTF                sprintf
 #define FLUID_FPRINTF                fprintf
 
 #define fluid_clip(_val, _min, _max) \

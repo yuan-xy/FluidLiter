@@ -1049,7 +1049,7 @@ int fluid_defpreset_import_sfont(fluid_defpreset_t *preset,
   }
   else
   {
-    FLUID_SPRINTF(preset->name, "Bank%d,Preset%d", sfpreset->bank, sfpreset->prenum);
+    snprintf(preset->name, sizeof(preset->name), "Bank%d,Preset%d", sfpreset->bank, sfpreset->prenum);
   }
   preset->bank = sfpreset->bank;
   preset->num = sfpreset->prenum;
@@ -1058,7 +1058,7 @@ int fluid_defpreset_import_sfont(fluid_defpreset_t *preset,
   while (p != NULL)
   {
     sfzone = (SFZone *)p->data;
-    FLUID_SPRINTF(zone_name, "%s/%d", preset->name, count);
+    sprintf(zone_name, "%s/%d", preset->name, count);
     zone = new_fluid_preset_zone(zone_name);
     if (zone == NULL)
     {
@@ -1519,7 +1519,7 @@ int fluid_inst_import_sfont(fluid_inst_t *inst, SFInst *sfinst, fluid_defsfont_t
   {
 
     sfzone = (SFZone *)p->data;
-    FLUID_SPRINTF(zone_name, "%s/%d", inst->name, count);
+    sprintf(zone_name, "%s/%d", inst->name, count);
 
     zone = new_fluid_inst_zone(zone_name);
     if (zone == NULL)
@@ -2419,7 +2419,7 @@ pdtahelper(unsigned int expid, unsigned int reclen, SFChunk *chunk,
            int *size, void *fd, fluid_fileapi_t *fapi)
 {
   unsigned int id;
-  char *expstr;
+  const char *expstr;
 
   expstr = CHNKIDSTR(expid); /* in case we need it */
 
