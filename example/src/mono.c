@@ -6,9 +6,7 @@
 #include <stdbool.h>
 
 #include "fluidlite.h"
-#include "fluid_synth.h"
-#include "fluid_chan.h"
-#include "fluid_defsfont.h"
+#include "utils.c"
 
 
 #define SAMPLE_RATE 44100
@@ -47,17 +45,12 @@ int main(int argc, char *argv[]) {
     fluid_synth_program_select(synth, 0, sfont, 0, 0);
 
     fluid_preset_t *preset = synth->channel[0]->preset;
+    print_preset_info(preset);
+    
     fluid_defpreset_t * defpreset = (fluid_defpreset_t *)preset->data;
     fluid_preset_zone_t *preset_zone = defpreset->zone;
     fluid_inst_t *inst = preset_zone->inst;
     fluid_inst_zone_t *zone = inst->zone;
-    fluid_inst_zone_t *cur_zone = zone;
-    while(cur_zone != NULL){
-      printf("sample: %s, samplerate:%d, sampletype:%d, origpitch:%d\n", 
-            cur_zone->sample->name, cur_zone->sample->samplerate,
-            cur_zone->sample->sampletype, cur_zone->sample->origpitch);
-      cur_zone = cur_zone->next;
-    }
     bool stereo_sample = zone->next !=NULL && (zone->sample->sampletype + zone->next->sample->sampletype == 2+4);
 
     int16_t *buffer = calloc(SAMPLE_SIZE, NUM_SAMPLES);

@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <fluidlite.h>
 #include "fluid_sfont.h"
+#include "utils.c"
+
 
 int main(int argc, char** argv)
 {
@@ -26,14 +28,13 @@ int main(int argc, char** argv)
     /* Enumeration of banks and programs */
     sfont = fluid_synth_get_sfont_by_id(synth, sfid);
     if (sfont != NULL) {
+		char *fontname = fluid_defsfont_get_name((fluid_defsfont_t *)sfont->data);
+		printf("%s\n", fontname);
         fluid_preset_t struct_preset;
 		fluid_preset_t *preset = &struct_preset;
         fluid_sfont_iteration_start(sfont);
         while (fluid_sfont_iteration_next(sfont, preset) != 0) {
-            int bank = fluid_preset_get_banknum(preset);
-            int prog = fluid_preset_get_num(preset);
-            const char* name = fluid_preset_get_name(preset);
-			printf("bank: %d prog: %d name: %s\n", bank, prog, name);
+			print_preset_info(preset);
 		}
 	}
 
