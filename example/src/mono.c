@@ -16,6 +16,8 @@
 #define NUM_CHANNELS 1
 #define NUM_SAMPLES (NUM_FRAMES * NUM_CHANNELS)
 
+#define POLYPHONY 8
+
 int main(int argc, char *argv[]) {
     if (argc < 2) {
       printf("Usage: %s <soundfont> [<output>]\n", argv[0]);
@@ -24,22 +26,26 @@ int main(int argc, char *argv[]) {
 
     fluid_settings_t* settings = new_fluid_settings();
     fluid_settings_setstr(settings, "synth.verbose", "yes"); //在新版本中"synth.verbose"是int型
-    fluid_settings_setint(settings, "synth.polyphony", 6); 
+    fluid_settings_setint(settings, "synth.polyphony", POLYPHONY); 
     fluid_settings_setint(settings, "synth.midi-channels", 1); 
     char *vb = "   ";
     fluid_settings_getstr(settings, "synth.verbose", &vb);
     assert(strcmp(vb, "yes") == 0);
     int polyphony;
     fluid_settings_getint(settings, "synth.polyphony", &polyphony);
-    assert(polyphony == 6);
+    assert(polyphony == POLYPHONY);
     int midi_channels;
     fluid_settings_getint(settings, "synth.midi-channels", &midi_channels);
     assert(midi_channels == 1);
 
     fluid_synth_t* synth = new_fluid_synth(settings);
     assert(synth->verbose == 1);
-    assert(synth->polyphony == 6);
+    assert(synth->polyphony == POLYPHONY);
     assert(synth->midi_channels == 1);
+    assert(synth->ticks == 0);
+    assert(synth->noteid == 0);
+    assert(synth->storeid == 0);
+    assert(synth->cur == FLUID_BUFSIZE);
 
     int sfont = fluid_synth_sfload(synth, argv[1], 1);
     fluid_synth_program_select(synth, 0, sfont, 0, 0);
@@ -57,6 +63,10 @@ int main(int argc, char *argv[]) {
     FILE* file = argc > 2 ? fopen(argv[2], "wb") : stdout;
 
     fluid_synth_noteon(synth, 0, 60, 50);
+    assert(synth->ticks == 0);
+    assert(synth->noteid == 1);
+    assert(synth->storeid == 0);
+    assert(synth->cur == FLUID_BUFSIZE);
     assert(synth->voice[0]->id == 0);
     assert(synth->voice[0]->chan == 0);
     assert(synth->voice[0]->key == 60);
@@ -70,6 +80,9 @@ int main(int argc, char *argv[]) {
     }
 
     fluid_synth_noteon(synth, 0, 67, 80);
+    assert(synth->ticks == 0);
+    assert(synth->noteid == 2);
+    assert(synth->storeid == 1);
     if(stereo_sample){
       assert(synth->voice[2]->id == 1);
       assert(synth->voice[2]->chan == 0);
@@ -88,6 +101,10 @@ int main(int argc, char *argv[]) {
 
 
     fluid_synth_noteon(synth, 0, 76, 100);
+    assert(synth->ticks == 0);
+    assert(synth->noteid == 3);
+    assert(synth->storeid == 2);
+    assert(synth->cur == FLUID_BUFSIZE);
     if(stereo_sample){
       assert(synth->voice[4]->id == 2);
       assert(synth->voice[4]->chan == 0);
@@ -105,12 +122,108 @@ int main(int argc, char *argv[]) {
     }
 
 
+    fluid_voice_t copy0 = *synth->voice[0];
+    assert(copy0.chan == 0);
     fluid_synth_write_s16_mono(synth, NUM_FRAMES, buffer);
+    assert(synth->ticks == 88256);
+    assert(synth->noteid == 3);
+    assert(synth->storeid == 2);
+    assert(synth->cur == 8);
+    assert(synth->voice[0]->id == 0);
+    assert(synth->voice[0]->key == 60);
+    assert(synth->voice[0]->vel == 50);
+
+    assert(copy0.chan == 0);
+    bool already_off = FALSE;
+    if(synth->voice[0]->chan == NO_CHANNEL){
+      already_off = TRUE;
+      printf("noteoff in fluid_voice_write");
+      assert(synth->voice[0]->volenv_section == FLUID_VOICE_ENVFINISHED);
+    }
+
+
     fwrite(buffer, SAMPLE_SIZE, NUM_SAMPLES, file);
 
+
+    if(!already_off){
+      assert(synth->voice[0]->volenv_section < FLUID_VOICE_ENVRELEASE);
+      assert(synth->voice[0]->volenv_count > 0);
+      assert(synth->voice[0]->modenv_section < FLUID_VOICE_ENVRELEASE);
+      assert(synth->voice[0]->modenv_count > 0);
+      assert(synth->voice[0]->status == FLUID_VOICE_ON);
+    }
     fluid_synth_noteoff(synth, 0, 60);
+    if(!already_off){
+      assert(synth->voice[0]->volenv_section  == FLUID_VOICE_ENVRELEASE);
+      assert(synth->voice[0]->modenv_section  == FLUID_VOICE_ENVRELEASE);
+      assert(synth->voice[0]->status == FLUID_VOICE_ON);
+    }else{
+      assert(synth->voice[0]->volenv_section == FLUID_VOICE_ENVFINISHED);
+      assert(synth->voice[0]->modenv_section  == FLUID_VOICE_ENVFINISHED);
+      assert(synth->voice[0]->status == FLUID_VOICE_OFF);
+    }
+    assert(synth->voice[0]->volenv_count  == 0);
+    assert(synth->voice[0]->modenv_count  == 0);
+    
+
+    if(stereo_sample && !already_off){
+      assert(synth->voice[2]->volenv_section < FLUID_VOICE_ENVRELEASE);
+      assert(synth->voice[2]->volenv_count > 0);
+      assert(synth->voice[2]->modenv_section < FLUID_VOICE_ENVRELEASE);
+      assert(synth->voice[2]->modenv_count > 0);
+      assert(synth->voice[2]->status == FLUID_VOICE_ON);
+      assert(synth->voice[3]->volenv_section < FLUID_VOICE_ENVRELEASE);
+      assert(synth->voice[3]->volenv_count > 0);
+      assert(synth->voice[3]->modenv_section < FLUID_VOICE_ENVRELEASE);
+      assert(synth->voice[3]->modenv_count > 0);
+      assert(synth->voice[2]->status == FLUID_VOICE_ON);
+    }else if(!already_off){
+      assert(synth->voice[1]->volenv_section < FLUID_VOICE_ENVRELEASE);
+      assert(synth->voice[1]->volenv_count > 0);
+      assert(synth->voice[1]->modenv_section < FLUID_VOICE_ENVRELEASE);
+      assert(synth->voice[1]->modenv_count > 0);
+      assert(synth->voice[1]->status == FLUID_VOICE_ON);
+    }
     fluid_synth_noteoff(synth, 0, 67);
+    if(stereo_sample && !already_off){
+      assert(synth->voice[2]->volenv_section  == FLUID_VOICE_ENVRELEASE);
+      assert(synth->voice[2]->volenv_count  == 0);
+      assert(synth->voice[2]->modenv_section  == FLUID_VOICE_ENVRELEASE);
+      assert(synth->voice[2]->modenv_count  == 0);
+      assert(synth->voice[2]->status == FLUID_VOICE_ON);
+      assert(synth->voice[3]->volenv_section  == FLUID_VOICE_ENVRELEASE);
+      assert(synth->voice[3]->volenv_count  == 0);
+      assert(synth->voice[3]->modenv_section  == FLUID_VOICE_ENVRELEASE);
+      assert(synth->voice[3]->modenv_count  == 0);
+      assert(synth->voice[3]->status == FLUID_VOICE_ON);
+    }else if(!already_off){
+      assert(synth->voice[1]->volenv_section  == FLUID_VOICE_ENVRELEASE);
+      assert(synth->voice[1]->volenv_count  == 0);
+      assert(synth->voice[1]->modenv_section  == FLUID_VOICE_ENVRELEASE);
+      assert(synth->voice[1]->modenv_count  == 0);
+      assert(synth->voice[1]->status == FLUID_VOICE_ON);
+    }
+
     fluid_synth_noteoff(synth, 0, 76);
+    if(stereo_sample && !already_off){
+      assert(synth->voice[4]->volenv_section  == FLUID_VOICE_ENVRELEASE);
+      assert(synth->voice[4]->volenv_count  == 0);
+      assert(synth->voice[4]->modenv_section  == FLUID_VOICE_ENVRELEASE);
+      assert(synth->voice[4]->modenv_count  == 0);
+      assert(synth->voice[4]->status == FLUID_VOICE_ON);
+      assert(synth->voice[5]->volenv_section  == FLUID_VOICE_ENVRELEASE);
+      assert(synth->voice[5]->volenv_count  == 0);
+      assert(synth->voice[5]->modenv_section  == FLUID_VOICE_ENVRELEASE);
+      assert(synth->voice[5]->modenv_count  == 0);
+      assert(synth->voice[5]->status == FLUID_VOICE_ON);
+    }else if(!already_off){
+      assert(synth->voice[2]->volenv_section  == FLUID_VOICE_ENVRELEASE);
+      assert(synth->voice[2]->volenv_count  == 0);
+      assert(synth->voice[2]->modenv_section  == FLUID_VOICE_ENVRELEASE);
+      assert(synth->voice[2]->modenv_count  == 0);
+      assert(synth->voice[2]->status == FLUID_VOICE_ON);
+    }
+
     fluid_synth_write_s16_mono(synth, NUM_FRAMES/10, buffer);
     fwrite(buffer, SAMPLE_SIZE, NUM_SAMPLES/10, file);
 
