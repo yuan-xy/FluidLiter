@@ -755,7 +755,7 @@ int fluid_voice_calculate_runtime_synthesis_parameters(fluid_voice_t *voice)
 {
   int i;
 
-  static const int list_of_generators_to_initialize[35] = {
+  static const int list_of_generators_to_initialize[] = {
       GEN_STARTADDROFS,     /* SF2.01 page 48 #0   */
       GEN_ENDADDROFS,       /*                #1   */
       GEN_STARTLOOPADDROFS, /*                #2   */
@@ -771,6 +771,7 @@ int fluid_voice_calculate_runtime_synthesis_parameters(fluid_voice_t *voice)
       /* GEN_ENDADDRCOARSEOFS [1]                            #12  */
       GEN_MODLFOTOVOL, /*                #13  */
       /* not defined                                         #14  */
+      /* GEN_CHORUSSEND,                      /*                #15  */
       GEN_REVERBSEND, /*                #16  */
       GEN_PAN,        /*                #17  */
       /* not defined                                         #18  */
