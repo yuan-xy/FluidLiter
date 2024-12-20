@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
+#include <unistd.h>
+
 #include "fluidlite.h"
 
 typedef enum {
@@ -63,6 +66,14 @@ int my_read(void *buf, int count, void *handle)
     return FLUID_OK;
 }
 
+void* my_read_zero_memcpy(int count, void *handle)
+{
+    struct FileDescriptor *fdp = (struct FileDescriptor *)handle;
+    void* ret = fdp->ptr;
+    fdp->ptr += count;
+    return ret;
+}
+
 int my_seek(void *handle, long offset, int origin)
 {
     struct FileDescriptor *fdp = (struct FileDescriptor *)handle;
@@ -99,9 +110,9 @@ long my_tell(void *handle)
 static fluid_fileapi_t my_fileapi =
 {
   NULL,
-  NULL,
   my_open,
   my_read,
+  my_read_zero_memcpy,
   my_seek,
   my_close,
   my_tell
@@ -112,6 +123,8 @@ int main(int argc, char *argv[]) {
 
     fluid_settings_t *settings = new_fluid_settings();
     fluid_settings_setstr(settings, "synth.verbose", "yes");
+    fluid_settings_setint(settings, "synth.polyphony", 1); 
+    fluid_settings_setint(settings, "synth.midi-channels", 1); 
     fluid_synth_t *synth = new_fluid_synth(settings);
 
     fluid_set_default_fileapi(&my_fileapi);
@@ -140,7 +153,7 @@ int main(int argc, char *argv[]) {
 
 #define SAMPLE_RATE 44100
 #define SAMPLE_SIZE sizeof(int16_t) //s16
-#define DURATION 2 //second
+#define DURATION 0.1 //second
 #define NUM_FRAMES SAMPLE_RATE*DURATION
 #define NUM_CHANNELS 1
 #define NUM_SAMPLES (NUM_FRAMES * NUM_CHANNELS)
@@ -159,7 +172,7 @@ int main(int argc, char *argv[]) {
     fwrite(buffer, SAMPLE_SIZE, NUM_SAMPLES/10, file);
 
     fclose(file);
-
+    sleep(1);
     free(buffer);
 
 

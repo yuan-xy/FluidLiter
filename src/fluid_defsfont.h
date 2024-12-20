@@ -452,6 +452,7 @@ struct _fluid_defsfont_t
 
   fluid_preset_t iter_preset;        /* preset interface used in the iteration */
   fluid_defpreset_t* iter_cur;       /* the current preset in the iteration */
+  char is_rom;              /* is the sample data loaded in rom */
 };
 
 

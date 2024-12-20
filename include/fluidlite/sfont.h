@@ -91,9 +91,6 @@ struct _fluid_sfloader_t {
  * File callback structure to enable custom soundfont loading (e.g. from memory).
  */
 struct _fluid_fileapi_t {
-  /** Private data */
-  void* data;
-
   /**
    * The free must free the memory allocated for the loader in
    * addition to any private data. It should return 0 if no error
@@ -115,6 +112,8 @@ struct _fluid_fileapi_t {
    * @return returns #FLUID_OK if exactly \c count bytes were successfully read, else #FLUID_FAILED
    */
   int (*fread)(void *buf, int count, void* handle);
+
+  void* (*fread_zero_memcpy)(int count, void* handle);
 
   /**
    * Same purpose and behaviour as fseek.

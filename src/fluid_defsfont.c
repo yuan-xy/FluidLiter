@@ -128,30 +128,20 @@ static int safe_fseek(void *handle, long ofs, int whence)
 static const fluid_fileapi_t default_fileapi =
     {
         NULL,
-        NULL,
         default_fopen,
         safe_fread,
+        NULL,
         safe_fseek,
         default_fclose,
         default_ftell};
 
 static fluid_fileapi_t *fluid_default_fileapi = (fluid_fileapi_t *)&default_fileapi;
 
-void fluid_init_default_fileapi(fluid_fileapi_t *fileapi)
-{
-  fileapi->data = NULL;
-  fileapi->free = NULL;
-  fileapi->fopen = default_fopen;
-  fileapi->fread = safe_fread;
-  fileapi->fseek = safe_fseek;
-  fileapi->fclose = default_fclose;
-  fileapi->ftell = default_ftell;
-}
-
 void fluid_set_default_fileapi(fluid_fileapi_t *fileapi)
 {
+  if(fileapi == NULL) return;
   fluid_fileapi_delete(fluid_default_fileapi);
-  fluid_default_fileapi = fileapi == NULL ? (fluid_fileapi_t *)&default_fileapi : fileapi;
+  fluid_default_fileapi = fileapi;
 }
 
 fluid_sfloader_t *new_fluid_defsfloader()
@@ -379,7 +369,7 @@ int delete_fluid_defsfont(fluid_defsfont_t *sfont)
     delete_fluid_list(sfont->sample);
   }
 
-  if (sfont->sampledata != NULL)
+  if (sfont->sampledata != NULL && !sfont->is_rom)
   {
     FLUID_FREE(sfont->sampledata);
   }
@@ -562,20 +552,27 @@ int fluid_defsfont_load_sampledata(fluid_defsfont_t *sfont, fluid_fileapi_t *fap
     FLUID_LOG(FLUID_ERR, "Failed to seek position in data file");
     return FLUID_FAILED;
   }
-  sfont->sampledata = (short *)FLUID_MALLOC(sfont->samplesize);
-  FLUID_LOG(FLUID_INFO, "sfont->samplesize %d\n", sfont->samplesize);
 
-  if (sfont->sampledata == NULL)
-  {
-    FLUID_LOG(FLUID_ERR, "Out of memory");
-    return FLUID_FAILED;
+  if(fapi->fread_zero_memcpy != NULL){
+      sfont->sampledata = fapi->fread_zero_memcpy(sfont->samplesize, fd);
+      sfont->is_rom = 1;
+  }else{
+      sfont->is_rom = 0;
+      sfont->sampledata = (short *)FLUID_MALLOC(sfont->samplesize);
+      FLUID_LOG(FLUID_INFO, "sfont->samplesize %d\n", sfont->samplesize);
+
+      if (sfont->sampledata == NULL)
+      {
+        FLUID_LOG(FLUID_ERR, "Out of memory");
+        return FLUID_FAILED;
+      }
+      if (fapi->fread(sfont->sampledata, sfont->samplesize, fd) == FLUID_FAILED)
+      {
+        FLUID_LOG(FLUID_ERR, "Failed to read sample data");
+        return FLUID_FAILED;
+      }
+      fapi->fclose(fd);
   }
-  if (fapi->fread(sfont->sampledata, sfont->samplesize, fd) == FLUID_FAILED)
-  {
-    FLUID_LOG(FLUID_ERR, "Failed to read sample data");
-    return FLUID_FAILED;
-  }
-  fapi->fclose(fd);
 
   /* I'm not sure this endian test is waterproof...  */
   endian = 0x0100;
