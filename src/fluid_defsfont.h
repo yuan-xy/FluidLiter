@@ -115,7 +115,6 @@ SFPreset;
 typedef struct _SFData
 {				/* Sound font data structure */
   SFVersion version;		/* sound font version */
-  SFVersion romver;		/* ROM version */
   unsigned int samplepos;		/* position within sffd of the sample chunk */
   unsigned int samplesize;		/* length within sffd of the sample chunk */
   char *fname;			/* file name */

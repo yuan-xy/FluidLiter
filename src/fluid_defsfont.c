@@ -2322,17 +2322,6 @@ process_info(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi)
         return (FAIL);
       }
     }
-    else if (id == IVER_ID)
-    { /* ROM version chunk? */
-      if (chunk.size != 4)
-        return (gerr(ErrCorr,
-                     _("ROM version info chunk has invalid size")));
-
-      READW(ver, fd, fapi);
-      sf->romver.major = ver;
-      READW(ver, fd, fapi);
-      sf->romver.minor = ver;
-    }
     else if (id != UNKN_ID)
     {
       if ((id != ICMT_ID && chunk.size > 256) || (chunk.size > 65536) || (chunk.size % 2))
