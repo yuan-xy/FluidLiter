@@ -60,9 +60,9 @@ void print_fluid_inst_zone(fluid_inst_zone_t *iz){
     print_mod(iz, "inst_mod");
 
     fluid_sample_t* sample = iz->sample;
-    printf("\tsample: %s, \t%d, %d, origpitch:%d\t s_end:%d_%d\t loop:%d_%d\n", 
+    printf("\tsample: %s, \t%d, %d, origpitch:%d_%d\t s_end:%d_%d\t loop:%d_%d\n", 
           sample->name, sample->samplerate,
-          sample->sampletype, sample->origpitch,
+          sample->sampletype, sample->origpitch, sample->pitchadj,
           sample->start, sample->end, sample->loopstart, sample->loopend
           );
 }

@@ -10,6 +10,7 @@
 #include "fluid_synth.h"
 
 
+// #define SF_SIZE  290914808 //Boomwhacker.sf2
 #define SF_SIZE  302328 //Boomwhacker.sf2
 
 static unsigned char example_sf2[SF_SIZE];
@@ -18,6 +19,7 @@ void read_example_sf2(){
     FILE *file;
     size_t fileSize, bytesRead;
 
+    // file = fopen("/mnt/d/SF2/X Piano SoundFont v1.0.1.sf2", "rb");
     file = fopen("./example/sf_/Boomwhacker.sf2", "rb");
     if (file == NULL) {
         printf("Error opening file example/sf_/Boomwhacker.sf2\n");
@@ -118,6 +120,7 @@ static fluid_fileapi_t my_fileapi =
 };
 
 int main(int argc, char *argv[]) {
+    assert(GEN_LAST==60);
     int err = 0;
 
     fluid_settings_t *settings = new_fluid_settings();
@@ -162,7 +165,7 @@ int main(int argc, char *argv[]) {
 
 #define SAMPLE_RATE 44100
 #define SAMPLE_SIZE sizeof(int16_t) //s16
-#define DURATION 0.1 //second
+#define DURATION 0.01 //second
 #define NUM_FRAMES SAMPLE_RATE*DURATION
 #define NUM_CHANNELS 1
 #define NUM_SAMPLES (NUM_FRAMES * NUM_CHANNELS)
@@ -172,13 +175,28 @@ int main(int argc, char *argv[]) {
     FILE* file = argc > 1 ? fopen(argv[1], "wb") : stdout;
 
     fluid_synth_noteon(synth, 0, 60, 127);
+
+    for(int i=0; i<900; i++){
+        fluid_synth_write_s16(synth, NUM_FRAMES, buffer, 0, NUM_CHANNELS, buffer, 1, NUM_CHANNELS);
+        fwrite(buffer, SAMPLE_SIZE, NUM_SAMPLES, file);
+    }
+
+
+    fluid_synth_noteoff(synth, 0, 60);
     fluid_synth_write_s16(synth, NUM_FRAMES, buffer, 0, NUM_CHANNELS, buffer, 1, NUM_CHANNELS);
     fwrite(buffer, SAMPLE_SIZE, NUM_SAMPLES, file);
 
 
-    fluid_synth_noteoff(synth, 0, 60);
-    fluid_synth_write_s16(synth, NUM_FRAMES/10, buffer, 0, NUM_CHANNELS, buffer, 1, NUM_CHANNELS);
-    fwrite(buffer, SAMPLE_SIZE, NUM_SAMPLES/10, file);
+    for(int j=1; j<10; j++){
+        fluid_synth_noteon(synth, 0, 60+j, 127);
+        for(int i=0; i<100; i++){
+            fluid_synth_write_s16(synth, NUM_FRAMES, buffer, 0, NUM_CHANNELS, buffer, 1, NUM_CHANNELS);
+            fwrite(buffer, SAMPLE_SIZE, NUM_SAMPLES, file);
+        }
+        fluid_synth_noteoff(synth, 0, 60+j);
+        fluid_synth_write_s16(synth, NUM_FRAMES, buffer, 0, NUM_CHANNELS, buffer, 1, NUM_CHANNELS);
+        fwrite(buffer, SAMPLE_SIZE, NUM_SAMPLES, file);        
+    }
 
     fclose(file);
     sleep(1);
