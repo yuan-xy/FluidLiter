@@ -3,13 +3,12 @@
 #include <stdint.h>
 #include <string.h>
 #include <unistd.h>
+#include <assert.h>
+#include <stdbool.h>
 
 #include "fluidlite.h"
+#include "fluid_synth.h"
 
-typedef enum {
-  FLUID_OK = 0,
-  FLUID_FAILED = -1
-} fluid_status;
 
 #define SF_SIZE  302328 //Boomwhacker.sf2
 
@@ -123,9 +122,19 @@ int main(int argc, char *argv[]) {
 
     fluid_settings_t *settings = new_fluid_settings();
     fluid_settings_setstr(settings, "synth.verbose", "yes");
+    fluid_settings_setstr(settings, "synth.reverb.active", "no");
     fluid_settings_setint(settings, "synth.polyphony", 1); 
     fluid_settings_setint(settings, "synth.midi-channels", 1); 
+
+    char *vb = "   ";
+    fluid_settings_getstr(settings, "synth.verbose", &vb);
+    assert(strcmp(vb, "yes") == 0);
+    fluid_settings_getstr(settings, "synth.reverb.active", &vb);
+    assert(strcmp(vb, "no") == 0);
+
     fluid_synth_t *synth = new_fluid_synth(settings);
+    assert(synth->verbose == 1);
+    assert(synth->with_reverb == 0);
 
     fluid_set_default_fileapi(&my_fileapi);
     fluid_sfloader_t *my_sfloader = new_fluid_defsfloader();

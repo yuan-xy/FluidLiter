@@ -69,7 +69,6 @@ const static fluid_revmodel_presets_t revmodel_preset[] = {
   { "Test 3",          0.6f,      0.4f,       0.5f,       0.7f },
   { "Test 4",          0.8f,      0.7f,       0.5f,       0.6f },
   { "Test 5",          0.8f,      1.0f,       0.5f,       0.5f },
-  { NULL, 0.0f, 0.0f, 0.0f, 0.0f }
 };
 
 
@@ -1629,23 +1628,15 @@ fluid_synth_program_reset(fluid_synth_t* synth)
   return FLUID_OK;
 }
 
-/*
- * fluid_synth_set_reverb_preset
- */
-int fluid_synth_set_reverb_preset(fluid_synth_t* synth, int num)
+
+int fluid_synth_set_reverb_preset(fluid_synth_t* synth, int i)
 {
-  int i = 0;
-  while (revmodel_preset[i].name != NULL) {
-    if (i == num) {
-      fluid_revmodel_setroomsize(synth->reverb, revmodel_preset[i].roomsize);
-      fluid_revmodel_setdamp(synth->reverb, revmodel_preset[i].damp);
-      fluid_revmodel_setwidth(synth->reverb, revmodel_preset[i].width);
-      fluid_revmodel_setlevel(synth->reverb, revmodel_preset[i].level);
-      return FLUID_OK;
-    }
-    i++;
-  }
-  return FLUID_FAILED;
+  if(i < 0 || i >= sizeof(revmodel_preset)/sizeof(revmodel_preset[0])) return FLUID_FAILED;
+  fluid_revmodel_setroomsize(synth->reverb, revmodel_preset[i].roomsize);
+  fluid_revmodel_setdamp(synth->reverb, revmodel_preset[i].damp);
+  fluid_revmodel_setwidth(synth->reverb, revmodel_preset[i].width);
+  fluid_revmodel_setlevel(synth->reverb, revmodel_preset[i].level);
+  return FLUID_OK;
 }
 
 /*

@@ -31,6 +31,8 @@ int main(int argc, char *argv[]) {
     char *vb = "   ";
     fluid_settings_getstr(settings, "synth.verbose", &vb);
     assert(strcmp(vb, "yes") == 0);
+    fluid_settings_getstr(settings, "synth.reverb.active", &vb);
+    assert(strcmp(vb, "yes") == 0);
     int polyphony;
     fluid_settings_getint(settings, "synth.polyphony", &polyphony);
     assert(polyphony == POLYPHONY);
@@ -40,12 +42,15 @@ int main(int argc, char *argv[]) {
 
     fluid_synth_t* synth = new_fluid_synth(settings);
     assert(synth->verbose == 1);
+    assert(synth->with_reverb == 1);
     assert(synth->polyphony == POLYPHONY);
     assert(synth->midi_channels == 1);
     assert(synth->ticks == 0);
     assert(synth->noteid == 0);
     assert(synth->storeid == 0);
     assert(synth->cur == FLUID_BUFSIZE);
+
+    fluid_synth_set_reverb_preset(synth, 4);
 
     int sfont = fluid_synth_sfload(synth, argv[1], 1);
     fluid_synth_program_select(synth, 0, sfont, 0, 0);
