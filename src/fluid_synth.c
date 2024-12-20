@@ -402,17 +402,19 @@ new_fluid_synth(fluid_settings_t *settings)
   synth->cur = FLUID_BUFSIZE;
 
   /* allocate the reverb module */
-  synth->reverb = new_fluid_revmodel();
-  if (synth->reverb == NULL) {
-    FLUID_LOG(FLUID_ERR, "Out of memory");
-    goto error_recovery;
-  }
+  if(synth->with_reverb){
+    synth->reverb = new_fluid_revmodel();
+    if (synth->reverb == NULL) {
+      FLUID_LOG(FLUID_ERR, "Out of memory");
+      goto error_recovery;
+    }
 
-  fluid_synth_set_reverb(synth,
-			FLUID_REVERB_DEFAULT_ROOMSIZE,
-			FLUID_REVERB_DEFAULT_DAMP,
-			FLUID_REVERB_DEFAULT_WIDTH,
-			FLUID_REVERB_DEFAULT_LEVEL);
+    fluid_synth_set_reverb(synth,
+        FLUID_REVERB_DEFAULT_ROOMSIZE,
+        FLUID_REVERB_DEFAULT_DAMP,
+        FLUID_REVERB_DEFAULT_WIDTH,
+        FLUID_REVERB_DEFAULT_LEVEL);
+  }
 
   if(fluid_settings_str_equal(settings, "synth.drums-channel.active", "yes"))
       fluid_synth_bank_select(synth,9,DRUM_INST_BANK);
