@@ -3246,7 +3246,6 @@ load_shdr(unsigned int size, SFData *sf, void *fd, fluid_fileapi_t *fapi)
     READB(p->pitchadj, fd, fapi);
     FSKIPW(fd, fapi); /* skip sample link */
     READW(p->sampletype, fd, fapi);
-    p->samfile = 0;
   }
 
   FSKIP(SFSHDRSIZE, fd, fapi); /* skip terminal shdr */
