@@ -848,7 +848,7 @@ int fluid_defpreset_noteon(fluid_defpreset_t *preset, fluid_synth_t *synth, int 
       while (inst_zone != NULL){
         /* make sure this instrument zone has a valid sample */
         sample = fluid_inst_zone_get_sample(inst_zone);
-        if (fluid_sample_in_rom(sample) || (sample == NULL)){
+        if (sample == NULL){
           inst_zone = fluid_inst_zone_next(inst_zone);
           continue;
         }
@@ -1937,14 +1937,6 @@ int delete_fluid_sample(fluid_sample_t *sample)
 }
 
 /*
- * fluid_sample_in_rom
- */
-int fluid_sample_in_rom(fluid_sample_t *sample)
-{
-  return (sample->sampletype & FLUID_SAMPLETYPE_ROM);
-}
-
-/*
  * fluid_sample_import_sfont
  */
 int fluid_sample_import_sfont(fluid_sample_t *sample, SFSample *sfsample, fluid_defsfont_t *sfont)
@@ -1962,12 +1954,6 @@ int fluid_sample_import_sfont(fluid_sample_t *sample, SFSample *sfsample, fluid_
 
   if (sample->sampletype & FLUID_SAMPLETYPE_OGG_VORBIS)
   {
-  }
-
-  if (sample->sampletype & FLUID_SAMPLETYPE_ROM)
-  {
-    sample->valid = 0;
-    FLUID_LOG(FLUID_WARN, "Ignoring sample %s: can't use ROM samples", sample->name);
   }
   if (sample->end - sample->start < 8)
   {
@@ -3332,9 +3318,9 @@ fixup_sample(SFData *sf)
   {
     sam = (SFSample *)(p->data);
 
-    /* if sample is not a ROM sample and end is over the sample data chunk
+    /* if sample end is over the sample data chunk
        or sam start is greater than 4 less than the end (at least 4 samples) */
-    if ((!(sam->sampletype & FLUID_SAMPLETYPE_ROM) && sam->end > sdtachunk_size) || sam->start > (sam->end - 4))
+    if (sam->end > sdtachunk_size || sam->start > (sam->end - 4))
     {
       FLUID_LOG(FLUID_WARN, _("Sample '%s' start/end file positions are invalid,"
                               " disabling and will not be saved"),

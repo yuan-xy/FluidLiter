@@ -88,7 +88,7 @@ typedef struct _SFSample
   unsigned int samplerate;		/* Sample rate recorded at */
   unsigned char origpitch;		/* root midi key number */
   signed char pitchadj;		/* pitch correction in cents */
-  unsigned short sampletype;		/* 1 mono,2 right,4 left,linked 8,0x8000=ROM */
+  unsigned short sampletype;		/* 1 mono,2 right,4 left,linked 8 */
 }
 SFSample;
 
@@ -259,7 +259,7 @@ typedef struct _SFShdr
   unsigned char origpitch;		/* root midi key number */
   signed char pitchadj;		/* pitch correction in cents */
   unsigned short samplelink;		/* Not used */
-  unsigned short sampletype;		/* 1 mono,2 right,4 left,linked 8,0x8000=ROM */
+  unsigned short sampletype;		/* 1 mono,2 right,4 left,linked 8 */
 }
 SFShdr;
 
@@ -559,7 +559,6 @@ fluid_sample_t* fluid_inst_zone_get_sample(fluid_inst_zone_t* zone);
 fluid_sample_t* new_fluid_sample(void);
 int delete_fluid_sample(fluid_sample_t* sample);
 int fluid_sample_import_sfont(fluid_sample_t* sample, SFSample* sfsample, fluid_defsfont_t* sfont);
-int fluid_sample_in_rom(fluid_sample_t* sample);
 
 
 #endif  /* _FLUID_SFONT_H */

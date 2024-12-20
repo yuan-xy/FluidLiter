@@ -1945,7 +1945,6 @@ int fluid_voice_optimize_sample(fluid_sample_t *s)
   double result;
   int i;
 
-  /* ignore ROM and other(?) invalid samples */
   if (!s->valid || (s->sampletype & FLUID_SAMPLETYPE_OGG_VORBIS))
     return (FLUID_OK);
 
