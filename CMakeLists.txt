@@ -36,8 +36,6 @@ list(APPEND HEADERS
     include/fluidlite.h
 )
 
-configure_file(src/version.cmake ${PROJECT_BINARY_DIR}/fluidlite/version.h @ONLY)
-
 list(APPEND SCOPED_HEADERS
     include/fluidlite/types.h
     include/fluidlite/settings.h
@@ -48,7 +46,6 @@ list(APPEND SCOPED_HEADERS
     include/fluidlite/mod.h
     include/fluidlite/gen.h
     include/fluidlite/voice.h
-    ${PROJECT_BINARY_DIR}/fluidlite/version.h
 )
 
 list(APPEND SOURCES

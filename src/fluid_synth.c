@@ -99,23 +99,6 @@ void fluid_synth_settings(fluid_settings_t* settings)
   fluid_settings_register_int(settings, "synth.min-note-length", 10, 0, 65535, 0, NULL, NULL);
 }
 
-/*
- * fluid_version
- */
-void fluid_version(int *major, int *minor, int *micro)
-{
-  *major = FLUIDLITE_VERSION_MAJOR;
-  *minor = FLUIDLITE_VERSION_MINOR;
-  *micro = FLUIDLITE_VERSION_MICRO;
-}
-
-/*
- * fluid_version_str
- */
-char* fluid_version_str(void)
-{
-  return FLUIDLITE_VERSION;
-}
 
 
 /*
