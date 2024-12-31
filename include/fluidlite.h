@@ -92,6 +92,7 @@ extern "C" {
 #include "fluidlite/mod.h"
 #include "fluidlite/gen.h"
 #include "fluidlite/voice.h"
+#include "fluidlite/music.h"
 
 
 #ifdef __cplusplus

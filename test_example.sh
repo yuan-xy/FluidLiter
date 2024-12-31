@@ -22,8 +22,13 @@ gcc example/src/mono.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm -o mon
 # gcc example/src/test2.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm -o test2
 # valgrind --tool=massif --massif-out-file=massif_test2 ./test2
 
+
 rm sfload_mem
 gcc example/src/sfload_mem.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm -o sfload_mem
 valgrind --tool=massif --massif-out-file=massif_sfload_mem ./sfload_mem mem.pcm
 # massif-visualizer massif_sfload_mem
 
+rm test3
+gcc example/src/test3.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm -o test3
+./test3 example/sf_/GMGSx_1.sf2 test3.pcm
+# ffmpeg -f s16le -ar 44100 -ac 1 -i test3.pcm test3.wav
