@@ -52,7 +52,7 @@
 #include <limits.h>
 #endif
 
-
+#include <stdint.h>
 #include "fluidlite.h"
 
 
@@ -85,8 +85,8 @@ typedef signed short       sint16;
 typedef unsigned short     uint16;
 typedef signed int         sint32;
 typedef unsigned int       uint32;
-typedef signed long long   sint64;
-typedef unsigned long long uint64;
+typedef int64_t   sint64;
+typedef uint64_t uint64;
 
 #if defined(__LP64__) || defined(_WIN64)
 typedef uint64             uintptr;

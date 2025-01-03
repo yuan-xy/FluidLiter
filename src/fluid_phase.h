@@ -22,6 +22,7 @@
 #ifndef _FLUID_PHASE_H
 #define _FLUID_PHASE_H
 
+#include <stdint.h>
 #include "fluid_config.h"
 
 /*
@@ -45,7 +46,7 @@
 * It is a 64 bit number. The higher 32 bits contain the 'index' (number of
 * the current sample), the lower 32 bits the fractional part.
 */
-typedef unsigned long long fluid_phase_t;
+typedef uint64_t fluid_phase_t;
 
 /* Purpose:
  * Set a to b.

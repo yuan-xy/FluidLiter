@@ -771,7 +771,7 @@ int fluid_voice_calculate_runtime_synthesis_parameters(fluid_voice_t *voice)
       /* GEN_ENDADDRCOARSEOFS [1]                            #12  */
       GEN_MODLFOTOVOL, /*                #13  */
       /* not defined                                         #14  */
-      /* GEN_CHORUSSEND,                      /*                #15  */
+      /* GEN_CHORUSSEND,                                     #15  */
       GEN_REVERBSEND, /*                #16  */
       GEN_PAN,        /*                #17  */
       /* not defined                                         #18  */

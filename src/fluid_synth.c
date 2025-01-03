@@ -1758,16 +1758,11 @@ fluid_synth_write_s16(fluid_synth_t* synth, int len,
 }
 
 
-/*
- *  fluid_synth_one_block
- */
 int
 fluid_synth_one_block(fluid_synth_t* synth, int do_not_mix_fx_to_out)
 {
   int i;
   fluid_voice_t* voice;
-  fluid_real_t* left_buf;
-  fluid_real_t* right_buf;
   fluid_real_t* reverb_buf;
   int byte_size = FLUID_BUFSIZE * sizeof(fluid_real_t);
 
