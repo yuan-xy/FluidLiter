@@ -11,7 +11,7 @@
 #define MIRCO_SECOND 1000000
 #define SAMPLE_RATE 44100
 #define SAMPLE_SIZE sizeof(int16_t)         // s16
-#define NUM_FRAMES 17640                    // SAMPLE_RATE*DURATION
+#define NUM_FRAMES 441                    // SAMPLE_RATE*DURATION
 #define DURATION (NUM_FRAMES / SAMPLE_RATE) // second
 #define NUM_CHANNELS 1
 #define NUM_SAMPLES (NUM_FRAMES * NUM_CHANNELS)
@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
     }
     fluid_settings_t *settings = new_fluid_settings();
     fluid_settings_setstr(settings, "synth.verbose", "no"); // 在新版本中"synth.verbose"是int型
-    fluid_settings_setint(settings, "synth.polyphony", 1);
+    fluid_settings_setint(settings, "synth.polyphony", 3);
     fluid_settings_setint(settings, "synth.midi-channels", 1);
     fluid_settings_setstr(settings, "synth.reverb.active", "no");
 
@@ -52,8 +52,23 @@ int main(int argc, char *argv[])
     {
         char filename[32];
         snprintf(filename, 31, "test1_%d.pcm", j);
-        printf("write file %s.\n", filename);
+        // printf("write file %s.\n", filename);
         FILE *file = fopen(filename, "wb");
+
+        for (int i = 0; i < synth->polyphony; i++) {
+            fluid_voice_t *vt = synth->voice[i];
+            if (_PLAYING(vt)) {
+                // Test Loop sample 9176 - 10515 GMGSx.sf2
+                unsigned int start = vt->sample->start;
+                int phasei = fluid_phase_index(vt->phase);
+                int diff = phasei-start;
+                int diff_per = diff/(j+1);
+                int phasef = fluid_phase_fract(vt->phase);
+                printf("key:%d, diff:%d, diff_per:%d, phase_index:%d, phase_fract:%x\n", 
+                    vt->key, diff, diff_per, phasei, phasef);
+            }
+        }
+
         fluid_synth_write_s16_mono(synth, NUM_FRAMES, buffer);
         fwrite(buffer, SAMPLE_SIZE, NUM_SAMPLES, file);
         fclose(file);

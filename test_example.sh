@@ -32,3 +32,7 @@ rm test3
 gcc example/src/test3.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm -o test3
 ./test3 example/sf_/GMGSx_1.sf2 test3.pcm
 # ffmpeg -f s16le -ar 44100 -ac 1 -i test3.pcm test3.wav
+
+gcc example/src/test4.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm -o test4
+./test4 example/sf_/GMGSx_1.sf2 test4.pcm
+# ffmpeg -f s16le -ar 44100 -ac 1 -i test4.pcm test4.wav
