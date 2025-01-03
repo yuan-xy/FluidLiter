@@ -13,7 +13,7 @@
 #define MIRCO_SECOND 1000000
 #define SAMPLE_RATE 44100
 #define SAMPLE_SIZE sizeof(int16_t) //s16
-#define DURATION 0.1 //second
+#define DURATION 0.01 //second
 #define NUM_FRAMES SAMPLE_RATE*DURATION
 #define NUM_CHANNELS 1
 #define NUM_SAMPLES (NUM_FRAMES * NUM_CHANNELS)
@@ -31,6 +31,7 @@ uint32_t sample_single_us(void){
 
 
 int main(int argc, char *argv[]) {
+    printf("sample_duration_us:%d, sample_single_us:%d\n", sample_duration_us(), sample_single_us());
     if (argc < 2) {
       printf("Usage: %s <soundfont> [<output>]\n", argv[0]);
       return 1;
@@ -60,7 +61,7 @@ int main(int argc, char *argv[]) {
 		fluid_synth_noteoff(synth, 0, value);
     }
 
-    for(int i=-2; i<3; i++){
+    for(int i=-2; i<3; i++){//C1=65.4Hz , B5=1975.5Hz ,  C6=2093Hz
         int notes[] = {C, D, E, F, G, A, B};
         int note_count = sizeof(notes) / sizeof(notes[0]);
         for (int j = 0; j<note_count; j++) {
