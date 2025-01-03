@@ -589,7 +589,7 @@ fluid_synth_noteoff(fluid_synth_t* synth, int chan, int key)
         }
         FLUID_LOG(FLUID_INFO, "noteoff\t%d\t%d\t%d\t voice_id:%05d\t time:%.3f\t  ticks:%d  used_voices:%d",
 		              voice->chan, voice->key, 0, voice->id,
-		              (float) (voice->start_time + voice->ticks) / 44100.0f,
+		              (float) (voice->start_time + voice->ticks) / synth->sample_rate,
 		              voice->ticks,
 		              used_voices);
       } /* if verbose */
