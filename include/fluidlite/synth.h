@@ -21,6 +21,7 @@
 #ifndef _FLUIDSYNTH_SYNTH_H
 #define _FLUIDSYNTH_SYNTH_H
 
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -561,6 +562,11 @@ FLUIDSYNTH_API int fluid_synth_write_s16(fluid_synth_t* synth, int len,
 				       void* rout, int roff, int rincr);
 
 FLUIDSYNTH_API int fluid_synth_write_s16_mono(fluid_synth_t* synth, int len, void* out);
+
+FLUIDSYNTH_API int fluid_synth_write_u12(fluid_synth_t* synth, int len, int16_t* out, int channel);
+
+FLUIDSYNTH_API int fluid_synth_write_u12_mono(fluid_synth_t* synth, int len, int16_t* out);
+
 
   /** Generate a number of samples. This function expects two floating
    *  point buffers (left and right channel) that will be filled with

@@ -6,5 +6,6 @@ Debug
 Release
 a.out
 *-test
+test?
 massif*
 .vscode/
