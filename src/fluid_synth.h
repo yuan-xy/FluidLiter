@@ -138,7 +138,6 @@ int fluid_synth_kill_voice(fluid_synth_t* synth, fluid_voice_t * voice);
 void fluid_synth_kill_by_exclusive_class(fluid_synth_t* synth, fluid_voice_t* voice);
 void fluid_synth_release_voice_on_same_note(fluid_synth_t* synth, int chan, int key);
 
-void fluid_synth_print_voice(fluid_synth_t* synth);
 
 /** This function assures that every MIDI channels has a valid preset
  *  (NULL is okay). This function is called after a SoundFont is

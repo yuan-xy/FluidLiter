@@ -50,11 +50,6 @@ int main(int argc, char *argv[])
 
     for (int j=0; j <= 5 * MIRCO_SECOND / sample_duration_us(); j++)
     {
-        char filename[32];
-        snprintf(filename, 31, "test1_%d.pcm", j);
-        // printf("write file %s.\n", filename);
-        FILE *file = fopen(filename, "wb");
-
         for (int i = 0; i < synth->polyphony; i++) {
             fluid_voice_t *vt = synth->voice[i];
             if (_PLAYING(vt)) {
@@ -70,8 +65,6 @@ int main(int argc, char *argv[])
         }
 
         fluid_synth_write_s16_mono(synth, NUM_FRAMES, buffer);
-        fwrite(buffer, SAMPLE_SIZE, NUM_SAMPLES, file);
-        fclose(file);
     }
 
     fluid_synth_noteoff(synth, 0, C);

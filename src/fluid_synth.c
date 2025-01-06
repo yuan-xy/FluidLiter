@@ -1718,8 +1718,8 @@ fluid_synth_write_s16(fluid_synth_t* synth, int len,
 		     void* rout, int roff, int rincr)
 {
   int i, j, k, cur;
-  signed short* left_out = (signed short*) lout;
-  signed short* right_out = (signed short*) rout;
+  int16_t* left_out = (int16_t*) lout;
+  int16_t* right_out = (int16_t*) rout;
   fluid_real_t* left_in = synth->left_buf;
   fluid_real_t* right_in = synth->right_buf;
   fluid_real_t left_sample;
@@ -1749,8 +1749,8 @@ fluid_synth_write_s16(fluid_synth_t* synth, int len,
     if (right_sample > 32767.0f) right_sample = 32767.0f;
     if (right_sample < -32768.0f) right_sample = -32768.0f;
 
-    left_out[j] = (signed short) left_sample;
-    if(right_out != NULL) right_out[k] = (signed short) right_sample;
+    left_out[j] = (int16_t) left_sample;
+    if(right_out != NULL) right_out[k] = (int16_t) right_sample;
   }
 
   synth->cur = cur;

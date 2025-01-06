@@ -64,6 +64,9 @@ int main(int argc, char *argv[])
 
 	for(int i=0; i<NUM_SAMPLES*2; i++){
 		assert(SAMPLE_SIZE==2);
+		assert(sizeof(signed short) == 2);
+		assert(sizeof(int16_t) == 2);
+		assert(sizeof(float) == 4);
 		int16_t v = (buffer[i+1] << 8) | (buffer[i] & 0xFF);
 		int16_t v12 = v>>4;
 		uint16_t uv12 = v12+2048;
