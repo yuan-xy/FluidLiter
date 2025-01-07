@@ -1723,8 +1723,8 @@ fluid_synth_write_u8(fluid_synth_t* synth, int len, uint8_t* out, int channel)
       cur = 0;
     }
 
-    left_sample = roundi (left_in[cur] * 127.0f );
-    right_sample = roundi (right_in[cur] * 127.0f );
+    left_sample = roundi (left_in[cur] * 127.0f * 16 );  //实际测试发大16倍合适，默认音量太小
+    right_sample = roundi (right_in[cur] * 127.0f * 16 );
 
     /* digital clipping */
     if (left_sample > 127.0f) left_sample = 127.0f;
@@ -1756,7 +1756,9 @@ fluid_synth_write_u12(fluid_synth_t* synth, int len, int16_t* out, int channel)
     ret = fluid_synth_write_s16(synth, len, out, 0, 2, out, 1, 2);
   }
   for(int i=0; i<len*channel; i++){
-    int16_t v12 = out[i]>>4;
+    int16_t v12 = out[i]; //>>4; 
+    if(v12>2047) v12 = 2047;
+    if(v12<-2048) v12=-2048;
 		uint16_t uv12 = v12+2048;  //-2048~2047 -> 0~4095
     out[i] = uv12;
   }
