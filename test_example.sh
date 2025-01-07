@@ -1,3 +1,6 @@
+#!/bin/bash
+set -e
+
 cmake -S . -B Debug -DCMAKE_BUILD_TYPE=Debug
 cmake --build Debug/
 # cmake -S . -B Release -DCMAKE_BUILD_TYPE=Release
@@ -10,8 +13,19 @@ gcc example/src/instruments.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm
 rm fluidlite-test
 gcc example/src/main.c -g -Iinclude -IDebug -LDebug -lfluidlite -lm -o fluidlite-test
 rm massif.out.*
-valgrind --tool=massif ./fluidlite-test ./example/sf_/Boomwhacker.sf2 output.pcm
+valgrind --tool=massif ./fluidlite-test ./example/sf_/GMGSx_1.sf2 output.pcm
 # ms_print massif.out.<pid>
+# ffmpeg -f s16le -ar 44100 -ac 2 -i output.pcm output.wav
+# ffmpeg -i output64.wav -filter:a volumedetect -f null /dev/null
+
+# ffmpeg -i output64.wav -af astats -f null -
+# 如果 Peak level 接近 0 dB，说明音频信号已经达到最大值，可能存在 clipping（削波）。
+# 流行音乐通常会将 RMS(Root Mean Square) 电平控制在 -12 dBFS 到 -9 dBFS 之间
+# dBFS（Decibels Full Scale，满量程分贝）, 对于 16-bit 音频，满量程值为32768, -9 dBFS对应的样本值11628
+
+# 人耳舒适的音量范围是 60 dB 到 85 dB SPL, Sound Pressure Level（声压级）
+# SPL 和 dBFS 之间没有直接的数学关系，因为 SPL 取决于播放设备的增益和环境的声学特性。
+
 
 rm mono-test
 gcc example/src/mono.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm -o mono-test
@@ -39,5 +53,9 @@ gcc example/src/test4.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm -o te
 
 gcc example/src/test5.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm -o test5
 ./test5 example/sf_/GMGSx_1.sf2
+
+gcc example/src/test_u8.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm -o test_u8
+./test_u8 example/sf_/GMGSx_1.sf2
+
 
 
