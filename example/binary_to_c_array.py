@@ -1,3 +1,5 @@
+import sys
+
 def binary_to_c_array(binary_filename, c_filename):
     try:
         with open(binary_filename, 'rb') as binary_file:
@@ -25,7 +27,13 @@ def binary_to_c_array(binary_filename, c_filename):
     except Exception as e:
         print(f"发生错误: {e}")
 
-binary_filename = 'example/sf_/GMGSx_1.sf2'
-c_filename = 'example/src/GMGSx_1.h'
-binary_to_c_array(binary_filename, c_filename)
+if __name__ == "__main__":
+    if len(sys.argv) == 3:
+        binary_filename = sys.argv[1]
+        c_filename = sys.argv[2]
+    else:
+        binary_filename = 'example/sf_/GMGSx_1.sf2'
+        c_filename = 'example/src/GMGSx_1.h'
+
+    binary_to_c_array(binary_filename, c_filename)
 

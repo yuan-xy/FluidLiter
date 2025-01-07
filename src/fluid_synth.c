@@ -1723,8 +1723,8 @@ fluid_synth_write_u8(fluid_synth_t* synth, int len, uint8_t* out, int channel)
       cur = 0;
     }
 
-    left_sample = roundi (left_in[cur] * 127.0f * 16 );  //实际测试发大16倍合适，默认音量太小
-    right_sample = roundi (right_in[cur] * 127.0f * 16 );
+    left_sample = roundi (left_in[cur] * 127.0f * 16.0f ); 
+    right_sample = roundi (right_in[cur] * 127.0f * 16.0f );
 
     /* digital clipping */
     if (left_sample > 127.0f) left_sample = 127.0f;

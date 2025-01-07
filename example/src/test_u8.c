@@ -10,7 +10,6 @@
 
 #define MIRCO_SECOND 1000000
 #define SAMPLE_RATE 44100
-#define SAMPLE_SIZE sizeof(int16_t)         // s16
 #define NUM_FRAMES 441                    // SAMPLE_RATE*DURATION
 #define DURATION (NUM_FRAMES / SAMPLE_RATE) // second
 #define NUM_CHANNELS 1
@@ -48,8 +47,12 @@ int main(int argc, char *argv[])
 
 	for(int i=0; i<NUM_SAMPLES; i++){
 		uint16_t v1 = buffer[i];
-        printf("i%d: %d, %d, %d\n", i, v1, v1>>4, buffer2[i]);
-		//assert(v1>>4 == buffer2[i]);
+        uint16_t v12 = v1 >> 4;
+        if( abs(v12 - buffer2[i]) > 1 ){
+            printf("warning i%d: %d, %d, %d, \t abs:%d\n", 
+                i, v1, v12, buffer2[i], abs(v12 - buffer2[i]));
+        }
+		assert( abs(v12 - buffer2[i]) <= 2 );
 	}
 
     free(buffer);
