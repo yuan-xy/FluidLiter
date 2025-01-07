@@ -74,24 +74,30 @@ $10 = {data = 0x5555556a33c0, id = 0, free = 0x555555566f0e <fluid_defsfont_sfon
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
     printf("code exec time: %f seconds\n", cpu_time_used);
 
+    for(int i=0; i< NUM_FRAMES; i++){
+      //printf("i%d: %d\n", i, buffer[i]);
+      buffer[i] *= 16;
+    }
+
     fwrite(buffer, SAMPLE_SIZE, NUM_SAMPLES, file);
 
 
     fluid_synth_noteoff(synth, 0, 60);
     fluid_synth_noteoff(synth, 0, 67);
     fluid_synth_noteoff(synth, 0, 76);
-    fluid_synth_write_s16(synth, NUM_FRAMES/10, buffer, 0, NUM_CHANNELS, buffer, 1, NUM_CHANNELS);
-    fwrite(buffer, SAMPLE_SIZE, NUM_SAMPLES/10, file);
+
+    int16_t *buffer2 = buffer+NUM_SAMPLES;
+    fluid_synth_write_s16(synth, NUM_FRAMES/10, buffer2, 0, NUM_CHANNELS, buffer2, 1, NUM_CHANNELS);
+    fwrite(buffer2, SAMPLE_SIZE, NUM_SAMPLES/10, file);
 
     fclose(file);
 
 
     int compare(const void *a, const void *b) {
-        return (*(int *)a - *(int *)b);
+        return (*(int16_t *)a - *(int16_t *)b);
     };
     qsort(buffer, NUM_SAMPLES, SAMPLE_SIZE, compare);
     printf("最小值: %d, 最大值: %d\n", buffer[0], buffer[NUM_SAMPLES-1]);
-
 
     free(buffer);
 
