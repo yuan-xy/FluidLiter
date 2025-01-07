@@ -567,6 +567,11 @@ FLUIDSYNTH_API int fluid_synth_write_u12(fluid_synth_t* synth, int len, int16_t*
 
 FLUIDSYNTH_API int fluid_synth_write_u12_mono(fluid_synth_t* synth, int len, int16_t* out);
 
+FLUIDSYNTH_API int fluid_synth_write_u8(fluid_synth_t* synth, int len, uint8_t* out, int channel);
+
+FLUIDSYNTH_API int fluid_synth_write_u8_mono(fluid_synth_t* synth, int len, uint8_t* out);
+
+
 
   /** Generate a number of samples. This function expects two floating
    *  point buffers (left and right channel) that will be filled with

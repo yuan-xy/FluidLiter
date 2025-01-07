@@ -1685,6 +1685,62 @@ roundi (float x)
 }
 
 int
+fluid_synth_write_u8_mono(fluid_synth_t* synth, int len, uint8_t* out){
+  return fluid_synth_write_u8(synth, len, out, 1);
+}
+
+int
+fluid_synth_write_u8(fluid_synth_t* synth, int len, uint8_t* out, int channel)
+{
+  int loff=0, roff=1;
+  int lincr=channel, rincr=channel;
+
+  int i, j, k, cur;
+  uint8_t* left_out = out;
+  uint8_t* right_out = out;
+
+  if(channel == 1){
+    right_out = NULL;
+  }
+
+  fluid_real_t* left_in = synth->left_buf;
+  fluid_real_t* right_in = synth->right_buf;
+  fluid_real_t left_sample;
+  fluid_real_t right_sample;
+
+  /* make sure we're playing */
+  if (synth->state != FLUID_SYNTH_PLAYING) {
+    return 0;
+  }
+
+  cur = synth->cur;
+
+  for (i = 0, j = loff, k = roff; i < len; i++, cur++, j += lincr, k += rincr) {
+
+    /* fill up the buffers as needed */
+    if (cur == FLUID_BUFSIZE) {
+      fluid_synth_one_block(synth, 0);
+      cur = 0;
+    }
+
+    left_sample = roundi (left_in[cur] * 127.0f );
+    right_sample = roundi (right_in[cur] * 127.0f );
+
+    /* digital clipping */
+    if (left_sample > 127.0f) left_sample = 127.0f;
+    if (left_sample < -128.0f) left_sample = -128.0f;
+    if (right_sample > 127.0f) right_sample = 127.0f;
+    if (right_sample < -128.0f) right_sample = -128.0f;
+
+    left_out[j] = (uint8_t) left_sample+128;
+    if(right_out != NULL) right_out[k] = (uint8_t) right_sample+128;
+  }
+
+  synth->cur = cur;
+  return 0;
+}
+
+int
 fluid_synth_write_u12_mono(fluid_synth_t* synth, int len, int16_t* out){
   return fluid_synth_write_u12(synth, len, out, 1);
 }
