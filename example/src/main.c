@@ -59,7 +59,7 @@ $10 = {data = 0x5555556a33c0, id = 0, free = 0x555555566f0e <fluid_defsfont_sfon
 */
 
 
-    int16_t *buffer = calloc(SAMPLE_SIZE, NUM_SAMPLES);
+    int16_t *buffer = calloc(SAMPLE_SIZE, NUM_SAMPLES+NUM_SAMPLES/10);
 
     FILE* file = argc > 2 ? fopen(argv[2], "wb") : stdout;
 
@@ -72,8 +72,7 @@ $10 = {data = 0x5555556a33c0, id = 0, free = 0x555555566f0e <fluid_defsfont_sfon
     fluid_synth_write_s16(synth, NUM_FRAMES, buffer, 0, NUM_CHANNELS, buffer, 1, NUM_CHANNELS);
     end = clock();
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-    printf("code exec time: %f seconds", cpu_time_used);
-
+    printf("code exec time: %f seconds\n", cpu_time_used);
 
     fwrite(buffer, SAMPLE_SIZE, NUM_SAMPLES, file);
 
@@ -85,6 +84,15 @@ $10 = {data = 0x5555556a33c0, id = 0, free = 0x555555566f0e <fluid_defsfont_sfon
     fwrite(buffer, SAMPLE_SIZE, NUM_SAMPLES/10, file);
 
     fclose(file);
+
+
+    int compare(const void *a, const void *b) {
+        return (*(int *)a - *(int *)b);
+    };
+    qsort(buffer, NUM_SAMPLES, SAMPLE_SIZE, compare);
+    printf("最小值: %d, 最大值: %d\n", buffer[0], buffer[NUM_SAMPLES-1]);
+
+
     free(buffer);
 
     delete_fluid_synth(synth);
