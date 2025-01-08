@@ -2107,7 +2107,7 @@ fluid_dsp_float_interpolate_none (fluid_voice_t *voice)
   int looping;
 
   /* Convert playback "speed" floating point value to phase index/fract */
-  fluid_phase_set_float (dsp_phase_incr, voice->phase_incr);
+  fluid_phase_set_float(dsp_phase_incr, voice->phase_incr);
 
   /* voice is currently looping? */
   looping = _SAMPLEMODE (voice) == FLUID_LOOP_DURING_RELEASE
@@ -2172,7 +2172,7 @@ fluid_dsp_float_interpolate_linear (fluid_voice_t *voice)
   int looping;
 
   /* Convert playback "speed" floating point value to phase index/fract */
-  fluid_phase_set_float (dsp_phase_incr, voice->phase_incr);
+  fluid_phase_set_float(dsp_phase_incr, voice->phase_incr);
 
   /* voice is currently looping? */
   looping = _SAMPLEMODE (voice) == FLUID_LOOP_DURING_RELEASE
@@ -2263,7 +2263,7 @@ fluid_dsp_float_interpolate_4th_order (fluid_voice_t *voice)
   int looping;
 
   /* Convert playback "speed" floating point value to phase index/fract */
-  fluid_phase_set_float (dsp_phase_incr, voice->phase_incr);
+  fluid_phase_set_float(dsp_phase_incr, voice->phase_incr);
 
   /* voice is currently looping? */
   looping = _SAMPLEMODE (voice) == FLUID_LOOP_DURING_RELEASE
