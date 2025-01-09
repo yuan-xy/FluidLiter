@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <stdio.h>
 
 #include "fluid_synth.h"
 #include "fluid_chan.h"
@@ -87,5 +88,149 @@ void print_preset_info(fluid_preset_t *preset){
     while(cur_zone != NULL){
       print_fluid_inst_zone(cur_zone);
       cur_zone = cur_zone->next;
+    }
+}
+
+
+const char* getMIDIControlName(int cc) {
+    switch (cc) {
+        case 0: return "Bank Select";
+        case 1: return "Modulation Wheel";
+        case 2: return "Breath Controller";
+        case 3: return "Undefined";
+        case 4: return "Foot Controller";
+        case 5: return "Portamento Time";
+        case 6: return "Data Entry MSB";
+        case 7: return "Channel Volume";
+        case 8: return "Balance";
+        case 9: return "Undefined";
+        case 10: return "Pan";
+        case 11: return "Expression Controller";
+        case 12: return "Effect Control 1";
+        case 13: return "Effect Control 2";
+        case 14: return "Undefined";
+        case 15: return "Undefined";
+        case 16: return "General Purpose Controller 1";
+        case 17: return "General Purpose Controller 2";
+        case 18: return "General Purpose Controller 3";
+        case 19: return "General Purpose Controller 4";
+        case 20: return "Undefined";
+        case 21: return "Undefined";
+        case 22: return "Undefined";
+        case 23: return "Undefined";
+        case 24: return "Undefined";
+        case 25: return "Undefined";
+        case 26: return "Undefined";
+        case 27: return "Undefined";
+        case 28: return "Undefined";
+        case 29: return "Undefined";
+        case 30: return "Undefined";
+        case 31: return "Undefined";
+        case 32: return "LSB for Control 0 (Bank Select)";
+        case 33: return "LSB for Control 1 (Modulation Wheel)";
+        case 34: return "LSB for Control 2 (Breath Controller)";
+        case 35: return "LSB for Control 3 (Undefined)";
+        case 36: return "LSB for Control 4 (Foot Controller)";
+        case 37: return "LSB for Control 5 (Portamento Time)";
+        case 38: return "LSB for Control 6 (Data Entry)";
+        case 39: return "LSB for Control 7 (Channel Volume)";
+        case 40: return "LSB for Control 8 (Balance)";
+        case 41: return "LSB for Control 9 (Undefined)";
+        case 42: return "LSB for Control 10 (Pan)";
+        case 43: return "LSB for Control 11 (Expression Controller)";
+        case 44: return "LSB for Control 12 (Effect Control 1)";
+        case 45: return "LSB for Control 13 (Effect Control 2)";
+        case 46: return "LSB for Control 14 (Undefined)";
+        case 47: return "LSB for Control 15 (Undefined)";
+        case 48: return "LSB for Control 16 (General Purpose Controller 1)";
+        case 49: return "LSB for Control 17 (General Purpose Controller 2)";
+        case 50: return "LSB for Control 18 (General Purpose Controller 3)";
+        case 51: return "LSB for Control 19 (General Purpose Controller 4)";
+        case 52: return "LSB for Control 20 (Undefined)";
+        case 53: return "LSB for Control 21 (Undefined)";
+        case 54: return "LSB for Control 22 (Undefined)";
+        case 55: return "LSB for Control 23 (Undefined)";
+        case 56: return "LSB for Control 24 (Undefined)";
+        case 57: return "LSB for Control 25 (Undefined)";
+        case 58: return "LSB for Control 26 (Undefined)";
+        case 59: return "LSB for Control 27 (Undefined)";
+        case 60: return "LSB for Control 28 (Undefined)";
+        case 61: return "LSB for Control 29 (Undefined)";
+        case 62: return "LSB for Control 30 (Undefined)";
+        case 63: return "LSB for Control 31 (Undefined)";
+        case 64: return "Damper Pedal (Sustain)";
+        case 65: return "Portamento On/Off";
+        case 66: return "Sostenuto";
+        case 67: return "Soft Pedal";
+        case 68: return "Legato Footswitch";
+        case 69: return "Hold 2";
+        case 70: return "Sound Controller 1 (Timbre)";
+        case 71: return "Sound Controller 2 (Brightness)";
+        case 72: return "Sound Controller 3";
+        case 73: return "Sound Controller 4";
+        case 74: return "Sound Controller 5";
+        case 75: return "Sound Controller 6";
+        case 76: return "Sound Controller 7";
+        case 77: return "Sound Controller 8";
+        case 78: return "Sound Controller 9";
+        case 79: return "Sound Controller 10";
+        case 80: return "General Purpose Controller 5";
+        case 81: return "General Purpose Controller 6";
+        case 82: return "General Purpose Controller 7";
+        case 83: return "General Purpose Controller 8";
+        case 84: return "Portamento Control";
+        case 85: return "Undefined";
+        case 86: return "Undefined";
+        case 87: return "Undefined";
+        case 88: return "Undefined";
+        case 89: return "Undefined";
+        case 90: return "Undefined";
+        case 91: return "Effects 1 Depth";
+        case 92: return "Effects 2 Depth";
+        case 93: return "Effects 3 Depth";
+        case 94: return "Effects 4 Depth";
+        case 95: return "Effects 5 Depth";
+        case 96: return "Data Increment";
+        case 97: return "Data Decrement";
+        case 98: return "Non-Registered Parameter Number LSB";
+        case 99: return "Non-Registered Parameter Number MSB";
+        case 100: return "Registered Parameter Number LSB";
+        case 101: return "Registered Parameter Number MSB";
+        case 102: return "Undefined";
+        case 103: return "Undefined";
+        case 104: return "Undefined";
+        case 105: return "Undefined";
+        case 106: return "Undefined";
+        case 107: return "Undefined";
+        case 108: return "Undefined";
+        case 109: return "Undefined";
+        case 110: return "Undefined";
+        case 111: return "Undefined";
+        case 112: return "Undefined";
+        case 113: return "Undefined";
+        case 114: return "Undefined";
+        case 115: return "Undefined";
+        case 116: return "Undefined";
+        case 117: return "Undefined";
+        case 118: return "Undefined";
+        case 119: return "Undefined";
+        case 120: return "All Sound Off";
+        case 121: return "Reset All Controllers";
+        case 122: return "Local Control";
+        case 123: return "All Notes Off";
+        case 124: return "Omni Mode Off";
+        case 125: return "Omni Mode On";
+        case 126: return "Mono Mode On";
+        case 127: return "Poly Mode On";
+        default: return "Invalid CC value (must be 0-127)";
+    }
+}
+
+
+void print_cc_values(fluid_synth_t* synth, int ch) {
+    fluid_channel_t *chan = synth->channel[ch];
+    printf("CC Values for Channel %d:\n", chan->channum);
+    for (int i = 0; i < 128; i++) {
+        if(chan->cc[i]!=0) printf("CC %3d %s: \t %3d\n", i, getMIDIControlName(i), chan->cc[i]);
     }
 }
