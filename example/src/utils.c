@@ -8,6 +8,7 @@
 
 const char* get_gen_name(int gen_id);
 void get_flag_names(char flags, char* output, size_t output_size);
+const char* get_mod_src_name(int src);
 
 #define print_gen(iz, desc) for(int i=0; i<GEN_LAST; i++){ \
       fluid_gen_t gen = iz->gen[i];\
@@ -22,9 +23,9 @@ static char flags2_names[256];
     while(mod != NULL){\
         get_flag_names(mod->flags1, flags1_names, 256),\
         get_flag_names(mod->flags2, flags2_names, 256),\
-        printf("\t%s:\t%i, %i-%s,\t %i, %i-%s, \t%i,\tamount:%.2f\n",\
-            desc, mod->src1, mod->flags1, flags1_names, \
-            mod->src2, mod->flags2, flags2_names, mod->dest, mod->amount);\
+        printf("\t%s:%s,\t%s, %i-%s,\t %s, %i-%s, \tamount:%.2f\n",\
+            desc, get_gen_name(mod->dest), get_mod_src_name(mod->src1), mod->flags1, flags1_names, \
+            get_mod_src_name(mod->src2), mod->flags2, flags2_names, mod->amount);\
         mod = mod->next;\
     }\
 
@@ -318,8 +319,7 @@ const char* get_gen_name(int gen_id) {
     }
 }
 
-
-// 定义标志位名称数组
+// 将 fluid_mod_flags 转换为名称字符串
 // (1) 极性（Polarity）
 // FLUID_MOD_POSITIVE (0)：
 // 调制信号为正方向。
@@ -335,7 +335,7 @@ const char* get_gen_name(int gen_id) {
 // FLUID_MOD_BIPOLAR (2)：
 // 双极性映射。
 // 调制信号的范围为负最大值到正最大值。
-
+//  (3)
 // FLUID_MOD_LINEAR (0)：
 // 线性映射。
 // 调制信号与目标参数的关系是线性的。
@@ -349,7 +349,7 @@ const char* get_gen_name(int gen_id) {
 // 开关映射。
 // 调制信号只有两个状态（开或关）。
 
-// (3) 调制源类型（Source Type）
+// (4) 调制源类型（Source Type）
 // FLUID_MOD_GC (0)：
 // 调制源是通用控制器（General Controller, GC）。
 // 通用控制器是 SoundFont 2 规范中定义的特殊控制器。
@@ -357,28 +357,6 @@ const char* get_gen_name(int gen_id) {
 // 调制源是 MIDI 控制改变消息（Control Change, CC）。
 // 例如，调制轮（CC1）、音量（CC7）等。
 
-// 定义标志位名称数组
-const char* flag_names[] = {
-    "FLUID_MOD_POSITIVE",  // 0 (极性组默认值)
-    "FLUID_MOD_NEGATIVE",  // 1 (极性组)
-    "FLUID_MOD_BIPOLAR",   // 2 (映射方式组)
-    "",                    // 3 (未使用)
-    "FLUID_MOD_CONCAVE",   // 4 (曲线类型组)
-    "",                    // 5 (未使用)
-    "",                    // 6 (未使用)
-    "",                    // 7 (未使用)
-    "FLUID_MOD_CONVEX",    // 8 (曲线类型组)
-    "",                    // 9 (未使用)
-    "",                    // 10 (未使用)
-    "",                    // 11 (未使用)
-    "FLUID_MOD_SWITCH",    // 12 (曲线类型组)
-    "",                    // 13 (未使用)
-    "",                    // 14 (未使用)
-    "",                    // 15 (未使用)
-    "FLUID_MOD_CC"         // 16 (调制源类型组)
-};
-
-// 将 fluid_mod_flags 转换为名称字符串
 void get_flag_names(char flags, char* output, size_t output_size) {
     char buffer[256] = {0}; // 临时缓冲区
 
@@ -402,5 +380,18 @@ void get_flag_names(char flags, char* output, size_t output_size) {
     snprintf(buffer, sizeof(buffer), "%s|%s|%s|%s", polarity, mapping, curve, source);
     strncpy(output, buffer, output_size - 1);
     output[output_size - 1] = '\0';
+}
+
+const char* get_mod_src_name(int src) {
+    switch (src) {
+        case FLUID_MOD_NONE: return "SRC_NONE";
+        case FLUID_MOD_VELOCITY: return "SRC_VELOCITY";
+        case FLUID_MOD_KEY: return "SRC_KEY";
+        case FLUID_MOD_KEYPRESSURE: return "SRC_KEYPRESSURE";
+        case FLUID_MOD_CHANNELPRESSURE: return "SRC_CHANNELPRESSURE";
+        case FLUID_MOD_PITCHWHEEL: return "SRC_PITCHWHEEL";
+        case FLUID_MOD_PITCHWHEELSENS: return "SRC_PITCHWHEELSENS";
+        default: return "Unknown fluid_mod_src";
+    }
 }
 
