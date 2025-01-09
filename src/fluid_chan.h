@@ -5,9 +5,7 @@
 #include "fluid_midi.h"
 #include "fluid_tuning.h"
 
-/*
- * fluid_channel_t
- */
+
 struct _fluid_channel_t
 {
   int channum;                          /**< MIDI channel number */

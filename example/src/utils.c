@@ -6,10 +6,13 @@
 #include "fluid_defsfont.h"
 #include "fluid_sfont.h"
 
+const char* get_gen_name(int gen_id);
+
+
 #define print_gen(iz, desc) for(int i=0; i<GEN_LAST; i++){ \
       fluid_gen_t gen = iz->gen[i];\
       if(!gen.flags) continue;\
-      printf("%s %d,\t nominal value:%.2f, \tmod:%.2f, \tnrpn:%.2f\n", desc, i, gen.val, gen.mod, gen.nrpn);\
+      printf("%s %d_%s,\t n_v:%.2f, \tmod:%.2f, \tnrpn:%.2f\n", desc, i, get_gen_name(i), gen.val, gen.mod, gen.nrpn);\
     }\
 
 
@@ -234,3 +237,79 @@ void print_cc_values(fluid_synth_t* synth, int ch) {
         if(chan->cc[i]!=0) printf("CC %3d %s: \t %3d\n", i, getMIDIControlName(i), chan->cc[i]);
     }
 }
+
+
+// 生成器名称数组
+const char* gen_names[] = {
+    "GEN_STARTADDROFS",          // 0
+    "GEN_ENDADDROFS",            // 1
+    "GEN_STARTLOOPADDROFS",      // 2
+    "GEN_ENDLOOPADDROFS",        // 3
+    "GEN_STARTADDRCOARSEOFS",    // 4
+    "GEN_MODLFOTOPITCH",         // 5
+    "GEN_VIBLFOTOPITCH",         // 6
+    "GEN_MODENVTOPITCH",         // 7
+    "GEN_FILTERFC",              // 8
+    "GEN_FILTERQ",               // 9
+    "GEN_MODLFOTOFILTERFC",      // 10
+    "GEN_MODENVTOFILTERFC",      // 11
+    "GEN_ENDADDRCOARSEOFS",      // 12
+    "GEN_MODLFOTOVOL",           // 13
+    "GEN_UNUSED1",               // 14
+    "GEN_CHORUSSEND",            // 15
+    "GEN_REVERBSEND",            // 16
+    "GEN_PAN",                   // 17
+    "GEN_UNUSED2",               // 18
+    "GEN_UNUSED3",               // 19
+    "GEN_UNUSED4",               // 20
+    "GEN_MODLFODELAY",           // 21
+    "GEN_MODLFOFREQ",            // 22
+    "GEN_VIBLFODELAY",           // 23
+    "GEN_VIBLFOFREQ",            // 24
+    "GEN_MODENVDELAY",           // 25
+    "GEN_MODENVATTACK",          // 26
+    "GEN_MODENVHOLD",            // 27
+    "GEN_MODENVDECAY",           // 28
+    "GEN_MODENVSUSTAIN",         // 29
+    "GEN_MODENVRELEASE",         // 30
+    "GEN_KEYTOMODENVHOLD",       // 31
+    "GEN_KEYTOMODENVDECAY",      // 32
+    "GEN_VOLENVDELAY",           // 33
+    "GEN_VOLENVATTACK",          // 34
+    "GEN_VOLENVHOLD",            // 35
+    "GEN_VOLENVDECAY",           // 36
+    "GEN_VOLENVSUSTAIN",         // 37
+    "GEN_VOLENVRELEASE",         // 38
+    "GEN_KEYTOVOLENVHOLD",       // 39
+    "GEN_KEYTOVOLENVDECAY",      // 40
+    "GEN_INSTRUMENT",            // 41
+    "GEN_RESERVED1",             // 42
+    "GEN_KEYRANGE",              // 43
+    "GEN_VELRANGE",              // 44
+    "GEN_STARTLOOPADDRCOARSEOFS",// 45
+    "GEN_KEYNUM",                // 46
+    "GEN_VELOCITY",              // 47
+    "GEN_ATTENUATION",           // 48
+    "GEN_RESERVED2",             // 49
+    "GEN_ENDLOOPADDRCOARSEOFS",  // 50
+    "GEN_COARSETUNE",            // 51
+    "GEN_FINETUNE",              // 52
+    "GEN_SAMPLEID",              // 53
+    "GEN_SAMPLEMODE",            // 54
+    "GEN_RESERVED3",             // 55
+    "GEN_SCALETUNE",             // 56
+    "GEN_EXCLUSIVECLASS",        // 57
+    "GEN_OVERRIDEROOTKEY",       // 58
+    "GEN_PITCH",                 // 59
+    "GEN_LAST"                   // 60
+};
+
+// 打印生成器名称的函数
+const char* get_gen_name(int gen_id) {
+    if (gen_id >= 0 && gen_id <= GEN_LAST) {
+        return gen_names[gen_id];
+    } else {
+        return "Invalid generator ID";
+    }
+}
+
