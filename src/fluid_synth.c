@@ -9,26 +9,6 @@
 
 fluid_sfloader_t* new_fluid_defsfloader(void);
 
-/************************************************************************
- *
- * These functions were added after the v1.0 API freeze. They are not
- * in synth.h. They should be added as soon as a new development
- * version is started.
- *
- ************************************************************************/
-
-int fluid_synth_program_select2(fluid_synth_t* synth,
-				int chan,
-				char* sfont_name,
-				unsigned int bank_num,
-				unsigned int preset_num);
-
-fluid_sfont_t* fluid_synth_get_sfont_by_name(fluid_synth_t* synth, char *name);
-
-int fluid_synth_set_gen2(fluid_synth_t* synth, int chan,
-			 int param, float value,
-			 int absolute, int normalized);
-
 
 /***************************************************************
  *
@@ -1448,9 +1428,7 @@ int fluid_synth_program_select(fluid_synth_t* synth,
   return FLUID_OK;
 }
 
-/*
- * fluid_synth_program_select2
- */
+
 int fluid_synth_program_select2(fluid_synth_t* synth,
 				int chan,
 				char* sfont_name,
@@ -2330,9 +2308,7 @@ fluid_sfont_t* fluid_synth_get_sfont_by_id(fluid_synth_t* synth, unsigned int id
   return NULL;
 }
 
-/* fluid_synth_get_sfont_by_name
- *
- */
+
 fluid_sfont_t* fluid_synth_get_sfont_by_name(fluid_synth_t* synth, char *name)
 {
   fluid_list_t* list = synth->sfont;
@@ -2804,29 +2780,7 @@ int fluid_synth_getint(fluid_synth_t* synth, char* name, int* val)
 int
 fluid_synth_set_gen(fluid_synth_t* synth, int chan, int param, float value)
 {
-  int i;
-  fluid_voice_t* voice;
-
-  if ((chan < 0) || (chan >= synth->midi_channels)) {
-    FLUID_LOG(FLUID_WARN, "Channel out of range");
-    return FLUID_FAILED;
-  }
-
-  if ((param < 0) || (param >= GEN_LAST)) {
-    FLUID_LOG(FLUID_WARN, "Parameter number out of range");
-    return FLUID_FAILED;
-  }
-
-  fluid_channel_set_gen(synth->channel[chan], param, value, 0);
-
-  for (i = 0; i < synth->polyphony; i++) {
-    voice = synth->voice[i];
-    if (voice->chan == chan) {
-      fluid_voice_set_param(voice, param, value, 0);
-    }
-  }
-
-  return FLUID_OK;
+  return fluid_synth_set_gen2(synth, chan, param, value, 0, 1);
 }
 
 /** Change the value of a generator. This function allows to control
