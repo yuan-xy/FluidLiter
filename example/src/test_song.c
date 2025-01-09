@@ -30,6 +30,10 @@ int main(int argc, char *argv[])
     int sfont = fluid_synth_sfload(synth, "example/sf_/GMGSx_1.sf2", 1);
     fluid_synth_program_select(synth, 0, sfont, 0, 0);
 
+    fluid_synth_set_gen(synth, 0, GEN_VIBLFODELAY, 100);    // 延迟时间为 100 毫秒
+    fluid_synth_set_gen(synth, 0, GEN_VIBLFOFREQ, 6);       // LFO 频率为 6 Hz
+    fluid_synth_set_gen(synth, 0, GEN_VIBLFOTOPITCH, 200);  // 调制深度为 200 音分
+
     int notes[] = {NN3, NN6, NN1+12, NN7, NN6, NN1+12, NN6, NN7, NN6, NN4, NN5, NN3};
                 //    ,NN3, NN6, NN1+12, NN7, NN6, NN1+12, NN6, NN7, NN6, NN3, NN3-1, NN2};
     float dura[] =  {0.5, 0.5, 0.5,   0.5,  0.5, 0.5,    0.5, 0.5, 0.5, 0.5, 0.5, 1.5};

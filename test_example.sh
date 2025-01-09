@@ -57,5 +57,11 @@ gcc example/src/test5.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm -o te
 gcc example/src/test_u8.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm -o test_u8
 ./test_u8 example/sf_/GMGSx_1.sf2
 
+gcc example/src/test_song.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm -o test_song
+./test_song
+./test_song u12
+
+
+
 
 
