@@ -28,7 +28,7 @@ extern "C" {
   /* Modulator-related definitions */
 
   /* Maximum number of modulators in a voice */
-#define FLUID_NUM_MOD           64
+#define FLUID_NUM_MOD           9   // only support default modulators
 
   /*
    *  fluid_mod_t

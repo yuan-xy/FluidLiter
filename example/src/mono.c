@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
     fluid_synth_program_select(synth, 0, sfont, 0, 0);
 
     fluid_preset_t *preset = synth->channel[0]->preset;
-    // print_preset_info(preset);
+    print_preset_info(preset);
     
     fluid_defpreset_t * defpreset = (fluid_defpreset_t *)preset->data;
     fluid_preset_zone_t *preset_zone = defpreset->zone;
@@ -87,7 +87,7 @@ int main(int argc, char *argv[]) {
     for(int i=0; i<synth->polyphony; i++){
       fluid_voice_t* voice = synth->voice[i];
       if(i<2){
-        assert(voice->status == 1);  //一次noteon激活两个voice，左右声道
+        if(i==0 || (i==1 && stereo_sample)) assert(voice->status == 1);  //一次noteon激活两个voice，左右声道
       }else{
         assert(voice->status == 0);
       }
