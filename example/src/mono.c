@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
     fluid_synth_program_select(synth, 0, sfont, 0, 0);
 
     fluid_preset_t *preset = synth->channel[0]->preset;
-    print_preset_info(preset);
+    // print_preset_info(preset);
     
     fluid_defpreset_t * defpreset = (fluid_defpreset_t *)preset->data;
     fluid_preset_zone_t *preset_zone = defpreset->zone;
@@ -83,6 +83,18 @@ int main(int argc, char *argv[]) {
       assert(synth->voice[1]->vel == 50);
       assert(synth->voice[0]->sample->start != synth->voice[1]->sample->start);
     }
+
+    for(int i=0; i<synth->polyphony; i++){
+      fluid_voice_t* voice = synth->voice[i];
+      if(i<2){
+        assert(voice->status == 1);  //一次noteon激活两个voice，左右声道
+      }else{
+        assert(voice->status == 0);
+      }
+      printf("voice %d：%d\n", i, voice->status);
+      print_voice_modulator(voice);
+    }
+
 
     fluid_synth_noteon(synth, 0, 67, 80);
     assert(synth->ticks == 0);
@@ -142,7 +154,7 @@ int main(int argc, char *argv[]) {
     bool already_off = FALSE;
     if(synth->voice[0]->chan == NO_CHANNEL){
       already_off = TRUE;
-      printf("noteoff in fluid_voice_write");
+      printf("noteoff in fluid_voice_write\n");
       assert(synth->voice[0]->volenv_section == FLUID_VOICE_ENVFINISHED);
     }
 

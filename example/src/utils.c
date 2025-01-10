@@ -11,22 +11,39 @@ const char* get_gen_name(int gen_id);
 void get_flag_names(char flags, char* output, size_t output_size);
 const char* get_mod_src_name(int src);
 
+static char flags1_names[256];
+static char flags2_names[256];
+
+
+void print_modulator(fluid_mod_t *mod){
+    get_flag_names(mod->flags1, flags1_names, 256);
+    get_flag_names(mod->flags2, flags2_names, 256);
+    printf("%s,\t%s, %i-%s,\t %s, %i-%s, \tamount:%.2f\n",
+            get_gen_name(mod->dest), get_mod_src_name(mod->src1), mod->flags1, flags1_names, 
+            get_mod_src_name(mod->src2), mod->flags2, flags2_names, mod->amount);
+}
+
+void print_voice_modulator(fluid_voice_t* voice){
+    for (int i = 0; i < voice->mod_count; i++){
+      fluid_mod_t *mod = &voice->mod[i];
+      print_modulator(mod);
+    }
+}
+
+
+
+
 #define print_gen(iz, desc) for(int i=0; i<GEN_LAST; i++){ \
       fluid_gen_t gen = iz->gen[i];\
       if(!gen.flags) continue;\
       printf("%s %d_%s,\t n_v:%.2f, \tmod:%.2f, \tnrpn:%.2f\n", desc, i, get_gen_name(i), gen.val, gen.mod, gen.nrpn);\
     }\
 
-static char flags1_names[256];
-static char flags2_names[256];
 
 #define print_mod(iz, desc)    fluid_mod_t * mod = iz->mod;\
     while(mod != NULL){\
-        get_flag_names(mod->flags1, flags1_names, 256),\
-        get_flag_names(mod->flags2, flags2_names, 256),\
-        printf("\t%s:%s,\t%s, %i-%s,\t %s, %i-%s, \tamount:%.2f\n",\
-            desc, get_gen_name(mod->dest), get_mod_src_name(mod->src1), mod->flags1, flags1_names, \
-            get_mod_src_name(mod->src2), mod->flags2, flags2_names, mod->amount);\
+        printf("\t%s ", desc);\
+        print_modulator(mod);\
         mod = mod->next;\
     }\
 
