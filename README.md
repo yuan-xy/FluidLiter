@@ -4,7 +4,7 @@
 [![Travis-CI Status](https://travis-ci.com/katyo/fluidlite.svg?branch=master)](https://travis-ci.com/katyo/fluidlite)
 
 
-FluidLiter is a lighter version of FluidLite.
+FluidLiter is a lighter version of FluidLite and is not compatible with FluidLite.
 
 FluidLite (c) 2016 Robin Lobel is a very light version of FluidSynth
 designed to be hardware, platform and external dependency independent.

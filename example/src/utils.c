@@ -402,6 +402,7 @@ void get_flag_names(char flags, char* output, size_t output_size) {
 
 const char* get_mod_src_name(int src) {
     switch (src) {
+        case 1: return "MODULATION_MSB";
         case FLUID_MOD_NONE: return "SRC_NONE";
         case FLUID_MOD_VELOCITY: return "SRC_VELOCITY";
         case FLUID_MOD_KEY: return "SRC_KEY";
@@ -409,7 +410,9 @@ const char* get_mod_src_name(int src) {
         case FLUID_MOD_CHANNELPRESSURE: return "SRC_CHANNELPRESSURE";
         case FLUID_MOD_PITCHWHEEL: return "SRC_PITCHWHEEL";
         case FLUID_MOD_PITCHWHEELSENS: return "SRC_PITCHWHEELSENS";
-        default: return "Unknown fluid_mod_src";
+        default: printf("warning: Unknown fluid_mod_src %d\n", src);return "Unknown fluid_mod_src";
+        //1、7、11、91 are used in fluidsynth but no defined in enum fluid_mod_src and Specification2.01
+        //127 are define in Specification2.01 but not used in fluidsynth.
     }
 }
 
