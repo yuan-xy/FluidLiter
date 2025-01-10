@@ -363,9 +363,7 @@ fluid_channel_get_cc(fluid_channel_t* chan, int num)
   return ((num >= 0) && (num < 128))? chan->cc[num] : 0;
 }
 
-/*
- * fluid_channel_pressure
- */
+
 int
 fluid_channel_pressure(fluid_channel_t* chan, int val)
 {
@@ -374,9 +372,7 @@ fluid_channel_pressure(fluid_channel_t* chan, int val)
   return FLUID_OK;
 }
 
-/*
- * fluid_channel_pitch_bend
- */
+
 int
 fluid_channel_pitch_bend(fluid_channel_t* chan, int val)
 {
@@ -385,9 +381,7 @@ fluid_channel_pitch_bend(fluid_channel_t* chan, int val)
   return FLUID_OK;
 }
 
-/*
- * fluid_channel_pitch_wheel_sens
- */
+
 int
 fluid_channel_pitch_wheel_sens(fluid_channel_t* chan, int val)
 {
@@ -396,9 +390,7 @@ fluid_channel_pitch_wheel_sens(fluid_channel_t* chan, int val)
   return FLUID_OK;
 }
 
-/*
- * fluid_channel_get_num
- */
+
 int
 fluid_channel_get_num(fluid_channel_t* chan)
 {

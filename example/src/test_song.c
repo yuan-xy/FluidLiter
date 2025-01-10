@@ -8,6 +8,7 @@
 #include "fluidlite.h"
 #include "fluid_synth.h"
 #include "utils.c"
+#include "fluid_sfont.h"
 
 
 #define SAMPLE_RATE 44100
@@ -30,9 +31,10 @@ int main(int argc, char *argv[])
     fluid_settings_setstr(settings, "synth.reverb.active", "no");
 
     fluid_synth_t *synth = new_fluid_synth(settings);
-    int sfont = fluid_synth_sfload(synth, "example/sf_/GMGSx_1.sf2", 1);
-    fluid_synth_program_select(synth, 0, sfont, 0, 0);
+    int sfid = fluid_synth_sfload(synth, "example/sf_/GMGSx_1.sf2", 1);
+    fluid_synth_program_select(synth, 0, sfid, 0, 0);
 
+    //颤音效果（Vibrato）
     // fluid_synth_set_gen(synth, 0, GEN_VIBLFODELAY, 100);    // 延迟时间为 100 毫秒
     // fluid_synth_set_gen(synth, 0, GEN_VIBLFOFREQ, 6);       // LFO 频率为 6 Hz
     // fluid_synth_set_gen(synth, 0, GEN_VIBLFOTOPITCH, 200);  // 调制深度为 200 音分
@@ -48,9 +50,14 @@ int main(int argc, char *argv[])
     //从源代码看fluid_synth_cc首先会在cc保存设置的值：chan->cc[num] = value;
     //最终会调用fluid_synth_modulate_voices，也就是默认有noteon，才有voice。
     //所以大概fluid_synth_set_gen是初始配置，fluid_synth_cc是播放中设置。
+    //还有一个关键区别，cc是midi规范里的，gen是soundfont规范里的。
+
+    //震音效果（Tremolo）
+    // fluid_synth_set_gen(synth, 0, GEN_MODLFOFREQ, 5.0f);  // 5 Hz 的震音速度
+    // fluid_synth_set_gen(synth, 0, GEN_MODLFOTOVOL, 500.0f);  // 调制深度为 500
 
     print_cc_values(synth, 0);
-
+    print_gen_values(synth, 0, false);
 
     // float attack_time = fluid_synth_get_gen(synth, 0, GEN_VOLENVATTACK);
     // printf("GEN_VOLENVATTACK: %f\n", attack_time);
