@@ -563,9 +563,9 @@ FLUIDSYNTH_API int fluid_synth_write_s16(fluid_synth_t* synth, int len,
 
 FLUIDSYNTH_API int fluid_synth_write_s16_mono(fluid_synth_t* synth, int len, void* out);
 
-FLUIDSYNTH_API int fluid_synth_write_u12(fluid_synth_t* synth, int len, int16_t* out, int channel);
+FLUIDSYNTH_API int fluid_synth_write_u12(fluid_synth_t* synth, int len, uint16_t* out, int channel);
 
-FLUIDSYNTH_API int fluid_synth_write_u12_mono(fluid_synth_t* synth, int len, int16_t* out);
+FLUIDSYNTH_API int fluid_synth_write_u12_mono(fluid_synth_t* synth, int len, uint16_t* out);
 
 FLUIDSYNTH_API int fluid_synth_write_u8(fluid_synth_t* synth, int len, uint8_t* out, int channel);
 

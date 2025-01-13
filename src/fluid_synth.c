@@ -1719,22 +1719,22 @@ fluid_synth_write_u8(fluid_synth_t* synth, int len, uint8_t* out, int channel)
 }
 
 int
-fluid_synth_write_u12_mono(fluid_synth_t* synth, int len, int16_t* out){
+fluid_synth_write_u12_mono(fluid_synth_t* synth, int len, uint16_t* out){
   return fluid_synth_write_u12(synth, len, out, 1);
 }
 
 int
-fluid_synth_write_u12(fluid_synth_t* synth, int len, int16_t* out, int channel)
+fluid_synth_write_u12(fluid_synth_t* synth, int len, uint16_t* out, int channel)
 {
   int ret;
   if(channel == 1){
-    ret = fluid_synth_write_s16_mono(synth, len, out);
+    ret = fluid_synth_write_s16_mono(synth, len, (int16_t*)out);
   }else{
     channel = 2;
-    ret = fluid_synth_write_s16(synth, len, out, 0, 2, out, 1, 2);
+    ret = fluid_synth_write_s16(synth, len, (int16_t*)out, 0, 2, (int16_t*)out, 1, 2);
   }
   for(int i=0; i<len*channel; i++){
-    int16_t v12 = out[i]; //>>4; 
+    int16_t v12 = (int16_t)out[i]; //>>4; 
     if(v12>2047) v12 = 2047;
     if(v12<-2048) v12=-2048;
 		uint16_t uv12 = v12+2048;  //-2048~2047 -> 0~4095
