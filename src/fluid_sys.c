@@ -212,26 +212,3 @@ fluid_error()
   return fluid_errbuf;
 }
 
-
-/*
- *
- *  fluid_is_midifile
- */
-int
-fluid_is_midifile(char* filename)
-{
-  FILE* fp = fopen(filename, "rb");
-  char id[4];
-
-  if (fp == NULL) {
-    return 0;
-  }
-  if (fread((void*) id, 1, 4, fp) != 4) {
-    fclose(fp);
-    return 0;
-  }
-  fclose(fp);
-
-  return strncmp(id, "MThd", 4) == 0;
-}
-
