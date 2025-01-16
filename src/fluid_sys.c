@@ -1,24 +1,3 @@
-/* FluidSynth - A Software Synthesizer
- *
- * Copyright (C) 2003  Peter Hanappe and others.
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Library General Public License
- * as published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Library General Public License for more details.
- *
- * You should have received a copy of the GNU Library General Public
- * License along with this library; if not, write to the Free
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
- * 02111-1307, USA
- */
-
-
 #include "fluid_sys.h"
 
 static char fluid_errbuf[512];  /* buffer for error message */
@@ -36,30 +15,6 @@ void fluid_sys_config()
 }
 
 
-unsigned int fluid_debug_flags = 0;
-
-#if DEBUG
-/*
- * fluid_debug
- */
-int fluid_debug(int level, char * fmt, ...)
-{
-  if (fluid_debug_flags & level) {
-    fluid_log_function_t fun;
-    va_list args;
-
-    va_start (args, fmt);
-    vsnprintf(fluid_errbuf, sizeof (fluid_errbuf), fmt, args);
-    va_end (args);
-
-    fun = fluid_log_function[FLUID_DBG];
-    if (fun != NULL) {
-      (*fun)(level, fluid_errbuf, fluid_log_user_data[FLUID_DBG]);
-    }
-  }
-  return 0;
-}
-#endif
 
 /**
  * Installs a new log function for a specified log level.
