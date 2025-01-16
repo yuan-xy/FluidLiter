@@ -235,22 +235,3 @@ fluid_is_midifile(char* filename)
   return strncmp(id, "MThd", 4) == 0;
 }
 
-
-int
-fluid_is_soundfont(char* filename)
-{
-  FILE* fp = fopen(filename, "rb");
-  char id[4];
-
-  if (fp == NULL) {
-    return 0;
-  }
-  if (fread((void*) id, 1, 4, fp) != 4) {
-    fclose(fp);
-    return 0;
-  }
-  fclose(fp);
-
-  return strncmp(id, "RIFF", 4) == 0;
-}
-
