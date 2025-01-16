@@ -7,6 +7,7 @@
 #include <stdbool.h>
 #include "fluidlite.h"
 #include "fluid_synth.h"
+#include "misc.h"
 
 #define MIRCO_SECOND 1000000
 #define SAMPLE_RATE 44100
@@ -15,22 +16,6 @@
 #define DURATION (NUM_FRAMES / SAMPLE_RATE) // second
 #define NUM_CHANNELS 1
 #define NUM_SAMPLES (NUM_FRAMES * NUM_CHANNELS)
-
-
-void set_bit(uint8_t* value, uint8_t index){
-	uint8_t bitmask = 1 << index;
-	*value |= bitmask;
-}
-
-void unset_bit(uint8_t* value, uint8_t index){
-	uint8_t bitmask = ~(1 << index);
-	*value &= bitmask;
-}
-
-void change_bit(uint8_t* value, uint8_t index, uint8_t bit){
-	if(bit) set_bit(value, index);
-	else unset_bit(value, index);
-}
 
 
 

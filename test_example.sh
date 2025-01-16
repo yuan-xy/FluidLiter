@@ -51,7 +51,8 @@ gcc example/src/test4.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm -o te
 ./test4 example/sf_/GMGSx_1.sf2 test4.pcm
 # ffmpeg -f s16le -ar 44100 -ac 1 -i test4.pcm test4.wav
 
-gcc example/src/test5.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm -o test5
+gcc example/src/misc.c -g -Iinclude -Isrc -IDebug -c
+gcc example/src/test5.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm misc.o -o test5
 ./test5 example/sf_/GMGSx_1.sf2
 
 gcc example/src/test_u8.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm -o test_u8
