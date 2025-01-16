@@ -193,6 +193,77 @@ void fluid_settings_init(fluid_settings_t* settings)
   fluid_synth_settings(settings);
 }
 
+/**
+ * An improved strtok, still trashes the input string, but is portable and
+ * thread safe.  Also skips token chars at beginning of token string and never
+ * returns an empty token (will return NULL if source ends in token chars though).
+ * NOTE: NOT part of public API
+ * @internal
+ * @param str Pointer to a string pointer of source to tokenize.  Pointer gets
+ *   updated on each invocation to point to beginning of next token.  Note that
+ *   token char get's overwritten with a 0 byte.  String pointer is set to NULL
+ *   when final token is returned.
+ * @param delim String of delimiter chars.
+ * @return Pointer to the next token or NULL if no more tokens.
+ */
+char *fluid_strtok (char **str, char *delim)
+{
+  char *s, *d, *token;
+  char c;
+
+  if (str == NULL || delim == NULL || !*delim)
+  {
+    FLUID_LOG(FLUID_ERR, "Null pointer");
+    return NULL;
+  }
+
+  s = *str;
+  if (!s) return NULL;	/* str points to a NULL pointer? (tokenize already ended) */
+
+  /* skip delimiter chars at beginning of token */
+  do
+  {
+    c = *s;
+    if (!c)	/* end of source string? */
+    {
+      *str = NULL;
+      return NULL;
+    }
+
+    for (d = delim; *d; d++)	/* is source char a token char? */
+    {
+      if (c == *d)	/* token char match? */
+      {
+	s++;		/* advance to next source char */
+	break;
+      }
+    }
+  } while (*d);		/* while token char match */
+
+  token = s;		/* start of token found */
+
+  /* search for next token char or end of source string */
+  for (s = s+1; *s; s++)
+  {
+    c = *s;
+
+    for (d = delim; *d; d++)	/* is source char a token char? */
+    {
+      if (c == *d)	/* token char match? */
+      {
+	*s = '\0';	/* overwrite token char with zero byte to terminate token */
+	*str = s+1;	/* update str to point to beginning of next token */
+	return token;
+      }
+    }
+  }
+
+  /* we get here only if source string ended */
+  *str = NULL;
+  return token;
+}
+
+
 static int fluid_settings_tokenize(const char* s, char *buf, char** ptr)
 {
   char *tokstr, *tok;

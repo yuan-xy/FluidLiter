@@ -6,8 +6,5 @@
 
 void fluid_log_config(void);
 
-char *fluid_strtok (char **str, char *delim);
-
-
 
 #endif /* _FLUID_SYS_H */
