@@ -6,27 +6,41 @@
 #include "fluid_chan.h"
 #include "fluid_defsfont.h"
 #include "fluid_sfont.h"
+#include "fluid_mod.h"
 
 const char* get_gen_name(int gen_id);
 void get_flag_names(char flags, char* output, size_t output_size);
-const char* get_mod_src_name(int src);
+const char* get_mod_src_name(unsigned char src);
 
 static char flags1_names[256];
 static char flags2_names[256];
+static char midi_cc[16];
 
+const char* get_mod_src_name_f(unsigned char src, unsigned char flags){
+  if (flags & FLUID_MOD_CC){
+    return "MIDI CC";
+  } else {
+    return get_mod_src_name(src);
+  }
+}
 
 void print_modulator(fluid_mod_t *mod){
     get_flag_names(mod->flags1, flags1_names, 256);
-    get_flag_names(mod->flags2, flags2_names, 256);
-    printf("%s,\t%s, %i-%s,\t %s, %i-%s, \tamount:%.2f\n",
-            get_gen_name(mod->dest), get_mod_src_name(mod->src1), mod->flags1, flags1_names, 
-            get_mod_src_name(mod->src2), mod->flags2, flags2_names, mod->amount);
+    printf("\033[31m%d/%-22s\033[0m \t%i/%s, %i/%s, \t\tamount:%.2f\n",
+            mod->dest, get_gen_name(mod->dest), mod->src1,
+            get_mod_src_name_f(mod->src1,mod->flags1), mod->flags1, flags1_names, mod->amount);
+    if(mod->src2 != FLUID_MOD_NONE){
+        get_flag_names(mod->flags2, flags2_names, 256);
+        printf("%24s \t %i/%s, %i/%s\n", "", mod->src2,
+            get_mod_src_name_f(mod->src2,mod->flags2), mod->flags2, flags2_names);        
+    }
 }
 
 void print_voice_modulator(fluid_voice_t* voice){
     for (int i = 0; i < voice->mod_count; i++){
       fluid_mod_t *mod = &voice->mod[i];
       print_modulator(mod);
+    //   fluid_dump_modulator(mod);
     }
 }
 
@@ -379,10 +393,10 @@ void get_flag_names(char flags, char* output, size_t output_size) {
     char buffer[256] = {0}; // 临时缓冲区
 
     // 极性组
-    const char* polarity = (flags & 1) ? "NEGATIVE" : "POSITIVE";
+    const char* polarity = (flags & 1) ? "-" : "+";
 
     // 映射方式组
-    const char* mapping = (flags & 2) ? "BIPOLAR" : "UNIPOLAR";
+    const char* mapping = (flags & 2) ? "bi" : "uni";
 
     // 曲线类型组
     const char* curve = "LINEAR"; // 默认值
@@ -400,7 +414,7 @@ void get_flag_names(char flags, char* output, size_t output_size) {
     output[output_size - 1] = '\0';
 }
 
-const char* get_mod_src_name(int src) {
+const char* get_mod_src_name(unsigned char src) {
     switch (src) {
         case 1: return "MODULATION_MSB";
         case FLUID_MOD_NONE: return "SRC_NONE";
