@@ -4,13 +4,8 @@
 #include "fluidsynth_priv.h"
 
 
-void fluid_sys_config(void);
 void fluid_log_config(void);
 
-
-/*
- * Utility functions
- */
 char *fluid_strtok (char **str, char *delim);
 
 

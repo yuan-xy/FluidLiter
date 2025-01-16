@@ -89,9 +89,9 @@ int main(int argc, char *argv[])
     delete_fluid_settings(settings);
 
     if(is_8bit){
-        system("ffmpeg -hide_banner -f u8 -ar 44100 -ac 1 -i song8.pcm -acodec pcm_u8 song8.wav");
+        system("ffmpeg -hide_banner -y -f u8 -ar 44100 -ac 1 -i song8.pcm -acodec pcm_u8 song8.wav");
     }else{
-        system("ffmpeg -hide_banner -f s16le -ar 44100 -ac 1 -i song12.pcm song12.wav");
+        system("ffmpeg -hide_banner -y -f s16le -ar 44100 -ac 1 -i song12.pcm song12.wav");
         // system("ffmpeg -hide_banner -f s16le -ar 44100 -ac 1 -i song12.pcm -filter:a 'volume=16' song12.wav");
         //虽然我认为是u12格式，ffmepg并不支持，所以当成了s16le格式。也就导致wav声音偏小, 手动放大16倍。
     }

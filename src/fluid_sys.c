@@ -9,13 +9,6 @@ static int fluid_log_initialized = 0;
 static char* fluid_libname = "fluidsynth";
 
 
-void fluid_sys_config()
-{
-  fluid_log_config();
-}
-
-
-
 /**
  * Installs a new log function for a specified log level.
  * @param level Log level to install handler for.
@@ -242,10 +235,7 @@ fluid_is_midifile(char* filename)
   return strncmp(id, "MThd", 4) == 0;
 }
 
-/*
- *  fluid_is_soundfont
- *
- */
+
 int
 fluid_is_soundfont(char* filename)
 {
@@ -264,56 +254,3 @@ fluid_is_soundfont(char* filename)
   return strncmp(id, "RIFF", 4) == 0;
 }
 
-/*=============================================================*/
-/*                                                             */
-/*                           Win32                             */
-/*                                                             */
-/*=============================================================*/
-
-/***************************************************************
- *
- *               Timer
- *
- */
-
-//timer disabled
-
-
-/***************************************************************
- *
- *               Floating point exceptions
- *
- *  The floating point exception functions were taken from Ircam's
- *  jMax source code. http://www.ircam.fr/jmax
- *
- *  FIXME: check in config for i386 machine
- *
- *  Currently not used. I leave the code here in case we want to pick
- *  this up again some time later.
- */
-
-
-
-/***************************************************************
- *
- *               Profiling (Linux, i586 only)
- *
- */
-
-
-/***************************************************************
- *
- *               Threads
- *
- */
-
-//thread disabled
-
-
-/***************************************************************
- *
- *               Sockets
- *
- */
-
-//socket disabled
