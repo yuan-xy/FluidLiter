@@ -501,18 +501,6 @@ delete_fluid_synth(fluid_synth_t* synth)
   return FLUID_OK;
 }
 
-/*
- * fluid_synth_error
- *
- * The error messages are not thread-safe, yet. They are still stored
- * in a global message buffer (see fluid_sys.c).
- * */
-char*
-fluid_synth_error(fluid_synth_t* synth)
-{
-  return fluid_error();
-}
-
 
 int
 fluid_synth_noteon(fluid_synth_t* synth, int chan, int key, int vel)

@@ -520,28 +520,6 @@ FLUIDSYNTH_API int fluid_synth_tuning_dump(fluid_synth_t* synth, int bank, int p
 
 
 
-
-  /*
-   * 
-   * Misc 
-   *
-   */
-
-  /** Get a textual representation of the last error */
-FLUIDSYNTH_API char* fluid_synth_error(fluid_synth_t* synth);
-
-
-  /*
-   *  
-   *    Synthesizer plugin
-   *  
-   *    
-   *    To create a synthesizer plugin, create the synthesizer as
-   *    explained above. Once the synthesizer is created you can call
-   *    any of the functions below to get the audio. 
-   * 
-   */
-
   /** Generate a number of samples. This function expects two signed
    *  16bits buffers (left and right channel) that will be filled with
    *  samples.

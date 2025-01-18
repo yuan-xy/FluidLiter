@@ -1,6 +1,10 @@
 #include "fluid_sys.h"
 
-static char fluid_errbuf[512];  /* buffer for error message */
+#ifndef ERR_BUF_LEN
+#define ERR_BUF_LEN 128
+#endif
+
+static char fluid_errbuf[ERR_BUF_LEN];  /* buffer for error message */
 
 static fluid_log_function_t fluid_log_function[LAST_LOG_LEVEL];
 static void* fluid_log_user_data[LAST_LOG_LEVEL];
@@ -131,13 +135,5 @@ fluid_log(int level, char* fmt, ...)
     }
   }
   return FLUID_FAILED;
-}
-
-
-
-char*
-fluid_error()
-{
-  return fluid_errbuf;
 }
 
