@@ -61,7 +61,7 @@ list(APPEND SOURCES
     src/fluid_rev.c
     src/fluid_settings.c
     src/fluid_synth.c
-    src/fluid_sys.c
+    src/fluid_log.c
     src/fluid_tuning.c
     src/fluid_voice.c
 )

@@ -1,7 +1,5 @@
 #include "fluid_defsfont.h"
 #include "fluid_sfont.h"
-/* Todo: Get rid of that 'include' */
-#include "fluid_sys.h"
 
 #if SF3_SUPPORT == SF3_XIPH_VORBIS
 #include "vorbis/codec.h"

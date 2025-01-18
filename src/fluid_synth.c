@@ -1,7 +1,6 @@
 #include <math.h>
 
 #include "fluid_synth.h"
-#include "fluid_sys.h"
 #include "fluid_chan.h"
 #include "fluid_tuning.h"
 #include "fluid_settings.h"

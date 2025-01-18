@@ -12,7 +12,6 @@
 #include "fluid_list.h"
 #include "fluid_rev.h"
 #include "fluid_voice.h"
-#include "fluid_sys.h"
 
 /***************************************************************
  *

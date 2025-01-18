@@ -1,4 +1,4 @@
-#include "fluid_sys.h"
+# include "fluidsynth_priv.h"
 
 #ifndef ERR_BUF_LEN
 #define ERR_BUF_LEN 128
