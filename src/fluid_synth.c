@@ -91,8 +91,6 @@ fluid_synth_init()
 {
   fluid_synth_initialized++;
 
-  fluid_log_config();
-
   /* SF2.01 page 53 section 8.4.1: MIDI Note-On Velocity to Initial Attenuation */
   fluid_mod_set_source1(&default_vel2att_mod, /* The modulator we are programming here */
 		       FLUID_MOD_VELOCITY,    /* Source. VELOCITY corresponds to 'index=2'. */
