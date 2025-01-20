@@ -15,9 +15,6 @@ void change_bit(uint8_t* value, uint8_t index, uint8_t bit);
 // 计算音量（dB）
 float calculateVolumeDB(int16_t *pcmData, int length);
 
-// 计算并打印平均音量和最大音量
-void calculateAndPrintVolume(int16_t *pcmData, int length);
-
 
 #endif /* _MISC_H */
 

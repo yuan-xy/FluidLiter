@@ -8,6 +8,10 @@
 #include "fluidlite.h"
 #include "fluid_synth.h"
 #include "misc.h"
+#include <float.h> // 用于定义 FLT_MIN
+
+#define RED_TEXT(x) "\033[31m" #x "\033[0m"
+
 
 #define MIRCO_SECOND 1000000
 #define SAMPLE_RATE 44100
@@ -15,6 +19,40 @@
 #define DURATION (NUM_FRAMES / SAMPLE_RATE) // second
 #define NUM_CHANNELS 2
 #define NUM_SAMPLES (NUM_FRAMES * NUM_CHANNELS)
+
+
+// 计算并打印平均音量和最大音量
+void calculateAndPrintVolume(int16_t *pcmData, int length) {
+    if (length == 0) {
+        printf("Error: PCM data length is zero.\n");
+        return;
+    }
+
+    float maxVolumeDB = -FLT_MAX; // 最大音量
+    float sumVolumeDB = 0.0;      // 音量总和
+
+    // 分段计算音量（例如每 1024 个采样点计算一次）
+    int segmentSize = 1024;
+    for (int i = 0; i < length; i += segmentSize) {
+        int segmentLength = (i + segmentSize < length) ? segmentSize : length - i;
+        float volumeDB = calculateVolumeDB(pcmData + i, segmentLength);
+
+        // 更新最大音量
+        if (volumeDB > maxVolumeDB) {
+            maxVolumeDB = volumeDB;
+        }
+
+        // 累加音量
+        sumVolumeDB += volumeDB;
+    }
+
+    // 计算平均音量
+    float meanVolumeDB = sumVolumeDB / (length / segmentSize);
+
+    // 打印结果
+    printf("mean_volume: %.1f dB\n", meanVolumeDB);
+    printf("max_volume: %.1f dB\n", maxVolumeDB);
+}
 
 
 int main(int argc, char *argv[])
@@ -39,8 +77,8 @@ int main(int argc, char *argv[])
         fluid_synth_noteoff(synth, 0, C);
         fwrite(buffer, sizeof(uint16_t), NUM_SAMPLES, file);
         if(true){
-            printf("Velocity %d:\t %.1fDB\n", i, calculateVolumeDB(buffer, NUM_SAMPLES));
-            calculateAndPrintVolume(buffer, NUM_SAMPLES);
+            printf("%s %d:\t %.1fDB\n", RED_TEXT(Velocity), i, calculateVolumeDB(buffer, NUM_SAMPLES));
+            //calculateAndPrintVolume(buffer, NUM_SAMPLES);
         }else{
             char cmd[256];
             snprintf(cmd, sizeof(cmd), "ffmpeg -hide_banner -y -f s16le -ar 44100 -ac 2 -i velocity.pcm velocity%d.wav", i);
