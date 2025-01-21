@@ -3,6 +3,12 @@
 #include <math.h>
 #include <float.h> // 用于定义 FLT_MIN
 
+#define EPSILON 1e-3
+
+int float_eq(double a, double b) {
+    return fabs(a - b) < EPSILON;
+}
+
 void set_bit(uint8_t* value, uint8_t index){
 	uint8_t bitmask = 1 << index;
 	*value |= bitmask;

@@ -35,6 +35,9 @@ int main(int argc, char *argv[])
     int sfont = fluid_synth_sfload(synth, "example/sf_/GMGSx_1.sf2", 1);
     fluid_synth_program_select(synth, 0, sfont, 0, 0);
 
+    printf("synth.gain:%f\n", synth->gain);
+    // assert(float_eq(1.0f, synth->gain));
+
     int16_t *buffer = calloc(sizeof(int16_t) , NUM_SAMPLES);
 
     float pre_mean_db = -FLT_MAX;
@@ -50,7 +53,7 @@ int main(int argc, char *argv[])
         float cur_peak_db_1024 = calculate_peak_dB_1024(buffer, NUM_SAMPLES);
         printf(RED_TEXT(Velocity) " %d:\tMEAN DB %.1f  ,\tPEAK DB:%.1f ,\tPEAK1024 DB:%.1f\n", 
             i, cur_mean_db, cur_peak_db, cur_peak_db_1024);
-            
+
         assert(cur_mean_db > pre_mean_db);
         assert(cur_peak_db > pre_peak_db);
         assert(cur_peak_db_1024 > pre_peak_db_1024);

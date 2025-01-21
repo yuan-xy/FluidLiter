@@ -4,6 +4,8 @@
 #include <stdint.h>
 
 
+int float_eq(double a, double b);
+
 void set_bit(uint8_t* value, uint8_t index);
 
 void unset_bit(uint8_t* value, uint8_t index);

@@ -7,6 +7,7 @@
 #include <stdbool.h>
 #include "fluidlite.h"
 #include "fluid_synth.h"
+#include "misc.h"
 
 #include <time.h>
 #include <stdint.h>
@@ -18,12 +19,6 @@ static inline uint64_t rdtsc() {
     return ((uint64_t)hi << 32) | lo;
 }
 
-
-#define EPSILON 1e-3
-
-int float_eq(double a, double b) {
-    return fabs(a - b) < EPSILON;
-}
 
 void task(){
     for(int i=0;i<100;i++) fluid_ct2hz(7000.0+i);

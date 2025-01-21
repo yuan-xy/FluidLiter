@@ -63,7 +63,7 @@ gcc example/src/test_song.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm -
 ./test_song u12
 
 
-gcc example/src/test_conv.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm -o test_conv
+gcc example/src/test_conv.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm misc.o -o test_conv
 ./test_conv
 
 gcc example/src/test_vel.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm misc.o -o test_vel
