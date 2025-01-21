@@ -22,6 +22,7 @@
 #define _FLUIDSYNTH_SYNTH_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -45,12 +46,23 @@ extern "C" {
    * 
    */
 
+typedef struct {
+    int polyphony;
+    double gain;
+    double sample_rate;
+    bool with_reverb;
+    bool verbose;
+    int midi_channels;
+} SynthParams;
+
 
   /** Creates a new synthesizer object. 
    *
    * \return a newly allocated synthesizer or NULL in case of error
    */
-FLUIDSYNTH_API fluid_synth_t* new_fluid_synth(int polyphony, double gain);
+FLUIDSYNTH_API fluid_synth_t* new_fluid_synth(SynthParams sp);
+
+#define NEW_FLUID_SYNTH(...) new_fluid_synth((SynthParams){ .polyphony = 10, .gain = 1.0, .sample_rate=44100.0, .with_reverb=true, .verbose=true, .midi_channels=1, __VA_ARGS__ })
 
 FLUIDSYNTH_API void fluid_synth_set_sample_rate(fluid_synth_t* synth, float sample_rate);
 

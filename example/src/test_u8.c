@@ -18,7 +18,7 @@
 
 int main(int argc, char *argv[])
 {
-    fluid_synth_t *synth = new_fluid_synth(8, 1.0f);
+    fluid_synth_t *synth = NEW_FLUID_SYNTH();
     int sfont = fluid_synth_sfload(synth, argv[1], 1);
     fluid_synth_program_select(synth, 0, sfont, 0, 0);
 
@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
     fluid_synth_noteoff(synth, 0, C);
 
 
-    fluid_synth_t *synth2 = new_fluid_synth(8, 1.0f);
+    fluid_synth_t *synth2 = NEW_FLUID_SYNTH();
     int sfont2 = fluid_synth_sfload(synth2, argv[1], 1);
     fluid_synth_program_select(synth2, 0, sfont2, 0, 0);
 

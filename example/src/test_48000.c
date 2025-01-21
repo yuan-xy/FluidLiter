@@ -20,8 +20,8 @@ int main(int argc, char *argv[])
 
     FILE* file = fopen(fname, "wb");
 
-    fluid_synth_t *synth = new_fluid_synth(8, 1.0);
-    fluid_synth_set_sample_rate(synth, 48000.0f);
+    fluid_synth_t *synth = NEW_FLUID_SYNTH(.sample_rate=48000.0f);
+    // fluid_synth_set_sample_rate(synth, 48000.0f);
     assert(synth->sample_rate == 48000);//break fluid_voice.c:1032
 
     int sfont = fluid_synth_sfload(synth, "example/sf_/GMGSx_1.sf2", 1);

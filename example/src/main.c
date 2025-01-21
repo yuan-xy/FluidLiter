@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {
     }
 
  
-    fluid_synth_t* synth = new_fluid_synth(8, 1.0f);
+    fluid_synth_t* synth = NEW_FLUID_SYNTH();
 /**
 $4 = {settings = 0x5555555852a0, polyphony = 256, with_reverb = 1 '\001', with_chorus = 1 '\001',
   verbose = 0 '\000', dump = 0 '\000', sample_rate = 44100, midi_channels = 16, audio_channels = 1,

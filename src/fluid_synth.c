@@ -195,9 +195,10 @@ fluid_synth_init()
   fluid_mod_set_amount(&default_pitch_bend_mod, 12700.0);                 /* Amount: 12700 cents */
 }
 
+#define NEW_SYNTH()
 
 fluid_synth_t*
-new_fluid_synth(int polyphony, double gain)
+new_fluid_synth(SynthParams sp)
 {
   int i;
   fluid_synth_t* synth;
@@ -216,13 +217,13 @@ new_fluid_synth(int polyphony, double gain)
   }
   FLUID_MEMSET(synth, 0, sizeof(fluid_synth_t));
 
-  synth->with_reverb = 1;
-  synth->verbose = 1;
+  synth->with_reverb = sp.with_reverb;
+  synth->verbose = sp.verbose;
   synth->dump = 1;
-  synth->sample_rate = 44100.0f;
-  synth->midi_channels = 1;
-  synth->polyphony = polyphony;
-  synth->gain = gain;
+  synth->sample_rate = sp.sample_rate;
+  synth->polyphony = sp.polyphony;
+  synth->gain = sp.gain;
+  synth->midi_channels = sp.midi_channels;
   synth->min_note_length_ticks = (unsigned int) (10*synth->sample_rate/1000.0f);
 
   /* as soon as the synth is created it starts playing. */

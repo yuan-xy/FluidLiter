@@ -15,7 +15,7 @@ int main(int argc, char** argv)
 		return 1;
 	}
 
-	synth = new_fluid_synth(8, 1.0f);
+	synth = NEW_FLUID_SYNTH();
 	sfid = fluid_synth_sfload(synth, argv[1], 1);
 	if (sfid == -1) {
 		fprintf(stderr, "Failed to load the SoundFont\n");
