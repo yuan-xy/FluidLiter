@@ -70,7 +70,7 @@ void fluid_synth_settings(fluid_settings_t* settings)
   fluid_settings_register_int(settings, "synth.midi-channels",
 			     16, 1, 256, 0, NULL, NULL);
   fluid_settings_register_num(settings, "synth.gain",
-			     0.2f, 0.0f, 10.0f,
+			     1.0f, 0.0f, 10.0f,
 			     0, NULL, NULL);
   fluid_settings_register_num(settings, "synth.sample-rate",
 			     44100.0f, 22050.0f, 96000.0f,
@@ -1475,18 +1475,14 @@ void fluid_synth_update_presets(fluid_synth_t* synth)
 }
 
 
-/*
- * fluid_synth_update_gain
- */
+
 int fluid_synth_update_gain(fluid_synth_t* synth, char* name, double value)
 {
   fluid_synth_set_gain(synth, (float) value);
   return 0;
 }
 
-/*
- * fluid_synth_set_gain
- */
+
 void fluid_synth_set_gain(fluid_synth_t* synth, float gain)
 {
   int i;
@@ -1686,8 +1682,8 @@ fluid_synth_write_u8(fluid_synth_t* synth, int len, uint8_t* out, int channel)
       cur = 0;
     }
 
-    left_sample = roundi (left_in[cur] * 127.0f * 16.0f ); 
-    right_sample = roundi (right_in[cur] * 127.0f * 16.0f );
+    left_sample = roundi (left_in[cur] * 127.0f); 
+    right_sample = roundi (right_in[cur] * 127.0f);
 
     /* digital clipping */
     if (left_sample > 127.0f) left_sample = 127.0f;
@@ -1719,7 +1715,7 @@ fluid_synth_write_u12(fluid_synth_t* synth, int len, uint16_t* out, int channel)
     ret = fluid_synth_write_s16(synth, len, (int16_t*)out, 0, 2, (int16_t*)out, 1, 2);
   }
   for(int i=0; i<len*channel; i++){
-    int16_t v12 = (int16_t)out[i]; //>>4; 
+    int16_t v12 = (int16_t)out[i] >> 4;
     if(v12>2047) v12 = 2047;
     if(v12<-2048) v12=-2048;
 		uint16_t uv12 = v12+2048;  //-2048~2047 -> 0~4095

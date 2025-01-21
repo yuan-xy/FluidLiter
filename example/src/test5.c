@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
 		assert(v2 ==  (p2[i+1] << 8) | (p2[i] & 0xFF));
 		assert(v2 == buffer2[i/2]);
 
-		int16_t v12 = v1; //>>4;
+		int16_t v12 = v1>>4;
 		uint16_t uv12 = v12+2048;
 		//printf("char: %d  %d %d \n", v1, uv12, v2);
 		assert(uv12 == v2);
@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
 
 	for(int i=0; i<NUM_SAMPLES; i++){
 		int16_t v1 = buffer[i];
-		int16_t v12 = v1; //>>4;
+		int16_t v12 = v1>>4;
 		uint16_t uv12 = v12+2048;
 		assert(uv12 == buffer2[i]);
 		//printf("i%d, %d \t %d\n", i, buffer[i], buffer2[i]);

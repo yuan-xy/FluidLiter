@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
             printf("warning i%d: %d, %d, %d, \t abs:%d\n", 
                 i, v1, v12, buffer2[i], abs(v12 - buffer2[i]));
         }
-		assert( abs(v12 - buffer2[i]) <= 2 );
+		assert( abs(v12 - buffer2[i]) <= 1 );
 	}
 
     free(buffer);

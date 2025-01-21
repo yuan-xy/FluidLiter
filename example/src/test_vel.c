@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
     fluid_synth_program_select(synth, 0, sfont, 0, 0);
 
     printf("synth.gain:%f\n", synth->gain);
-    // assert(float_eq(1.0f, synth->gain));
+    assert(float_eq(1.0f, synth->gain));
 
     int16_t *buffer = calloc(sizeof(int16_t) , NUM_SAMPLES);
 
