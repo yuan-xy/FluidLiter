@@ -48,13 +48,9 @@ extern "C" {
 
   /** Creates a new synthesizer object. 
    *
-   *  Creates a new synthesizer object. As soon as the synthesizer is
-   *  created, it will start playing.  
-   *
-   * \param settings a pointer to a settings structure
    * \return a newly allocated synthesizer or NULL in case of error
    */
-FLUIDSYNTH_API fluid_synth_t* new_fluid_synth(fluid_settings_t* settings);
+FLUIDSYNTH_API fluid_synth_t* new_fluid_synth(int polyphony, double gain);
 
 FLUIDSYNTH_API void fluid_synth_set_sample_rate(fluid_synth_t* synth, float sample_rate);
 
@@ -66,14 +62,6 @@ FLUIDSYNTH_API void fluid_synth_set_sample_rate(fluid_synth_t* synth, float samp
    * \return 0 if no error occured, -1 otherwise 
    */
 FLUIDSYNTH_API int delete_fluid_synth(fluid_synth_t* synth);
-
-
-  /** Get a reference to the settings of the synthesizer.
-   *
-   * \param synth the synthesizer object
-   * \return pointer to the settings
-   */
-FLUIDSYNTH_API fluid_settings_t* fluid_synth_get_settings(fluid_synth_t* synth);
 
 
   /*

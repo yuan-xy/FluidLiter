@@ -101,19 +101,7 @@ int main(int argc, char *argv[]) {
     assert(GEN_LAST==60);
     int err = 0;
 
-    fluid_settings_t *settings = new_fluid_settings();
-    fluid_settings_setstr(settings, "synth.verbose", "yes");
-    fluid_settings_setstr(settings, "synth.reverb.active", "yes");
-    fluid_settings_setint(settings, "synth.polyphony", 6); 
-    fluid_settings_setint(settings, "synth.midi-channels", 1); 
-
-    char *vb = "   ";
-    fluid_settings_getstr(settings, "synth.verbose", &vb);
-    assert(strcmp(vb, "yes") == 0);
-    fluid_settings_getstr(settings, "synth.reverb.active", &vb);
-    assert(strcmp(vb, "yes") == 0);
-
-    fluid_synth_t *synth = new_fluid_synth(settings);
+    fluid_synth_t *synth = new_fluid_synth(8, 1.0f);
     assert(synth->verbose == 1);
     assert(synth->with_reverb == 1);
 
@@ -183,8 +171,5 @@ int main(int argc, char *argv[]) {
 cleanup:
     /* deleting the synth also deletes my_sfloader */
     delete_fluid_synth(synth);
-
-    delete_fluid_settings(settings);
-
     return err;
 }

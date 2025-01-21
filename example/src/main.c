@@ -18,19 +18,8 @@ int main(int argc, char *argv[]) {
       return 1;
     }
 
-    fluid_settings_t* settings = new_fluid_settings();
-    fluid_settings_setstr(settings, "synth.verbose", "yes"); //在新版本中"synth.verbose"是int型
-    fluid_settings_setint(settings, "synth.polyphony", 5); 
-    
-/**
-$ gdb --args fluidlite-test /mnt/c/tools/fluidsynth/bin/GeneralUser-GS.sf2 out.pcm
-(gdb) break new_fluid_synth
-(gdb) break main.c:27  #注意要gcc编译时带-g才能在gdb里指定main.c的行断点
-(gdb) print *settings
-$1 = {size = 7, nnodes = 2, nodes = 0x5555555852c0, del = 0x555555555a7e <fluid_settings_hash_delete>}
-**/
-
-    fluid_synth_t* synth = new_fluid_synth(settings);
+ 
+    fluid_synth_t* synth = new_fluid_synth(8, 1.0f);
 /**
 $4 = {settings = 0x5555555852a0, polyphony = 256, with_reverb = 1 '\001', with_chorus = 1 '\001',
   verbose = 0 '\000', dump = 0 '\000', sample_rate = 44100, midi_channels = 16, audio_channels = 1,
@@ -102,5 +91,4 @@ $10 = {data = 0x5555556a33c0, id = 0, free = 0x555555566f0e <fluid_defsfont_sfon
     free(buffer);
 
     delete_fluid_synth(synth);
-    delete_fluid_settings(settings);
 }

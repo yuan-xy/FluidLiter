@@ -84,7 +84,6 @@ extern "C" {
  */
 
 #include "fluidlite/types.h"
-#include "fluidlite/settings.h"
 #include "fluidlite/synth.h"
 #include "fluidlite/sfont.h"
 #include "fluidlite/log.h"

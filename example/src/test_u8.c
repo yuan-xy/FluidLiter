@@ -18,13 +18,7 @@
 
 int main(int argc, char *argv[])
 {
-    fluid_settings_t *settings = new_fluid_settings();
-    fluid_settings_setstr(settings, "synth.verbose", "no"); // 在新版本中"synth.verbose"是int型
-    fluid_settings_setint(settings, "synth.polyphony", 3);
-    fluid_settings_setint(settings, "synth.midi-channels", 1);
-    fluid_settings_setstr(settings, "synth.reverb.active", "no");
-
-    fluid_synth_t *synth = new_fluid_synth(settings);
+    fluid_synth_t *synth = new_fluid_synth(8, 1.0f);
     int sfont = fluid_synth_sfload(synth, argv[1], 1);
     fluid_synth_program_select(synth, 0, sfont, 0, 0);
 
@@ -35,7 +29,7 @@ int main(int argc, char *argv[])
     fluid_synth_noteoff(synth, 0, C);
 
 
-    fluid_synth_t *synth2 = new_fluid_synth(settings);
+    fluid_synth_t *synth2 = new_fluid_synth(8, 1.0f);
     int sfont2 = fluid_synth_sfload(synth2, argv[1], 1);
     fluid_synth_program_select(synth2, 0, sfont2, 0, 0);
 
@@ -59,7 +53,6 @@ int main(int argc, char *argv[])
 	free(buffer2);
 
     delete_fluid_synth(synth);
-    delete_fluid_settings(settings);
 
     return 0;
 }

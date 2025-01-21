@@ -228,7 +228,7 @@ fluid_channel_cc(fluid_channel_t* chan, int num, int value)
 
   case BANK_SELECT_MSB:
     {
-      if (chan->channum == 9 && fluid_settings_str_equal(chan->synth->settings, "synth.drums-channel.active", "yes")) {
+      if (chan->channum == 9) {
         return FLUID_OK; /* ignored */
       }
 
@@ -249,7 +249,7 @@ fluid_channel_cc(fluid_channel_t* chan, int num, int value)
 
   case BANK_SELECT_LSB:
     {
-      if (chan->channum == 9 && fluid_settings_str_equal(chan->synth->settings, "synth.drums-channel.active", "yes")) {
+      if (chan->channum == 9) {
         return FLUID_OK; /* ignored */
       }
       /* FIXME: according to the Downloadable Sounds II specification,

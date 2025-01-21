@@ -6,7 +6,6 @@
 
 int main(int argc, char** argv)
 {
-	fluid_settings_t* settings = NULL;
 	fluid_synth_t* synth = NULL;
 	fluid_sfont_t* sfont = NULL;
 	int err = 0, sfid = -1;
@@ -16,8 +15,7 @@ int main(int argc, char** argv)
 		return 1;
 	}
 
-	settings = new_fluid_settings();
-	synth = new_fluid_synth(settings);
+	synth = new_fluid_synth(8, 1.0f);
 	sfid = fluid_synth_sfload(synth, argv[1], 1);
 	if (sfid == -1) {
 		fprintf(stderr, "Failed to load the SoundFont\n");
@@ -41,9 +39,6 @@ int main(int argc, char** argv)
  cleanup:
 	if (synth) {
 		delete_fluid_synth(synth);
-	}
-	if (settings) {
-		delete_fluid_settings(settings);
 	}
 	return err;
 }

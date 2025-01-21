@@ -24,13 +24,7 @@ int main(int argc, char *argv[])
 
     FILE* file = fopen(fname, "wb");
 
-    fluid_settings_t *settings = new_fluid_settings();
-    fluid_settings_setstr(settings, "synth.verbose", "no"); // 在新版本中"synth.verbose"是int型
-    fluid_settings_setint(settings, "synth.polyphony", 3);
-    fluid_settings_setint(settings, "synth.midi-channels", 1);
-    fluid_settings_setstr(settings, "synth.reverb.active", "no");
-
-    fluid_synth_t *synth = new_fluid_synth(settings);
+    fluid_synth_t *synth = new_fluid_synth(8, 1.0f);
     int sfid = fluid_synth_sfload(synth, "example/sf_/GMGSx_1.sf2", 1);
     fluid_synth_program_select(synth, 0, sfid, 0, 0);
 
@@ -86,7 +80,6 @@ int main(int argc, char *argv[])
 
     fclose(file);
     delete_fluid_synth(synth);
-    delete_fluid_settings(settings);
 
     if(is_8bit){
         system("ffmpeg -hide_banner -y -f u8 -ar 44100 -ac 1 -i song8.pcm -acodec pcm_u8 song8.wav");

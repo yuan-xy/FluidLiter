@@ -24,23 +24,7 @@ int main(int argc, char *argv[]) {
       return 1;
     }
 
-    fluid_settings_t* settings = new_fluid_settings();
-    fluid_settings_setstr(settings, "synth.verbose", "yes"); //在新版本中"synth.verbose"是int型
-    fluid_settings_setint(settings, "synth.polyphony", POLYPHONY); 
-    fluid_settings_setint(settings, "synth.midi-channels", 1); 
-    char *vb = "   ";
-    fluid_settings_getstr(settings, "synth.verbose", &vb);
-    assert(strcmp(vb, "yes") == 0);
-    fluid_settings_getstr(settings, "synth.reverb.active", &vb);
-    assert(strcmp(vb, "yes") == 0);
-    int polyphony;
-    fluid_settings_getint(settings, "synth.polyphony", &polyphony);
-    assert(polyphony == POLYPHONY);
-    int midi_channels;
-    fluid_settings_getint(settings, "synth.midi-channels", &midi_channels);
-    assert(midi_channels == 1);
-
-    fluid_synth_t* synth = new_fluid_synth(settings);
+    fluid_synth_t* synth = new_fluid_synth(POLYPHONY, 1.0f);
     assert(synth->verbose == 1);
     assert(synth->with_reverb == 1);
     assert(synth->polyphony == POLYPHONY);
@@ -248,5 +232,4 @@ int main(int argc, char *argv[]) {
     free(buffer);
 
     delete_fluid_synth(synth);
-    delete_fluid_settings(settings);
 }

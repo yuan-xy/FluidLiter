@@ -57,8 +57,6 @@ struct _fluid_bank_offset_t {
 
 struct _fluid_synth_t
 {
-  /* fluid_settings_old_t settings_old;  the old synthesizer settings */
-  fluid_settings_t* settings;         /** the synthesizer settings */
   int polyphony;                     /** maximum polyphony */
   char with_reverb;                  /** Should the synth use the built-in reverb unit? */
   char verbose;                      /** Turn verbose mode on? */
@@ -149,8 +147,6 @@ int fluid_synth_update_polyphony(fluid_synth_t* synth, char* name, int value);
 
 fluid_bank_offset_t* fluid_synth_get_bank_offset0(fluid_synth_t* synth, int sfont_id);
 void fluid_synth_remove_bank_offset(fluid_synth_t* synth, int sfont_id);
-
-void fluid_synth_settings(fluid_settings_t* settings);
 
 
 int fluid_synth_program_select2(fluid_synth_t* synth,

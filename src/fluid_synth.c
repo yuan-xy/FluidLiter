@@ -3,7 +3,6 @@
 #include "fluid_synth.h"
 #include "fluid_chan.h"
 #include "fluid_tuning.h"
-#include "fluid_settings.h"
 #include "fluid_sfont.h"
 
 fluid_sfloader_t* new_fluid_defsfloader(void);
@@ -49,35 +48,6 @@ const static fluid_revmodel_presets_t revmodel_preset[] = {
   { "Test 4",          0.8f,      0.7f,       0.5f,       0.6f },
   { "Test 5",          0.8f,      1.0f,       0.5f,       0.5f },
 };
-
-
-/***************************************************************
- *
- *               INITIALIZATION & UTILITIES
- */
-
-
-void fluid_synth_settings(fluid_settings_t* settings)
-{
-  fluid_settings_register_str(settings, "synth.verbose", "no", 0, NULL, NULL);
-  fluid_settings_register_str(settings, "synth.dump", "no", 0, NULL, NULL);
-  fluid_settings_register_str(settings, "synth.reverb.active", "yes", 0, NULL, NULL);
-  fluid_settings_register_str(settings, "midi.portname", "", 0, NULL, NULL);
-  fluid_settings_register_str(settings, "synth.drums-channel.active", "yes", 0, NULL, NULL);
-
-  fluid_settings_register_int(settings, "synth.polyphony",
-			     256, 1, 4096, 0, NULL, NULL);
-  fluid_settings_register_int(settings, "synth.midi-channels",
-			     16, 1, 256, 0, NULL, NULL);
-  fluid_settings_register_num(settings, "synth.gain",
-			     1.0f, 0.0f, 10.0f,
-			     0, NULL, NULL);
-  fluid_settings_register_num(settings, "synth.sample-rate",
-			     44100.0f, 22050.0f, 96000.0f,
-			     0, NULL, NULL);
-  fluid_settings_register_int(settings, "synth.min-note-length", 10, 0, 65535, 0, NULL, NULL);
-}
-
 
 
 /*
@@ -226,21 +196,8 @@ fluid_synth_init()
 }
 
 
-int fluid_synth_verify_settings(fluid_settings_t *settings)
-{
-  return 0;
-}
-
-/***************************************************************
- *
- *                      FLUID SYNTH
- */
-
-/*
- * new_fluid_synth
- */
 fluid_synth_t*
-new_fluid_synth(fluid_settings_t *settings)
+new_fluid_synth(int polyphony, double gain)
 {
   int i;
   fluid_synth_t* synth;
@@ -251,8 +208,6 @@ new_fluid_synth(fluid_settings_t *settings)
     fluid_synth_init();
   }
 
-  fluid_synth_verify_settings(settings);
-
   /* allocate a new synthesizer object */
   synth = FLUID_NEW(fluid_synth_t);
   if (synth == NULL) {
@@ -261,28 +216,14 @@ new_fluid_synth(fluid_settings_t *settings)
   }
   FLUID_MEMSET(synth, 0, sizeof(fluid_synth_t));
 
-  synth->settings = settings;
-
-  synth->with_reverb = fluid_settings_str_equal(settings, "synth.reverb.active", "yes");
-  synth->verbose = fluid_settings_str_equal(settings, "synth.verbose", "yes");
-  synth->dump = fluid_settings_str_equal(settings, "synth.dump", "yes");
-
-  fluid_settings_getint(settings, "synth.polyphony", &synth->polyphony);
-  fluid_settings_getnum(settings, "synth.sample-rate", &synth->sample_rate);
-  fluid_settings_getint(settings, "synth.midi-channels", &synth->midi_channels);
-  fluid_settings_getnum(settings, "synth.gain", &synth->gain);
-  fluid_settings_getint(settings, "synth.min-note-length", &i);
-  synth->min_note_length_ticks = (unsigned int) (i*synth->sample_rate/1000.0f);
-
-
-  /* register the callbacks */
-  fluid_settings_register_num(settings, "synth.gain",
-			      0.2f, 0.0f, 10.0f, 0,
-			      (fluid_num_update_t) fluid_synth_update_gain, synth);
-  fluid_settings_register_int(settings, "synth.polyphony",
-			      synth->polyphony, 16, 4096, 0,
-			      (fluid_int_update_t) fluid_synth_update_polyphony,
-                              synth);
+  synth->with_reverb = 1;
+  synth->verbose = 1;
+  synth->dump = 1;
+  synth->sample_rate = 44100.0f;
+  synth->midi_channels = 1;
+  synth->polyphony = polyphony;
+  synth->gain = gain;
+  synth->min_note_length_ticks = (unsigned int) (10*synth->sample_rate/1000.0f);
 
   /* as soon as the synth is created it starts playing. */
   synth->state = FLUID_SYNTH_PLAYING;
@@ -376,8 +317,8 @@ new_fluid_synth(fluid_settings_t *settings)
         FLUID_REVERB_DEFAULT_LEVEL);
   }
 
-  if(fluid_settings_str_equal(settings, "synth.drums-channel.active", "yes"))
-      fluid_synth_bank_select(synth,9,DRUM_INST_BANK);
+  // if(fluid_settings_str_equal(settings, "synth.drums-channel.active", "yes"))
+  //     fluid_synth_bank_select(synth,9,DRUM_INST_BANK);
 
   return synth;
 
@@ -1287,7 +1228,7 @@ fluid_synth_program_change(fluid_synth_t* synth, int chan, int prognum)
   if (synth->verbose)
     FLUID_LOG(FLUID_INFO, "prog\t%d\t%d\t%d", chan, banknum, prognum);
 
-  if (channel->channum == 9 && fluid_settings_str_equal(synth->settings, "synth.drums-channel.active", "yes")) {
+  if (channel->channum == 9) {
     preset = fluid_synth_find_preset(synth, DRUM_INST_BANK, prognum);
   }
   else
@@ -2723,40 +2664,6 @@ int fluid_synth_tuning_dump(fluid_synth_t* synth, int bank, int prog,
   return FLUID_OK;
 }
 
-fluid_settings_t* fluid_synth_get_settings(fluid_synth_t* synth)
-{
-  return synth->settings;
-}
-
-int fluid_synth_setstr(fluid_synth_t* synth, char* name, char* str)
-{
-  return fluid_settings_setstr(synth->settings, name, str);
-}
-
-int fluid_synth_getstr(fluid_synth_t* synth, char* name, char** str)
-{
-  return fluid_settings_getstr(synth->settings, name, str);
-}
-
-int fluid_synth_setnum(fluid_synth_t* synth, char* name, double val)
-{
-  return fluid_settings_setnum(synth->settings, name, val);
-}
-
-int fluid_synth_getnum(fluid_synth_t* synth, char* name, double* val)
-{
-  return fluid_settings_getnum(synth->settings, name, val);
-}
-
-int fluid_synth_setint(fluid_synth_t* synth, char* name, int val)
-{
-  return fluid_settings_setint(synth->settings, name, val);
-}
-
-int fluid_synth_getint(fluid_synth_t* synth, char* name, int* val)
-{
-  return fluid_settings_getint(synth->settings, name, val);
-}
 
 int
 fluid_synth_set_gen(fluid_synth_t* synth, int chan, int param, float value)

@@ -33,7 +33,6 @@ extern "C" {
   Forward declarations
 
 */
-typedef struct _fluid_hashtable_t fluid_settings_t;
 typedef struct _fluid_synth_t fluid_synth_t;
 typedef struct _fluid_voice_t fluid_voice_t;
 typedef struct _fluid_sfloader_t fluid_sfloader_t;
