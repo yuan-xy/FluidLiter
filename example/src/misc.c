@@ -40,7 +40,7 @@ float calculateVolumeDB(int16_t *pcmData, int length) {
     return 20 * log10(rms / rmsRef);
 }
 
-double calculate_peak_dB(int16_t *samples, int num_samples) {
+float calculate_peak_dB(int16_t *samples, int num_samples) {
     double peak = 0.0;
     for (int i = 0; i < num_samples; i++) {
         double normalized_sample = samples[i] / 32768.0;
@@ -53,4 +53,37 @@ double calculate_peak_dB(int16_t *samples, int num_samples) {
         return -FLT_MAX;
     }
     return 20 * log10(peak);
+}
+
+
+float calculate_peak_dB_1024(int16_t *pcmData, int length) {
+    if (length == 0) {
+        return -FLT_MAX;
+    }
+
+    float maxVolumeDB = -FLT_MAX; // 最大音量
+    float sumVolumeDB = 0.0;      // 音量总和
+
+    // 分段计算音量（例如每 1024 个采样点计算一次）
+    int segmentSize = 1024;
+    for (int i = 0; i < length; i += segmentSize) {
+        int segmentLength = (i + segmentSize < length) ? segmentSize : length - i;
+        float volumeDB = calculateVolumeDB(pcmData + i, segmentLength);
+
+        // 更新最大音量
+        if (volumeDB > maxVolumeDB) {
+            maxVolumeDB = volumeDB;
+        }
+
+        // 累加音量
+        sumVolumeDB += volumeDB;
+    }
+
+    // 计算平均音量
+    float meanVolumeDB = sumVolumeDB / (length / segmentSize);
+
+    // 打印结果
+    // printf("mean_volume: %.1f dB\n", meanVolumeDB);
+    // printf("max_volume: %.1f dB\n", maxVolumeDB);
+    return maxVolumeDB;
 }

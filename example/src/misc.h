@@ -15,7 +15,9 @@ void change_bit(uint8_t* value, uint8_t index, uint8_t bit);
 // 计算音量（dB）
 float calculateVolumeDB(int16_t *pcmData, int length);
 
-double calculate_peak_dB(int16_t *samples, int num_samples);
+float calculate_peak_dB(int16_t *pcmData, int length);
+
+float calculate_peak_dB_1024(int16_t *pcmData, int length);
 
 
 #endif /* _MISC_H */

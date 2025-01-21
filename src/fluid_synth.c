@@ -2838,20 +2838,7 @@ float fluid_synth_get_gen(fluid_synth_t* synth, int chan, int param)
   return fluid_channel_get_gen(synth->channel[chan], param);
 }
 
-//midi_router disabled
-/* The synth needs to know the router for the command line handlers (they only
- * supply the synth as argument)
- */
-//void fluid_synth_set_midi_router(fluid_synth_t* synth, fluid_midi_router_t* router){
-//  synth->midi_router=router;
-//};
 
-/* Purpose:
- * Any MIDI event from the MIDI router arrives here and is handed
- * to the appropriate function.
- */
-
-//fluid_synth_handle_midi_event disabled
 
 int fluid_synth_start(fluid_synth_t* synth, unsigned int id, fluid_preset_t* preset,
 		      int audio_chan, int midi_chan, int key, int vel)

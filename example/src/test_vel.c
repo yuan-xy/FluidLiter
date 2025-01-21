@@ -21,38 +21,6 @@
 #define NUM_SAMPLES (NUM_FRAMES * NUM_CHANNELS)
 
 
-// 计算并打印平均音量和最大音量
-void calculateAndPrintVolume(int16_t *pcmData, int length) {
-    if (length == 0) {
-        printf("Error: PCM data length is zero.\n");
-        return;
-    }
-
-    float maxVolumeDB = -FLT_MAX; // 最大音量
-    float sumVolumeDB = 0.0;      // 音量总和
-
-    // 分段计算音量（例如每 1024 个采样点计算一次）
-    int segmentSize = 1024;
-    for (int i = 0; i < length; i += segmentSize) {
-        int segmentLength = (i + segmentSize < length) ? segmentSize : length - i;
-        float volumeDB = calculateVolumeDB(pcmData + i, segmentLength);
-
-        // 更新最大音量
-        if (volumeDB > maxVolumeDB) {
-            maxVolumeDB = volumeDB;
-        }
-
-        // 累加音量
-        sumVolumeDB += volumeDB;
-    }
-
-    // 计算平均音量
-    float meanVolumeDB = sumVolumeDB / (length / segmentSize);
-
-    // 打印结果
-    printf("mean_volume: %.1f dB\n", meanVolumeDB);
-    printf("max_volume: %.1f dB\n", maxVolumeDB);
-}
 
 
 int main(int argc, char *argv[])
@@ -69,17 +37,30 @@ int main(int argc, char *argv[])
 
     int16_t *buffer = calloc(sizeof(int16_t) , NUM_SAMPLES);
 
-    float pre_db = -FLT_MAX;
+    float pre_mean_db = -FLT_MAX;
+    float pre_peak_db = -FLT_MAX;
+    float pre_peak_db_1024 = -FLT_MAX;
 
 	for(int i=10; i<=120; i+=10){
         fluid_synth_noteon(synth, 0, C, i);
         fluid_synth_write_s16(synth, NUM_FRAMES, buffer, 0, 1, buffer, 1, 2);
 
-        float cur_db = calculateVolumeDB(buffer, NUM_SAMPLES);
-        printf(RED_TEXT(Velocity) " %d:\tMEAN DB %.1f  ,\tPEAK DB:%.1f\n", i, cur_db, calculate_peak_dB(buffer, NUM_SAMPLES));
-        assert(cur_db > pre_db);
-        pre_db = cur_db;
-        calculateAndPrintVolume(buffer, NUM_SAMPLES);
+        float cur_mean_db = calculateVolumeDB(buffer, NUM_SAMPLES);
+        float cur_peak_db = calculate_peak_dB(buffer, NUM_SAMPLES);
+        float cur_peak_db_1024 = calculate_peak_dB_1024(buffer, NUM_SAMPLES);
+        printf(RED_TEXT(Velocity) " %d:\tMEAN DB %.1f  ,\tPEAK DB:%.1f ,\tPEAK1024 DB:%.1f\n", 
+            i, cur_mean_db, cur_peak_db, cur_peak_db_1024);
+            
+        assert(cur_mean_db > pre_mean_db);
+        assert(cur_peak_db > pre_peak_db);
+        assert(cur_peak_db_1024 > pre_peak_db_1024);
+
+        assert(cur_peak_db > cur_peak_db_1024);
+        assert(cur_peak_db_1024 > cur_mean_db);
+
+        pre_mean_db = cur_mean_db;
+        pre_peak_db = cur_peak_db;
+        pre_peak_db_1024 = cur_peak_db_1024;
 
         if(false){
             char *fname = "velocity.pcm";
