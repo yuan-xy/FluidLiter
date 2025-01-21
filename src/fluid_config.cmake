@@ -18,17 +18,3 @@
 
 /* if defined, the synth uses float (32 bit) samples, otherwise it uses double (64 bit) samples */
 #cmakedefine WITH_FLOAT
-
-/* Standard C99 headers detection */ 
-#cmakedefine01 HAVE_STRING_H
-#cmakedefine01 HAVE_STDLIB_H
-#cmakedefine01 HAVE_STDIO_H
-#cmakedefine01 HAVE_STDARG_H
-#cmakedefine01 HAVE_MATH_H
-#cmakedefine01 HAVE_LIMITS_H
-#cmakedefine01 HAVE_FCNTL_H
-
-//#pragma warning(disable : 4244)
-//#pragma warning(disable : 4101)
-//#pragma warning(disable : 4305)
-//#pragma warning(disable : 4996)

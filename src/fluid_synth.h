@@ -20,12 +20,6 @@
 #define FLUID_NUM_PROGRAMS      128
 #define DRUM_INST_BANK		128
 
-#if defined(WITH_FLOAT)
-#define FLUID_SAMPLE_FORMAT     FLUID_SAMPLE_FLOAT
-#else
-#define FLUID_SAMPLE_FORMAT     FLUID_SAMPLE_DOUBLE
-#endif
-
 
 /***************************************************************
  *
