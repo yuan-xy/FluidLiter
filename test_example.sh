@@ -69,3 +69,9 @@ gcc example/src/test_conv.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm m
 gcc example/src/test_vel.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm misc.o -o test_vel
 ./test_vel
 
+
+gcc example/src/test_fpe.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm misc.o -o test_fpe
+./test_fpe
+
+gcc example/src/test_fpe2.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm -rdynamic -o test_fpe2
+./test_fpe2
