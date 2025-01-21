@@ -39,3 +39,18 @@ float calculateVolumeDB(int16_t *pcmData, int length) {
     // 计算 dB 值（相对于参考电平）
     return 20 * log10(rms / rmsRef);
 }
+
+double calculate_peak_dB(int16_t *samples, int num_samples) {
+    double peak = 0.0;
+    for (int i = 0; i < num_samples; i++) {
+        double normalized_sample = samples[i] / 32768.0;
+        double abs_sample = fabs(normalized_sample);
+        if (abs_sample > peak) {
+            peak = abs_sample;
+        }
+    }
+    if (peak == 0.0) {
+        return -FLT_MAX;
+    }
+    return 20 * log10(peak);
+}

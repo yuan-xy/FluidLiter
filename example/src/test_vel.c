@@ -69,22 +69,28 @@ int main(int argc, char *argv[])
 
     int16_t *buffer = calloc(sizeof(int16_t) , NUM_SAMPLES);
 
+    float pre_db = -FLT_MAX;
+
 	for(int i=10; i<=120; i+=10){
-        char *fname = "velocity.pcm";
-        FILE* file = fopen(fname, "wb");
         fluid_synth_noteon(synth, 0, C, i);
         fluid_synth_write_s16(synth, NUM_FRAMES, buffer, 0, 1, buffer, 1, 2);
-        fluid_synth_noteoff(synth, 0, C);
-        fwrite(buffer, sizeof(uint16_t), NUM_SAMPLES, file);
-        if(true){
-            printf("%s %d:\t %.1fDB\n", RED_TEXT(Velocity), i, calculateVolumeDB(buffer, NUM_SAMPLES));
-            //calculateAndPrintVolume(buffer, NUM_SAMPLES);
-        }else{
+
+        float cur_db = calculateVolumeDB(buffer, NUM_SAMPLES);
+        printf(RED_TEXT(Velocity) " %d:\tMEAN DB %.1f  ,\tPEAK DB:%.1f\n", i, cur_db, calculate_peak_dB(buffer, NUM_SAMPLES));
+        assert(cur_db > pre_db);
+        pre_db = cur_db;
+        calculateAndPrintVolume(buffer, NUM_SAMPLES);
+
+        if(false){
+            char *fname = "velocity.pcm";
+            FILE* file = fopen(fname, "wb");
+            fwrite(buffer, sizeof(uint16_t), NUM_SAMPLES, file);
             char cmd[256];
             snprintf(cmd, sizeof(cmd), "ffmpeg -hide_banner -y -f s16le -ar 44100 -ac 2 -i velocity.pcm velocity%d.wav", i);
             system(cmd);
         }
-	}
+    }
+
 
     free(buffer);
     delete_fluid_synth(synth);
