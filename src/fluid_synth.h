@@ -85,8 +85,6 @@ struct _fluid_synth_t
   fluid_revmodel_t* reverb;
   int cur;                           /** the current sample in the audio buffers to be output */
 
-  char outbuf[256];                  /** buffer for message output */
-
   fluid_tuning_t*** tuning;           /** 128 banks of 128 programs for the tunings */
   fluid_tuning_t* cur_tuning;         /** current tuning in the iteration */
 
