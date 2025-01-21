@@ -219,7 +219,6 @@ new_fluid_synth(SynthParams sp)
 
   synth->with_reverb = sp.with_reverb;
   synth->verbose = sp.verbose;
-  synth->dump = 1;
   synth->sample_rate = sp.sample_rate;
   synth->polyphony = sp.polyphony;
   synth->gain = sp.gain;
