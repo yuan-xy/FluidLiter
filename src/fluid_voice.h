@@ -200,9 +200,6 @@ struct _fluid_voice_t
 
     /* interpolation method, as in fluid_interp in fluidlite.h */
 	int interp_method;
-
-	/* for debugging */
-	int debug;
 };
 
 

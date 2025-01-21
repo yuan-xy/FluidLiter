@@ -40,7 +40,7 @@ static int count=0;
 
 void handle_fpe(int sig) {
     count+=1;
-    if(count%10000==9999){
+    if(count%10000==99999){
         printf("%d\n", count);
         //print_stack_trace();  // 打印调用栈
     }

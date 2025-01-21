@@ -116,7 +116,6 @@ int fluid_voice_init(fluid_voice_t *voice, fluid_sample_t *sample,
   voice->start_time = start_time;
   voice->ticks = 0;
   voice->noteoff_ticks = 0;
-  voice->debug = 0;
   voice->has_looped = 0;     /* Will be set during voice_write when the 2nd loop point is reached */
   voice->last_fres = -1;     /* The filter coefficients have to be calculated later in the DSP loop. */
   voice->filter_startup = 1; /* Set the filter immediately, don't fade between old and new settings */
