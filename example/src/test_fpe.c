@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
     feclearexcept(FE_ALL_EXCEPT);
     feenableexcept(FE_INVALID | FE_DIVBYZERO | FE_OVERFLOW | FE_UNDERFLOW);
 
-    fluid_synth_t *synth = NEW_FLUID_SYNTH(.verbose=0);
+    fluid_synth_t *synth = NEW_FLUID_SYNTH(.log_level=FLUID_WARN);
     int sfont = fluid_synth_sfload(synth, "example/sf_/GMGSx_1.sf2", 1);
     fluid_synth_program_select(synth, 0, sfont, 0, 0);
 

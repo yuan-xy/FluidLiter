@@ -26,7 +26,7 @@
 int main(int argc, char *argv[])
 {
     fluid_synth_t *synth = NEW_FLUID_SYNTH();
-    synth->verbose = 0;
+    
     int sfont = fluid_synth_sfload(synth, "example/sf_/GMGSx_1.sf2", 1);
     fluid_synth_program_select(synth, 0, sfont, 0, 0);
 

@@ -123,7 +123,7 @@ int main(int argc, char *argv[]) {
     assert(GEN_LAST==60);
     int err = 0;
 
-    fluid_synth_t *synth = NEW_FLUID_SYNTH();
+    fluid_synth_t *synth = NEW_FLUID_SYNTH(.log_level=FLUID_DBG);
     assert(synth->verbose == 1);
     assert(synth->with_reverb == 1);
 

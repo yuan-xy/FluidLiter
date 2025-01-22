@@ -195,8 +195,6 @@ fluid_synth_init()
   fluid_mod_set_amount(&default_pitch_bend_mod, 12700.0);                 /* Amount: 12700 cents */
 }
 
-#define NEW_SYNTH()
-
 fluid_synth_t*
 new_fluid_synth(SynthParams sp)
 {
@@ -218,7 +216,8 @@ new_fluid_synth(SynthParams sp)
   FLUID_MEMSET(synth, 0, sizeof(fluid_synth_t));
 
   synth->with_reverb = sp.with_reverb;
-  synth->verbose = sp.verbose;
+  synth->verbose = (sp.log_level >= FLUID_DBG);
+  LOG_LEVEL = sp.log_level;
   synth->sample_rate = sp.sample_rate;
   synth->polyphony = sp.polyphony;
   synth->gain = sp.gain;

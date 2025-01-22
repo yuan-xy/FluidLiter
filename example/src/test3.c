@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
       return 1;
     }
 
-    fluid_synth_t *synth = NEW_FLUID_SYNTH(.verbose=false);
+    fluid_synth_t *synth = NEW_FLUID_SYNTH();
     assert(synth->verbose==false);
     int sfont = fluid_synth_sfload(synth, argv[1], 1);
     fluid_synth_program_select(synth, 0, sfont, 0, 0);

@@ -24,6 +24,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "log.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -51,7 +53,7 @@ typedef struct {
     double gain;
     double sample_rate;
     bool with_reverb;
-    bool verbose;
+    enum fluid_log_level log_level;
     int midi_channels;
 } SynthParams;
 
@@ -62,7 +64,7 @@ typedef struct {
    */
 FLUIDSYNTH_API fluid_synth_t* new_fluid_synth(SynthParams sp);
 
-#define NEW_FLUID_SYNTH(...) new_fluid_synth((SynthParams){ .polyphony = 10, .gain = 1.0, .sample_rate=44100.0, .with_reverb=true, .verbose=true, .midi_channels=1, __VA_ARGS__ })
+#define NEW_FLUID_SYNTH(...) new_fluid_synth((SynthParams){ .polyphony = 10, .gain = 1.0, .sample_rate=44100.0, .with_reverb=true, .log_level=FLUID_INFO, .midi_channels=1, __VA_ARGS__ })
 
 FLUIDSYNTH_API void fluid_synth_set_sample_rate(fluid_synth_t* synth, float sample_rate);
 

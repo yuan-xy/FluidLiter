@@ -71,7 +71,7 @@ void test_float(){
 int main(int argc, char *argv[])
 {
     test_float();
-    fluid_synth_t *synth = NEW_FLUID_SYNTH(.verbose=0, .polyphony=1);
+    fluid_synth_t *synth = NEW_FLUID_SYNTH(.log_level=FLUID_WARN, .polyphony=1);
     int sfont = fluid_synth_sfload(synth, "example/sf_/GMGSx_1.sf2", 1);
     fluid_synth_program_select(synth, 0, sfont, 0, 0);
 

@@ -8,6 +8,7 @@ static char fluid_errbuf[ERR_BUF_LEN];  /* buffer for error message */
 
 const char* fluid_libname = "FL";
 
+enum fluid_log_level LOG_LEVEL = FLUID_INFO;
 
 /**
  * Default log function which prints to the stderr.
@@ -15,7 +16,7 @@ const char* fluid_libname = "FL";
  * @param message Log message
  */
 void
-fluid_default_log_function(int level, char* message)
+fluid_default_log_function(enum fluid_log_level level, char* message)
 {
   FILE* out;
 
@@ -58,15 +59,14 @@ fluid_default_log_function(int level, char* message)
  * @return Always returns -1
  */
 int
-fluid_log(int level, char* fmt, ...)
+fluid_log(enum fluid_log_level level, char* fmt, ...)
 {
   va_list args;
   va_start (args, fmt);
   vsnprintf(fluid_errbuf, sizeof (fluid_errbuf), fmt, args);
   va_end (args);
 
-#define DEFAULT_LOG_LEVEL 0
-  if ((level >= DEFAULT_LOG_LEVEL) && (level < LAST_LOG_LEVEL)) { //Todo: set default log_level
+  if (level <= LOG_LEVEL) {
     fluid_default_log_function(level, fluid_errbuf);
   }
   return FLUID_FAILED;
