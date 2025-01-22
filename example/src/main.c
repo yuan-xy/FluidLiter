@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <time.h>
+#include <assert.h>
 
 #include "fluidlite.h"
 
@@ -19,7 +20,7 @@ int main(int argc, char *argv[]) {
     }
 
  
-    fluid_synth_t* synth = NEW_FLUID_SYNTH();
+    fluid_synth_t* synth = NEW_FLUID_SYNTH(.gain=0.4);
 /**
 $4 = {settings = 0x5555555852a0, polyphony = 256, with_reverb = 1 '\001', with_chorus = 1 '\001',
   verbose = 0 '\000', dump = 0 '\000', sample_rate = 44100, midi_channels = 16, audio_channels = 1,
@@ -87,6 +88,8 @@ $10 = {data = 0x5555556a33c0, id = 0, free = 0x555555566f0e <fluid_defsfont_sfon
     };
     qsort(buffer, NUM_SAMPLES, SAMPLE_SIZE, compare);
     printf("最小值: %d, 最大值: %d\n", buffer[0], buffer[NUM_SAMPLES-1]);
+    assert(buffer[0] > -32766);
+    assert(buffer[NUM_SAMPLES-1] < 32766);
 
     free(buffer);
 
