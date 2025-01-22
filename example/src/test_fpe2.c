@@ -40,11 +40,11 @@ static int count=0;
 
 void handle_fpe(int sig) {
     count+=1;
-    if(count%10000==99999){
-        printf("%d\n", count);
+    if(count%100000==99999){
+        //printf("%d\n", count);
         //print_stack_trace();  // 打印调用栈
     }
-    if(count>1000000) exit(0);
+    if(count>1000000) exit(0); //如果不主动exit，计数会停留在2147479999
 }
 
 
@@ -56,10 +56,21 @@ void handle_fpe(int sig) {
 #define NUM_SAMPLES (NUM_FRAMES * NUM_CHANNELS)
 
 
+void test_float(){
+#ifdef WITH_FLOAT
+    assert(sizeof(float) == sizeof(fluid_real_t));
+#endif
+    assert( 25 == (float)((33875-98481)*(uint32_t)1000/168000000) );
+    assert( 25564 == (float)((33875-98481)*(uint32_t)1/168000) );
+    assert( float_eq(25564.8984,  ((uint32_t)-64605*(float)1.0/168000)) );
+    assert( float_eq(-0.384553581, (float)((int32_t)-64605*(float)1.0/168000) ));
+}
+
 
 
 int main(int argc, char *argv[])
 {
+    test_float();
     fluid_synth_t *synth = NEW_FLUID_SYNTH(.verbose=0, .polyphony=1);
     int sfont = fluid_synth_sfload(synth, "example/sf_/GMGSx_1.sf2", 1);
     fluid_synth_program_select(synth, 0, sfont, 0, 0);

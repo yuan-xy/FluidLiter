@@ -62,6 +62,9 @@ gcc example/src/test_song.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm -
 ./test_song
 ./test_song u12
 
+# valgrind --dsymutil=yes --tool=callgrind --dump-instr=yes --collect-jumps=yes ./test_song u12
+# export QT_SCALE_FACTOR=2
+# kcachegrind callgrind.out.xx
 
 gcc example/src/test_conv.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm misc.o -o test_conv
 ./test_conv
@@ -73,5 +76,5 @@ gcc example/src/test_vel.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm mi
 gcc example/src/test_fpe.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm misc.o -o test_fpe
 ./test_fpe
 
-gcc example/src/test_fpe2.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm -rdynamic -o test_fpe2
+gcc example/src/test_fpe2.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm misc.o -rdynamic -o test_fpe2
 ./test_fpe2

@@ -8,4 +8,5 @@ a.out
 *-test
 test?
 massif*
+callgrind.out*
 .vscode/
