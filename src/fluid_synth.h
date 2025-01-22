@@ -53,7 +53,6 @@ struct _fluid_synth_t
 {
   int polyphony;                     /** maximum polyphony */
   char with_reverb;                  /** Should the synth use the built-in reverb unit? */
-  char verbose;                      /** Turn verbose mode on? */
   double sample_rate;                /** The sample rate */
   int midi_channels;                 /** the number of MIDI channels */
   unsigned int state;                /** the synthesizer state */

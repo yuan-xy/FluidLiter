@@ -10,6 +10,15 @@ const char* fluid_libname = "FL";
 
 enum fluid_log_level LOG_LEVEL = FLUID_INFO;
 
+enum fluid_log_level get_log_level(void){
+  return LOG_LEVEL;
+}
+
+void set_log_level(enum fluid_log_level level){
+  LOG_LEVEL = level;
+}
+
+
 /**
  * Default log function which prints to the stderr.
  * @param level Log level

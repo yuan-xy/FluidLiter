@@ -216,8 +216,6 @@ new_fluid_synth(SynthParams sp)
   FLUID_MEMSET(synth, 0, sizeof(fluid_synth_t));
 
   synth->with_reverb = sp.with_reverb;
-  synth->verbose = (sp.log_level >= FLUID_DBG);
-  LOG_LEVEL = sp.log_level;
   synth->sample_rate = sp.sample_rate;
   synth->polyphony = sp.polyphony;
   synth->gain = sp.gain;
@@ -459,10 +457,8 @@ fluid_synth_noteon(fluid_synth_t* synth, int chan, int key, int vel)
 
   /* make sure this channel has a preset */
   if (channel->preset == NULL) {
-    if (synth->verbose) {
       FLUID_LOG(FLUID_INFO, "noteon\t%d\t%d\t%d\t ticks:%d",
 	       chan, key, vel, synth->ticks, "channel has no preset");
-    }
     return FLUID_FAILED;
   }
 
@@ -484,7 +480,7 @@ fluid_synth_noteoff(fluid_synth_t* synth, int chan, int key)
   for (i = 0; i < synth->polyphony; i++) {
     voice = synth->voice[i];
     if (_ON(voice) && (voice->chan == chan) && (voice->key == key)) {
-      if (synth->verbose) {
+      if (get_log_level()>=FLUID_DBG) {
         int used_voices = 0;
         int k;
         for (k = 0; k < synth->polyphony; k++) {
@@ -497,7 +493,7 @@ fluid_synth_noteoff(fluid_synth_t* synth, int chan, int key)
 		              (float) (voice->start_time + voice->ticks) / synth->sample_rate,
 		              voice->ticks,
 		              used_voices);
-      } /* if verbose */
+      } /* if FLUID_DBG */
       fluid_voice_noteoff(voice);
       status = FLUID_OK;
     } /* if voice on */
@@ -545,9 +541,7 @@ fluid_synth_cc(fluid_synth_t* synth, int chan, int num, int val)
     return FLUID_FAILED;
   }
 
-  if (synth->verbose) {
-    FLUID_LOG(FLUID_INFO, "cc\t%d\t%d\t%d", chan, num, val);
-  }
+  FLUID_LOG(FLUID_INFO, "cc\t%d\t%d\t%d", chan, num, val);
 
   /* set the controller value in the channel */
   fluid_channel_cc(synth->channel[chan], num, val);
@@ -980,9 +974,7 @@ fluid_synth_channel_pressure(fluid_synth_t* synth, int chan, int val)
     return FLUID_FAILED;
   }
 
-  if (synth->verbose) {
-    FLUID_LOG(FLUID_INFO, "channelpressure\t%d\t%d", chan, val);
-  }
+  FLUID_LOG(FLUID_INFO, "channelpressure\t%d\t%d", chan, val);
 
   /* set the channel pressure value in the channel */
   fluid_channel_pressure(synth->channel[chan], val);
@@ -1009,8 +1001,7 @@ fluid_synth_key_pressure(fluid_synth_t* synth, int chan, int key, int val)
     return FLUID_FAILED;
   }
 
-  if (synth->verbose)
-    FLUID_LOG(FLUID_INFO, "keypressure\t%d\t%d\t%d", chan, key, val);
+  FLUID_LOG(FLUID_INFO, "keypressure\t%d\t%d\t%d", chan, key, val);
 
   fluid_channel_set_key_pressure (synth->channel[chan], key, val);
 
@@ -1053,9 +1044,7 @@ fluid_synth_pitch_bend(fluid_synth_t* synth, int chan, int val)
     return FLUID_FAILED;
   }
 
-  if (synth->verbose) {
-    FLUID_LOG(FLUID_INFO, "pitchb\t%d\t%d", chan, val);
-  }
+  FLUID_LOG(FLUID_INFO, "pitchb\t%d\t%d", chan, val);
 
   /* set the pitch-bend value in the channel */
   fluid_channel_pitch_bend(synth->channel[chan], val);
@@ -1092,9 +1081,7 @@ fluid_synth_pitch_wheel_sens(fluid_synth_t* synth, int chan, int val)
     return FLUID_FAILED;
   }
 
-  if (synth->verbose) {
-    FLUID_LOG(FLUID_INFO, "pitchsens\t%d\t%d", chan, val);
-  }
+  FLUID_LOG(FLUID_INFO, "pitchsens\t%d\t%d", chan, val);
 
   /* set the pitch-bend value in the channel */
   fluid_channel_pitch_wheel_sens(synth->channel[chan], val);
@@ -1224,8 +1211,7 @@ fluid_synth_program_change(fluid_synth_t* synth, int chan, int prognum)
   /* inform the channel of the new program number */
   fluid_channel_set_prognum(channel, prognum);
 
-  if (synth->verbose)
-    FLUID_LOG(FLUID_INFO, "prog\t%d\t%d\t%d", chan, banknum, prognum);
+  FLUID_LOG(FLUID_INFO, "prog\t%d\t%d\t%d", chan, banknum, prognum);
 
   if (channel->channum == 9) {
     preset = fluid_synth_find_preset(synth, DRUM_INST_BANK, prognum);
@@ -1900,7 +1886,7 @@ fluid_synth_alloc_voice(fluid_synth_t* synth, fluid_sample_t* sample, int chan, 
     return NULL;
   }
 
-  if (synth->verbose) {
+  if (get_log_level()>=FLUID_DBG) {
     k = 0;
     for (i = 0; i < synth->polyphony; i++) {
       if (!_AVAILABLE(synth->voice[i])) {

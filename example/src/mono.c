@@ -24,8 +24,8 @@ int main(int argc, char *argv[]) {
       return 1;
     }
 
-    fluid_synth_t* synth = NEW_FLUID_SYNTH(.polyphony=POLYPHONY, .log_level=FLUID_DBG);
-    assert(synth->verbose == 1);
+    fluid_synth_t* synth = NEW_FLUID_SYNTH(.polyphony=POLYPHONY);
+    set_log_level(FLUID_DBG);
     assert(synth->with_reverb == 1);
     assert(synth->polyphony == POLYPHONY);
     assert(synth->midi_channels == 1);

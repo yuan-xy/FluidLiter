@@ -19,7 +19,8 @@ enum fluid_log_level {
   LAST_LOG_LEVEL
 };
 
-extern enum fluid_log_level LOG_LEVEL;
+FLUIDSYNTH_API enum fluid_log_level get_log_level(void);
+FLUIDSYNTH_API void set_log_level(enum fluid_log_level level);
 
 FLUIDSYNTH_API int fluid_log(enum fluid_log_level level, char * fmt, ...);
 

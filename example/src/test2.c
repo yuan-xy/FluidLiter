@@ -101,8 +101,8 @@ int main(int argc, char *argv[]) {
     assert(GEN_LAST==60);
     int err = 0;
 
-    fluid_synth_t *synth = NEW_FLUID_SYNTH(.log_level=FLUID_DBG);
-    assert(synth->verbose == 1);
+    fluid_synth_t* synth = NEW_FLUID_SYNTH();
+    set_log_level(FLUID_DBG);
     assert(synth->with_reverb == 1);
 
     fluid_set_default_fileapi(&my_fileapi);
