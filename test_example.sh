@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-cmake -S . -B Debug -DCMAKE_BUILD_TYPE=Debug
+cmake -S . -B Debug -DCMAKE_BUILD_TYPE=Debug #-DWITH_FLOAT=0
 cmake --build Debug/
 # cmake -S . -B Release -DCMAKE_BUILD_TYPE=Release
 # cmake --build Release/
@@ -78,3 +78,6 @@ gcc example/src/test_fpe.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm mi
 
 gcc example/src/test_fpe2.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm misc.o -rdynamic -o test_fpe2
 ./test_fpe2
+
+gcc example/src/test_vel2.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm misc.o -o test_vel2
+./test_vel2
