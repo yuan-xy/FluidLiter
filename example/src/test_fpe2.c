@@ -56,6 +56,9 @@ void handle_fpe(int sig) {
 #define NUM_SAMPLES (NUM_FRAMES * NUM_CHANNELS)
 
 
+
+extern int roundi (float x);
+
 void test_float(){
 #ifdef WITH_FLOAT
     assert(sizeof(float) == sizeof(fluid_real_t));
@@ -64,6 +67,12 @@ void test_float(){
     assert( 25564 == (float)((33875-98481)*(uint32_t)1/168000) );
     assert( float_eq(25564.8984,  ((uint32_t)-64605*(float)1.0/168000)) );
     assert( float_eq(-0.384553581, (float)((int32_t)-64605*(float)1.0/168000) ));
+
+    assert(sizeof(short)==sizeof(int16_t));
+    assert((int)0.5f == 0);
+    assert((int)-0.5f == 0);
+    assert((int)0.9999f == 0);
+    assert((int)1.0f == 1);
 }
 
 

@@ -3941,9 +3941,10 @@ static const fluid_real_t fluid_pan_tab[FLUID_PAN_SIZE] = {
 fluid_real_t
 fluid_ct2hz_real(fluid_real_t cents)
 {
-    if(cents < 0)
+    if(cents < 0.0001)
     {
-        return (fluid_real_t) 1.0;
+        if(cents < 0) return (fluid_real_t) 1.0;
+        else return 8.1758;
     }
     else
     {
@@ -3976,10 +3977,10 @@ fluid_real_t
 fluid_ct2hz(fluid_real_t cents)
 {
   /* Filter fc limit: SF2.01 page 48 # 8 */
-  if (cents >= 13500){
-    cents = 13500;             /* 20 kHz */
+  if (cents > 13500){
+    return 20000;             /* 20 kHz */
   } else if (cents < 1500){
-    cents = 1500;              /* 20 Hz */
+    return 20;              /* 20 Hz */
   }
   return fluid_ct2hz_real(cents);
 }
@@ -4000,7 +4001,7 @@ fluid_cb2amp(fluid_real_t cb)
    */
 
   /* minimum attenuation: 0 dB */
-  if (cb < 0) {
+  if (cb < 0.0001) {
     return 1.0;
   }
   if (cb >= FLUID_CB_AMP_SIZE) {

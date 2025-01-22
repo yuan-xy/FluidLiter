@@ -20,6 +20,7 @@ void handle_fpe(int sig) {
 }
 
 void handle_fpe1(int sig) {
+    printf("Shoundn't happen: %d!\n", sig);
     exit(1);
 }
 

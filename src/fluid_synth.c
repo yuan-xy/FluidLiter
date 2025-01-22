@@ -1560,9 +1560,12 @@ fluid_synth_write_float(fluid_synth_t* synth, int len,
 
 /* A portable replacement for roundf(), seems it may actually be faster too! */
 //removed inline
-static int
+int
 roundi (float x)
 {
+#ifdef STM32F407xx
+  if(isnan(x)) return 0;
+#endif
   if (x >= 0.0f)
     return (int)(x+0.5f);
   else
