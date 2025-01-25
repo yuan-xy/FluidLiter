@@ -29,4 +29,3 @@ extern "C" {
 }
 #endif
 #endif /* _FLUIDSYNTH_MUSIC_H */
-

@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
     fluid_synth_t *synth2 = NEW_FLUID_SYNTH();
     int sfont2 = fluid_synth_sfload(synth2, argv[1], 1);
     fluid_synth_program_select(synth2, 0, sfont2, 0, 0);
-    int16_t *buffer2 = calloc(SAMPLE_SIZE, NUM_SAMPLES);
+    uint16_t *buffer2 = calloc(SAMPLE_SIZE, NUM_SAMPLES);
 
     fluid_synth_noteon(synth2, 0, C, 127);
 	fluid_synth_write_u12_mono(synth2, NUM_FRAMES, buffer2);

@@ -3,10 +3,10 @@
 
 #include "fluidsynth_priv.h"
 
-#define FLUID_CENTS_HZ_SIZE     1200
-#define FLUID_VEL_CB_SIZE       128
-#define FLUID_CB_AMP_SIZE       1441
-#define FLUID_PAN_SIZE          1002
+#define FLUID_CENTS_HZ_SIZE 1200
+#define FLUID_VEL_CB_SIZE 128
+#define FLUID_CB_AMP_SIZE 1441
+#define FLUID_PAN_SIZE 1002
 
 fluid_real_t fluid_ct2hz_real(fluid_real_t cents);
 fluid_real_t fluid_ct2hz(fluid_real_t cents);
