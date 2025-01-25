@@ -14,10 +14,6 @@ endif()
 
 if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@-static-targets.cmake")
    include(CMakeFindDependencyMacro)
-   if("${FLUIDLITE_SF3_SUPPORT}" STREQUAL "SF3_XIPH_VORBIS" AND NOT FLUIDLITE_VENDORED AND NOT TARGET Vorbis::vorbisfile)
-      find_dependency(Vorbis)
-   endif()
-
    include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@-static-targets.cmake")
 endif()
 

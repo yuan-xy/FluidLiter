@@ -9,8 +9,6 @@ include(GNUInstallDirs)
 
 list (APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-option(ENABLE_SF3 "Enable SF3 files (ogg/vorbis compressed samples)" FALSE)
-option(STB_VORBIS "Use stb_vorbis library instead of libogg/libvorbis" FALSE)
 option(WITH_FLOAT "Use 32 bit float type samples (instead of 64 bit double type)" TRUE)
 option(CMAKE_POSITION_INDEPENDENT_CODE "Use PIC for building all sources" TRUE)
 
@@ -63,15 +61,6 @@ list(APPEND SOURCES
     src/fluid_voice.c
 )
 
-if (ENABLE_SF3)
-    if (STB_VORBIS)
-        set(FLUIDLITE_SF3_SUPPORT "SF3_STB_VORBIS")
-    else()
-        set(FLUIDLITE_SF3_SUPPORT "SF3_XIPH_VORBIS")
-    endif()
-else()
-    set(FLUIDLITE_SF3_SUPPORT "SF3_DISABLED")
-endif()
 
 configure_file(src/fluid_config.cmake ${PROJECT_BINARY_DIR}/fluid_config.h @ONLY)
 
@@ -103,60 +92,6 @@ if (UNIX AND NOT APPLE)
 endif()
 
 set(FLUIDLITE_VENDORED FALSE)
-if (ENABLE_SF3 AND NOT STB_VORBIS)
-    find_package(Vorbis QUIET)
-    if (NOT TARGET Vorbis::vorbisfile)
-        message(WARNING "Using vendored libogg/libvorbis")
-
-        set(FLUIDLITE_VENDORED TRUE)
-
-        list(APPEND SOURCES
-            libogg-1.3.2/src/bitwise.c
-            libogg-1.3.2/src/framing.c
-            libvorbis-1.3.5/lib/vorbisenc.c
-            libvorbis-1.3.5/lib/info.c
-            libvorbis-1.3.5/lib/analysis.c
-            libvorbis-1.3.5/lib/bitrate.c
-            libvorbis-1.3.5/lib/block.c
-            libvorbis-1.3.5/lib/codebook.c
-            libvorbis-1.3.5/lib/envelope.c
-            libvorbis-1.3.5/lib/floor0.c
-            libvorbis-1.3.5/lib/floor1.c
-            libvorbis-1.3.5/lib/lookup.c
-            libvorbis-1.3.5/lib/lpc.c
-            libvorbis-1.3.5/lib/lsp.c
-            libvorbis-1.3.5/lib/mapping0.c
-            libvorbis-1.3.5/lib/mdct.c
-            libvorbis-1.3.5/lib/psy.c
-            libvorbis-1.3.5/lib/registry.c
-            libvorbis-1.3.5/lib/res0.c
-            libvorbis-1.3.5/lib/sharedbook.c
-            libvorbis-1.3.5/lib/smallft.c
-            libvorbis-1.3.5/lib/vorbisfile.c
-            libvorbis-1.3.5/lib/window.c
-            libvorbis-1.3.5/lib/synthesis.c
-        )
-        target_include_directories(${PROJECT_NAME}-options INTERFACE
-            ${PROJECT_SOURCE_DIR}/libogg-1.3.2/include
-            ${PROJECT_SOURCE_DIR}/libvorbis-1.3.5/include
-            ${PROJECT_SOURCE_DIR}/libvorbis-1.3.5/lib
-        )
-    else()
-        message(STATUS "Using system libvorbis")
-        
-        list(APPEND ADDITIONAL_LIBS Vorbis::vorbisfile)
-        list(APPEND PC_REQUIRES vorbisfile)
-    endif()
-endif()
-
-if (ENABLE_SF3 AND STB_VORBIS)
-    message(STATUS "Using vendored stb_vorbis")
-
-    set(FLUIDLITE_VENDORED TRUE)
-
-    list(APPEND SOURCES stb/stb_vorbis.c)
-    target_include_directories(${PROJECT_NAME}-options INTERFACE ${PROJECT_SOURCE_DIR}/stb)
-endif()
 
 # When defined, respect CMake's BUILD_SHARED_LIBS setting
 set(FLUIDLITE_STATIC_ENABLED_BY_DEFAULT ON)
@@ -227,14 +162,6 @@ install(FILES ${HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 install(FILES ${SCOPED_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/fluidlite)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/fluidlite.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 
-if(FLUIDLITE_BUILD_STATIC AND NOT FLUIDLITE_VENDORED)
-    install(
-        FILES
-            cmake/FindOgg.cmake
-            cmake/FindVorbis.cmake
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
-    )
-endif()
 
 # Exported targets
 
