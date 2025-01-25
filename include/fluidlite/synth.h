@@ -227,14 +227,6 @@ FLUIDSYNTH_API
 int fluid_synth_sfload(fluid_synth_t *synth, const char *filename,
                        int reset_presets);
 
-/** Reload a SoundFont. The reloaded SoundFont retains its ID and
-    index on the stack.
-
-    \param synth The synthesizer object
-    \param id The id of the SoundFont
-    \returns The ID of the loaded SoundFont, or -1 in case of error
-*/
-FLUIDSYNTH_API int fluid_synth_sfreload(fluid_synth_t *synth, unsigned int id);
 
 /** Removes a SoundFont from the stack and deallocates it.
 

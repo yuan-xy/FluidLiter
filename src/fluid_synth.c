@@ -1986,61 +1986,6 @@ int fluid_synth_sfunload(fluid_synth_t *synth, unsigned int id,
     return FLUID_OK;
 }
 
-/* fluid_synth_sfreload
- *
- */
-int fluid_synth_sfreload(fluid_synth_t *synth, unsigned int id) {
-    char filename[1024];
-    fluid_sfont_t *sfont;
-    int index = 0;
-    fluid_list_t *list;
-    fluid_sfloader_t *loader;
-
-    sfont = fluid_synth_get_sfont_by_id(synth, id);
-    if (!sfont) {
-        FLUID_LOG(FLUID_ERR, "No SoundFont with id = %d", id);
-        return FLUID_FAILED;
-    }
-
-    /* find the index of the SoundFont */
-    list = synth->sfont;
-    while (list) {
-        if (sfont == (fluid_sfont_t *)fluid_list_get(list)) {
-            break;
-        }
-        list = fluid_list_next(list);
-        index++;
-    }
-
-    /* keep a copy of the SoundFont's filename */
-    FLUID_STRCPY(filename, fluid_sfont_get_name(sfont));
-
-    if (fluid_synth_sfunload(synth, id, 0) != FLUID_OK) {
-        return FLUID_FAILED;
-    }
-
-    for (list = synth->loaders; list; list = fluid_list_next(list)) {
-        loader = (fluid_sfloader_t *)fluid_list_get(list);
-
-        sfont = fluid_sfloader_load(loader, filename);
-
-        if (sfont != NULL) {
-            sfont->id = id;
-
-            /* insert the sfont at the same index */
-            synth->sfont = fluid_list_insert_at(synth->sfont, index, sfont);
-
-            /* reset the presets for all channels */
-            fluid_synth_update_presets(synth);
-
-            return sfont->id;
-        }
-    }
-
-    FLUID_LOG(FLUID_ERR, "Failed to load SoundFont \"%s\"", filename);
-    return -1;
-}
-
 /*
  * fluid_synth_add_sfont
  */
