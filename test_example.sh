@@ -81,3 +81,6 @@ gcc example/src/test_fpe2.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm m
 
 gcc example/src/test_vel2.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm misc.o -o test_vel2
 ./test_vel2
+
+#gcc example/src/test_441.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm -o test_441
+#./test_441
