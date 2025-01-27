@@ -87,19 +87,14 @@ void fluid_tuning_set_key(fluid_tuning_t *tuning, int key, double pitch) {
     tuning->pitch[key] = pitch;
 }
 
-void fluid_tuning_set_octave(fluid_tuning_t *tuning,
-                             const double *pitch_deriv) {
-    int i;
-
-    for (i = 0; i < 128; i++) {
+void fluid_tuning_set_octave(fluid_tuning_t *tuning, const double *pitch_deriv) {
+    for (int i = 0; i < 128; i++) {
         tuning->pitch[i] = i * 100.0 + pitch_deriv[i % 12];
     }
 }
 
 void fluid_tuning_set_all(fluid_tuning_t *tuning, double *pitch) {
-    int i;
-
-    for (i = 0; i < 128; i++) {
+    for (int i = 0; i < 128; i++) {
         tuning->pitch[i] = pitch[i];
     }
 }

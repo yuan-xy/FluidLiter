@@ -13,9 +13,6 @@
 #define SAMPLE_RATE 44100
 
 int main(int argc, char *argv[]) {
-    bool is_8bit = true;
-    if (argc > 1) is_8bit = false;
-
     char *fname = "pcm441.pcm";
 
     FILE *file = fopen(fname, "wb");
