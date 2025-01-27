@@ -1,23 +1,3 @@
-/* FluidSynth - A Software Synthesizer
- *
- * Copyright (C) 2003  Peter Hanappe and others.
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Library General Public License
- * as published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Library General Public License for more details.
- *
- * You should have received a copy of the GNU Library General Public
- * License along with this library; if not, write to the Free
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
- * 02111-1307, USA
- */
-
 #ifndef _FLUIDSYNTH_SYNTH_H
 #define _FLUIDSYNTH_SYNTH_H
 
@@ -36,10 +16,7 @@ extern "C" {
  *
  *    You have to load a SoundFont in order to hear any sound. For that
  *    you use the fluid_synth_sfload() function.
- *
- *    You can use the audio driver functions described below to open
- *    the audio device and create a background audio thread.
- *
+ * 
  *    The API for sending MIDI events is probably what you expect:
  *    fluid_synth_noteon(), fluid_synth_noteoff(), ...
  *

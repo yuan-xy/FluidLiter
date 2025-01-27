@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
     feenableexcept(FE_INEXACT);
     signal(SIGFPE, handle_fpe); 
 
-    fluid_synth_noteon(synth, 0, C, 100);
+    fluid_synth_noteon(synth, 0, NOTE_C, 100);
     fluid_synth_write_s16_mono(synth, NUM_FRAMES, buffer);
 
     printf("FE_INEXACT occured %d times.\n ", count);

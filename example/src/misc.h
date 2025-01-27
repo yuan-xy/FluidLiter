@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 
+#define TEST_SUCCESS(FLUID_FUNCT) TEST_ASSERT((FLUID_FUNCT) != FLUID_FAILED)
 
 int float_eq(double a, double b);
 

@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 
     int16_t *buffer = calloc(SAMPLE_SIZE, NUM_SAMPLES);
 
-    fluid_synth_noteon(synth, 0, C, 80);
+    fluid_synth_noteon(synth, 0, NOTE_C, 80);
 
     for (int j=0; j <= 5 * MIRCO_SECOND / sample_duration_us(); j++)
     {
@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
         fluid_synth_write_s16_mono(synth, NUM_FRAMES, buffer);
     }
 
-    fluid_synth_noteoff(synth, 0, C);
+    fluid_synth_noteoff(synth, 0, NOTE_C);
 
     free(buffer);
 

@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
     }
 
     for(int i=-2; i<3; i++){//C1=65.4Hz , B5=1975.5Hz ,  C6=2093Hz
-        int notes[] = {C, D, E, F, G, A, B};
+        int notes[] = {NOTE_C, NOTE_D, NOTE_E, NOTE_F, NOTE_G, NOTE_A, NOTE_B};
         int note_count = sizeof(notes) / sizeof(notes[0]);
         for (int j = 0; j<note_count; j++) {
             int v = notes[j];

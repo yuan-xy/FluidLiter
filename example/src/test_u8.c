@@ -24,9 +24,9 @@ int main(int argc, char *argv[])
 
     int16_t *buffer = calloc(sizeof(int16_t) , NUM_SAMPLES);
 
-    fluid_synth_noteon(synth, 0, C, 127);
+    fluid_synth_noteon(synth, 0, NOTE_C, 127);
 	fluid_synth_write_u12_mono(synth, NUM_FRAMES, buffer);
-    fluid_synth_noteoff(synth, 0, C);
+    fluid_synth_noteoff(synth, 0, NOTE_C);
 
 
     fluid_synth_t *synth2 = NEW_FLUID_SYNTH();
@@ -35,9 +35,9 @@ int main(int argc, char *argv[])
 
     uint8_t *buffer2 = calloc(sizeof(uint8_t) , NUM_SAMPLES);
 
-    fluid_synth_noteon(synth2, 0, C, 127);
+    fluid_synth_noteon(synth2, 0, NOTE_C, 127);
 	fluid_synth_write_u8_mono(synth2, NUM_FRAMES, buffer2);
-    fluid_synth_noteoff(synth2, 0, C);
+    fluid_synth_noteoff(synth2, 0, NOTE_C);
 
 	for(int i=0; i<NUM_SAMPLES; i++){
 		uint16_t v1 = buffer[i];

@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
 
     int16_t *buffer = calloc(sizeof(int16_t) , NUM_SAMPLES);
 
-    fluid_synth_noteon(synth, 0, C, 100);
+    fluid_synth_noteon(synth, 0, NOTE_C, 100);
     fluid_synth_write_s16(synth, NUM_FRAMES, buffer, 0, 1, buffer, 1, 2);
     assert(fetestexcept(FE_INEXACT));
 

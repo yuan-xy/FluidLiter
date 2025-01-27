@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
     float pre_peak_db_1024 = -FLT_MAX;
 
 	for(int i=10; i<=120; i+=10){
-        fluid_synth_noteon(synth, 0, C, i);
+        fluid_synth_noteon(synth, 0, NOTE_C, i);
         fluid_synth_write_s16(synth, NUM_FRAMES, buffer, 0, 2, buffer, 1, 2);
 
         float cur_mean_db = calculateVolumeDB(buffer, NUM_SAMPLES);

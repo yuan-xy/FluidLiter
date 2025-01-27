@@ -42,9 +42,9 @@ int main(int argc, char *argv[])
 
     int16_t *buffer = calloc(SAMPLE_SIZE, NUM_SAMPLES);
 
-    fluid_synth_noteon(synth, 0, C, 127);
+    fluid_synth_noteon(synth, 0, NOTE_C, 127);
 	fluid_synth_write_s16_mono(synth, NUM_FRAMES, buffer);
-    fluid_synth_noteoff(synth, 0, C);
+    fluid_synth_noteoff(synth, 0, NOTE_C);
 
 
     fluid_synth_t *synth2 = NEW_FLUID_SYNTH();
@@ -52,9 +52,9 @@ int main(int argc, char *argv[])
     fluid_synth_program_select(synth2, 0, sfont2, 0, 0);
     uint16_t *buffer2 = calloc(SAMPLE_SIZE, NUM_SAMPLES);
 
-    fluid_synth_noteon(synth2, 0, C, 127);
+    fluid_synth_noteon(synth2, 0, NOTE_C, 127);
 	fluid_synth_write_u12_mono(synth2, NUM_FRAMES, buffer2);
-    fluid_synth_noteoff(synth2, 0, C);
+    fluid_synth_noteoff(synth2, 0, NOTE_C);
 
 	char *p1 = (char *)buffer;
 	unsigned char *p2 = (unsigned char *)buffer2;	
