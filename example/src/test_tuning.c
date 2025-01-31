@@ -56,8 +56,24 @@ int main(int argc, char *argv[]) {
         fluid_synth_noteoff(synth, 0, note);
     }
 
+
+    int notes8[] = {NN1, NN2, NN3, NN4, NN5, NN6, NN7, NN1+12};
+
+    for (int i = 0; i < 8; i++) {
+        int note = notes8[i];
+        fluid_synth_noteon(synth, 0, note, 127);
+        fluid_synth_write_s16_mono(synth, frame/4, buffer);
+        fwrite(buffer, sizeof(int16_t), frame/4, file);
+        fluid_synth_noteoff(synth, 0, note);
+    }
+
+
     fclose(file);
     system("ffmpeg -hide_banner -y -f s16le -ar 44100 -ac 1 -i pcmTuning.pcm pcmTuning1.wav");
+
+
+
+
 
     file = fopen(fname, "wb");
 
@@ -71,7 +87,12 @@ int main(int argc, char *argv[]) {
         //printf("%i:%f\n", i*100, tn->pitch[i]);
     }
     printf("\n");
+    assert(synth->voice[0]->channel->tuning == NULL);
 
+    synth->channel[0]->tuning = synth->tuning[0][0];
+    assert(synth->voice[0]->channel->tuning != NULL);
+
+    // 下面的声音没听出差别呢
     for (int i = 0; i < 3; i++) {
         int note = notes[i];
         fluid_synth_noteon(synth, 0, note, 127);
@@ -82,6 +103,16 @@ int main(int argc, char *argv[]) {
         int note = notes[i];
         fluid_synth_noteoff(synth, 0, note);
     }
+
+
+    for (int i = 0; i < 8; i++) {
+        int note = notes8[i];
+        fluid_synth_noteon(synth, 0, note, 127);
+        fluid_synth_write_s16_mono(synth, frame/4, buffer);
+        fwrite(buffer, sizeof(int16_t), frame/4, file);
+        fluid_synth_noteoff(synth, 0, note);
+    }
+
 
     fclose(file);
     delete_fluid_synth(synth);
