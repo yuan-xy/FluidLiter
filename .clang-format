@@ -7,7 +7,7 @@ BreakBeforeBraces: Attach
 AllowShortIfStatementsOnASingleLine: true
 AllowShortLoopsOnASingleLine: true
 AllowShortFunctionsOnASingleLine: Inline
-ColumnLimit: 120
+ColumnLimit: 100
 MaxEmptyLinesToKeep: 1
 KeepEmptyLinesAtTheStartOfBlocks: false
 SpacesBeforeTrailingComments: 1
