@@ -27,6 +27,7 @@ typedef struct {
     double gain;
     double sample_rate;
     bool with_reverb;
+    bool with_chorus;
     int midi_channels;
 } SynthParams;
 
@@ -41,6 +42,7 @@ FLUIDSYNTH_API fluid_synth_t *new_fluid_synth(SynthParams sp);
                                   .gain = 0.4,                                 \
                                   .sample_rate = 44100.0,                      \
                                   .with_reverb = true,                         \
+                                  .with_chorus = false,                         \
                                   .midi_channels = 1,                          \
                                   __VA_ARGS__})
 
@@ -295,10 +297,30 @@ FLUIDSYNTH_API double fluid_synth_get_reverb_level(fluid_synth_t *synth);
 FLUIDSYNTH_API double fluid_synth_get_reverb_width(fluid_synth_t *synth);
 
 /* Those are the default settings for the reverb */
-#define FLUID_REVERB_DEFAULT_ROOMSIZE 0.2f
-#define FLUID_REVERB_DEFAULT_DAMP 0.0f
-#define FLUID_REVERB_DEFAULT_WIDTH 0.5f
-#define FLUID_REVERB_DEFAULT_LEVEL 0.9f
+#define FLUID_REVERB_DEFAULT_DAMP 0.3f      /**< Default reverb damping */
+#define FLUID_REVERB_DEFAULT_LEVEL 0.7f     /**< Default reverb level */
+#define FLUID_REVERB_DEFAULT_ROOMSIZE 0.5f  /**< Default reverb room size */
+#define FLUID_REVERB_DEFAULT_WIDTH 0.8f     /**< Default reverb width */
+
+
+/**
+ * @defgroup chorus_effect Effect - Chorus
+ * @ingroup synth
+ *
+ * Functions for configuring the built-in chorus effect
+ *
+ * @{
+ */
+
+/**
+ * Chorus modulation waveform type.
+ */
+enum fluid_chorus_mod
+{
+    FLUID_CHORUS_MOD_SINE = 0,            /**< Sine wave chorus modulation */
+    FLUID_CHORUS_MOD_TRIANGLE = 1         /**< Triangle wave chorus modulation */
+};
+
 
 /** Returns the number of MIDI channels that the synthesizer uses
     internally */

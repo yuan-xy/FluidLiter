@@ -36,6 +36,7 @@ fluid_mod_t default_att_mod;        /* SF2.01 section 8.4.5  */
 fluid_mod_t default_pan_mod;        /* SF2.01 section 8.4.6  */
 fluid_mod_t default_expr_mod;       /* SF2.01 section 8.4.7  */
 fluid_mod_t default_reverb_mod;     /* SF2.01 section 8.4.8  */
+fluid_mod_t default_chorus_mod;     /* SF2.01 section 8.4.9  */
 fluid_mod_t default_pitch_bend_mod; /* SF2.01 section 8.4.10 */
 
 /* reverb presets */
@@ -181,6 +182,17 @@ static void fluid_synth_init() {
     fluid_mod_set_amount(&default_reverb_mod,
                          200); /* Amount: 200 ('tenths of a percent') */
 
+   /* SF2.01 page 55 section 8.4.9: MIDI continuous controller 93 to Reverb send */
+   fluid_mod_set_source1(&default_chorus_mod, 93,                 /* index=93 */
+ 		       FLUID_MOD_CC                              /* CC=1 */
+ 		       | FLUID_MOD_LINEAR                        /* type=0 */
+ 		       | FLUID_MOD_UNIPOLAR                      /* P=0 */
+ 		       | FLUID_MOD_POSITIVE                      /* D=0 */
+ 		       );
+   fluid_mod_set_source2(&default_chorus_mod, 0, 0);              /* No second source */
+   fluid_mod_set_dest(&default_chorus_mod, GEN_CHORUSSEND);       /* Target: Chorus */
+   fluid_mod_set_amount(&default_chorus_mod, 200);                /* Amount: 200 ('tenths of a percent') */
+ 
     /* SF2.01 page 57 section 8.4.10 MIDI Pitch Wheel to Initial Pitch ... */
     fluid_mod_set_source1(&default_pitch_bend_mod,
                           FLUID_MOD_PITCHWHEEL,    /* Index=14 */
@@ -221,6 +233,7 @@ fluid_synth_t *new_fluid_synth(SynthParams sp) {
     FLUID_MEMSET(synth, 0, sizeof(fluid_synth_t));
 
     synth->with_reverb = sp.with_reverb;
+    synth->with_chorus = sp.with_chorus;
     synth->sample_rate = sp.sample_rate;
     synth->polyphony = sp.polyphony;
     synth->gain = sp.gain;
@@ -275,6 +288,8 @@ fluid_synth_t *new_fluid_synth(SynthParams sp) {
     synth->right_buf = NULL;
     synth->fx_left_buf = NULL;
     synth->fx_right_buf = NULL;
+    synth->fx_left_buf2 = NULL;
+    synth->fx_right_buf2 = NULL;
 
     /* Left and right audio buffers */
 
@@ -314,6 +329,15 @@ fluid_synth_t *new_fluid_synth(SynthParams sp) {
         fluid_synth_set_reverb(
             synth, FLUID_REVERB_DEFAULT_ROOMSIZE, FLUID_REVERB_DEFAULT_DAMP,
             FLUID_REVERB_DEFAULT_WIDTH, FLUID_REVERB_DEFAULT_LEVEL);
+    }
+
+    if(synth->with_chorus){
+       /* allocate the chorus module */
+       synth->chorus = new_fluid_chorus(synth->sample_rate);
+       if (synth->chorus == NULL) {
+         FLUID_LOG(FLUID_ERR, "Out of memory");
+         goto error_recovery;
+       }
     }
 
     // if(fluid_settings_str_equal(settings, "synth.drums-channel.active",
@@ -415,6 +439,11 @@ int delete_fluid_synth(fluid_synth_t *synth) {
     if (synth->reverb != NULL) {
         delete_fluid_revmodel(synth->reverb);
     }
+
+   /* release the chorus module */
+   if (synth->chorus != NULL) {
+     delete_fluid_chorus(synth->chorus);
+   }
 
     /* free the tunings, if any */
     if (synth->tuning != NULL) {
@@ -867,6 +896,7 @@ int fluid_synth_system_reset(fluid_synth_t *synth) {
         fluid_channel_reset(synth->channel[i]);
     }
 
+    fluid_chorus_reset(synth->chorus);
     fluid_revmodel_reset(synth->reverb);
 
     return FLUID_OK;
@@ -1624,6 +1654,7 @@ int fluid_synth_one_block(fluid_synth_t *synth, int do_not_mix_fx_to_out) {
     int i;
     fluid_voice_t *voice;
     fluid_real_t *reverb_buf;
+    fluid_real_t *chorus_buf;
     int byte_size = FLUID_BUFSIZE * sizeof(fluid_real_t);
 
     FLUID_MEMSET(synth->left_buf, 0, byte_size);
@@ -1632,11 +1663,12 @@ int fluid_synth_one_block(fluid_synth_t *synth, int do_not_mix_fx_to_out) {
     FLUID_MEMSET(synth->fx_left_buf, 0, byte_size);
     FLUID_MEMSET(synth->fx_right_buf, 0, byte_size);
 
-    /* Set up the reverb only, when the effect is
+    /* Set up the reverb / chorus buffers only, when the effect is
      * enabled on synth level.  Nonexisting buffers are detected in the
-     * DSP loop. Not sending the reverb signal saves some time
+     * DSP loop. Not sending the reverb / chorus signal saves some time
      * in that case. */
     reverb_buf = synth->with_reverb ? synth->fx_left_buf : NULL;
+    chorus_buf = synth->with_chorus ? synth->fx_left_buf2 : NULL;
 
     /* call all playing synthesis processes */
     for (i = 0; i < synth->polyphony; i++) {
@@ -1644,11 +1676,11 @@ int fluid_synth_one_block(fluid_synth_t *synth, int do_not_mix_fx_to_out) {
 
         if (_PLAYING(voice)) {
             fluid_voice_write(voice, synth->left_buf, synth->right_buf,
-                              reverb_buf);
+                              reverb_buf, chorus_buf);
         }
     }
 
-    /* if multi channel output, don't mix the output of the
+    /* if multi channel output, don't mix the output of the chorus and
        reverb in the final output. The effects outputs are send
        separately. */
 
@@ -1659,12 +1691,22 @@ int fluid_synth_one_block(fluid_synth_t *synth, int do_not_mix_fx_to_out) {
                                           synth->fx_left_buf,
                                           synth->fx_right_buf);
         }
+        /* send to chorus */
+        if (chorus_buf) {
+          fluid_chorus_processreplace(synth->chorus, chorus_buf,
+                                    synth->fx_left_buf2, synth->fx_right_buf2);
+        }
 
     } else {
         /* send to reverb */
         if (reverb_buf) {
             fluid_revmodel_processmix(synth->reverb, reverb_buf,
                                       synth->left_buf, synth->right_buf);
+        }
+        /* send to chorus */
+        if (chorus_buf) {
+          fluid_chorus_processmix(synth->chorus, chorus_buf,
+                                synth->left_buf, synth->right_buf);
         }
     }
 
@@ -1827,6 +1869,7 @@ fluid_voice_t *fluid_synth_alloc_voice(fluid_synth_t *synth,
                         FLUID_VOICE_DEFAULT); /* SF2.01 $8.4.7  */
     fluid_voice_add_mod(voice, &default_reverb_mod,
                         FLUID_VOICE_DEFAULT); /* SF2.01 $8.4.8  */
+    fluid_voice_add_mod(voice, &default_chorus_mod, FLUID_VOICE_DEFAULT);     /* SF2.01 $8.4.9  */
     fluid_voice_add_mod(voice, &default_pitch_bend_mod,
                         FLUID_VOICE_DEFAULT); /* SF2.01 $8.4.10 */
 

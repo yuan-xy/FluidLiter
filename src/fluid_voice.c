@@ -28,7 +28,8 @@
 static void fluid_voice_effects(fluid_voice_t *voice, int count,
                                 fluid_real_t *dsp_left_buf,
                                 fluid_real_t *dsp_right_buf,
-                                fluid_real_t *dsp_reverb_buf);
+                                fluid_real_t *dsp_reverb_buf,
+                                fluid_real_t* dsp_chorus_buf);
 
 fluid_voice_t *new_fluid_voice(fluid_real_t output_rate) {
     fluid_voice_t *voice;
@@ -206,7 +207,7 @@ fluid_real_t fluid_voice_gen_value(fluid_voice_t *voice, int num) {
  *
  * This is where it all happens. This function is called by the
  * synthesizer to generate the sound samples. The synthesizer passes
- * 3 audio buffers: left, right, reverb out.
+ * four audio buffers: left, right, reverb out, and chorus out.
  *
  * The biggest part of this function sets the correct values for all
  * the dsp parameters (all the control data boil down to only a few
@@ -215,7 +216,7 @@ fluid_real_t fluid_voice_gen_value(fluid_voice_t *voice, int num) {
  */
 int fluid_voice_write(fluid_voice_t *voice, fluid_real_t *dsp_left_buf,
                       fluid_real_t *dsp_right_buf,
-                      fluid_real_t *dsp_reverb_buf) {
+                      fluid_real_t *dsp_reverb_buf, fluid_real_t *dsp_chorus_buf) {
     fluid_real_t fres;
     fluid_real_t target_amp; /* target amplitude */
     int count;
@@ -536,7 +537,7 @@ int fluid_voice_write(fluid_voice_t *voice, fluid_real_t *dsp_left_buf,
 
     if (count > 0)
         fluid_voice_effects(voice, count, dsp_left_buf, dsp_right_buf,
-                            dsp_reverb_buf);
+                            dsp_reverb_buf, dsp_chorus_buf);
 
     /* turn off voice if short count (sample ended and not looping) */
     if (count < FLUID_BUFSIZE) {
@@ -553,13 +554,14 @@ post_process:
  * - filters (applies a lowpass filter with variable cutoff frequency and
  * quality factor)
  * - mixes the processed sample to left and right output using the pan setting
- * - sends the processed sample to reverb
+ * - sends the processed sample to chorus and reverb
  *
  * Variable description:
  * - dsp_data: Pointer to the original waveform data
  * - dsp_left_buf: The generated signal goes here, left channel
  * - dsp_right_buf: right channel
  * - dsp_reverb_buf: Send to reverb unit
+ * - dsp_chorus_buf: Send to chorus unit
  * - dsp_a1: Coefficient for the filter
  * - dsp_a2: same
  * - dsp_b0: same
@@ -581,7 +583,8 @@ post_process:
 static void fluid_voice_effects(fluid_voice_t *voice, int count,
                                 fluid_real_t *dsp_left_buf,
                                 fluid_real_t *dsp_right_buf,
-                                fluid_real_t *dsp_reverb_buf) {
+                                fluid_real_t* dsp_reverb_buf, 
+                                fluid_real_t* dsp_chorus_buf) {
     /* IIR filter sample history */
     fluid_real_t dsp_hist1 = voice->hist1;
     fluid_real_t dsp_hist2 = voice->hist2;
@@ -678,6 +681,12 @@ static void fluid_voice_effects(fluid_voice_t *voice, int count,
             dsp_reverb_buf[dsp_i] += voice->amp_reverb * dsp_buf[dsp_i];
     }
 
+   /* chorus send. Buffer may be NULL. */
+   if ((dsp_chorus_buf != NULL) && (voice->amp_chorus != 0)){
+     for (dsp_i = 0; dsp_i < count; dsp_i++)
+       dsp_chorus_buf[dsp_i] += voice->amp_chorus * dsp_buf[dsp_i];
+   }
+
     voice->hist1 = dsp_hist1;
     voice->hist2 = dsp_hist2;
     voice->a1 = dsp_a1;
@@ -740,7 +749,7 @@ int fluid_voice_calculate_runtime_synthesis_parameters(fluid_voice_t *voice) {
         /* GEN_ENDADDRCOARSEOFS [1]                            #12  */
         GEN_MODLFOTOVOL, /*                #13  */
         /* not defined                                         #14  */
-        /* GEN_CHORUSSEND,                                     #15  */
+        GEN_CHORUSSEND,  /*                                   #15  */
         GEN_REVERBSEND, /*                #16  */
         GEN_PAN,        /*                #17  */
         /* not defined                                         #18  */
@@ -974,6 +983,13 @@ void fluid_voice_update_param(fluid_voice_t *voice, int gen) {
         voice->reverb_send = _GEN(voice, GEN_REVERBSEND) / 1000.0f;
         fluid_clip(voice->reverb_send, 0.0, 1.0);
         voice->amp_reverb = voice->reverb_send * voice->synth_gain / 32768.0f;
+        break;
+
+    case GEN_CHORUSSEND:
+        /* The generator unit is 'tenths of a percent'. */
+        voice->chorus_send = _GEN(voice, GEN_CHORUSSEND) / 1000.0f;
+        fluid_clip(voice->chorus_send, 0.0, 1.0);
+        voice->amp_chorus = voice->chorus_send * voice->synth_gain / 32768.0f;
         break;
 
     case GEN_OVERRIDEROOTKEY:
@@ -1871,6 +1887,7 @@ int fluid_voice_set_gain(fluid_voice_t *voice, fluid_real_t gain) {
     voice->amp_left = fluid_pan(voice->pan, 1) * gain / 32768.0f;
     voice->amp_right = fluid_pan(voice->pan, 0) * gain / 32768.0f;
     voice->amp_reverb = voice->reverb_send * gain / 32768.0f;
+    voice->amp_chorus = voice->chorus_send * gain / 32768.0f;
 
     return FLUID_OK;
 }

@@ -55,6 +55,7 @@ list(APPEND SOURCES
     src/fluid_list.c
     src/fluid_mod.c
     src/fluid_rev.c
+    src/fluid_chorus.c
     src/fluid_synth.c
     src/fluid_log.c
     src/fluid_tuning.c

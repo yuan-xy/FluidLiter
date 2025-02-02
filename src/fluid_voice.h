@@ -156,6 +156,10 @@ struct _fluid_voice_t {
     fluid_real_t reverb_send;
     fluid_real_t amp_reverb;
 
+    /* chorus */
+    fluid_real_t chorus_send;
+    fluid_real_t amp_chorus;
+
     /* interpolation method, as in fluid_interp in fluidlite.h */
     int interp_method;
 };
@@ -166,7 +170,7 @@ int delete_fluid_voice(fluid_voice_t *voice);
 void fluid_voice_start(fluid_voice_t *voice);
 
 int fluid_voice_write(fluid_voice_t *voice, fluid_real_t *left, fluid_real_t *right,
-                      fluid_real_t *reverb_buf);
+                      fluid_real_t* reverb_buf, fluid_real_t* chorus_buf);
 
 int fluid_voice_init(fluid_voice_t *voice, fluid_sample_t *sample, fluid_channel_t *channel,
                      int key, int vel, unsigned int id, unsigned int time, fluid_real_t gain);

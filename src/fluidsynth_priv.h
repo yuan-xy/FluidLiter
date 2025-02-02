@@ -15,6 +15,21 @@
 #include <stdint.h>
 #include "fluidlite.h"
 
+#define FLUID_INLINE              inline
+
+#define FLUID_N_ELEMENTS(struct)  (sizeof (struct) / sizeof (struct[0]))
+#define FLUID_MEMBER_SIZE(struct, member)  ( sizeof (((struct *)0)->member) )
+
+#define fluid_return_if_fail(cond) \
+if(cond) \
+    ; \
+else \
+    return
+
+#define fluid_return_val_if_fail(cond, val) \
+ fluid_return_if_fail(cond) (val)
+
+
 /***************************************************************
  *
  *         BASIC TYPES

@@ -10,6 +10,7 @@
 #include "fluidsynth_priv.h"
 #include "fluid_list.h"
 #include "fluid_rev.h"
+#include "fluid_chorus.h"
 #include "fluid_voice.h"
 
 /***************************************************************
@@ -18,6 +19,12 @@
  */
 #define FLUID_NUM_PROGRAMS 128
 #define DRUM_INST_BANK 128
+
+#define FLUID_CHORUS_DEFAULT_DEPTH 4.25f                 /**< Default chorus depth */
+#define FLUID_CHORUS_DEFAULT_LEVEL 0.6f                  /**< Default chorus level */
+#define FLUID_CHORUS_DEFAULT_N 3                         /**< Default chorus voice count */
+#define FLUID_CHORUS_DEFAULT_SPEED 0.2f                  /**< Default chorus speed */
+#define FLUID_CHORUS_DEFAULT_TYPE FLUID_CHORUS_MOD_SINE  /**< Default chorus waveform type */
 
 /***************************************************************
  *
@@ -47,6 +54,7 @@ struct _fluid_bank_offset_t {
 struct _fluid_synth_t {
     int polyphony;      /** maximum polyphony */
     char with_reverb;   /** Should the synth use the built-in reverb unit? */
+    char with_chorus;
     double sample_rate; /** The sample rate */
     int midi_channels;  /** the number of MIDI channels */
     unsigned int state; /** the synthesizer state */
@@ -65,12 +73,18 @@ struct _fluid_synth_t {
                             for noteoff's  */
     unsigned int storeid;
 
+    /**< Shadow of chorus parameter: chorus number, level, speed, depth, type */
+    double chorus_param[FLUID_CHORUS_PARAM_LAST];
+
     fluid_real_t *left_buf;
     fluid_real_t *right_buf;
     fluid_real_t *fx_left_buf;
     fluid_real_t *fx_right_buf;
+    fluid_real_t *fx_left_buf2;
+    fluid_real_t *fx_right_buf2;
 
     fluid_revmodel_t *reverb;
+    fluid_chorus_t *chorus;
     int cur; /** the current sample in the audio buffers to be output */
 
     fluid_tuning_t ***tuning;   /** 128 banks of 128 programs for the tunings */
