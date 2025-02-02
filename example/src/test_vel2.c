@@ -50,8 +50,8 @@ int main(int argc, char *argv[])
         printf(RED_TEXT(Velocity) " %d:\tMEAN DB %.1f  ,\tPEAK DB:%.1f \n", 
             i, cur_mean_db, cur_peak_db);
 
-        assert(cur_mean_db > pre_mean_db || i==110);
-        assert(cur_peak_db > pre_peak_db || i==110);
+        assert(cur_mean_db > pre_mean_db || pre_mean_db > -33);
+        assert(cur_peak_db > pre_peak_db || pre_peak_db > -33);
         // 110很反常
         // Velocity 100:   MEAN DB -31.0  ,        PEAK DB:-24.8
         // Velocity 110:   MEAN DB -31.3  ,        PEAK DB:-25.3

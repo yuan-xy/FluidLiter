@@ -182,7 +182,7 @@ static void fluid_synth_init() {
     fluid_mod_set_amount(&default_reverb_mod,
                          200); /* Amount: 200 ('tenths of a percent') */
 
-   /* SF2.01 page 55 section 8.4.9: MIDI continuous controller 93 to Reverb send */
+   /* SF2.01 page 55 section 8.4.9: MIDI continuous controller 93 to Chorus send */
    fluid_mod_set_source1(&default_chorus_mod, 93,                 /* index=93 */
  		       FLUID_MOD_CC                              /* CC=1 */
  		       | FLUID_MOD_LINEAR                        /* type=0 */
@@ -304,17 +304,31 @@ fluid_synth_t *new_fluid_synth(SynthParams sp) {
     FLUID_MEMSET(synth->left_buf, 0, FLUID_BUFSIZE * sizeof(fluid_real_t));
     FLUID_MEMSET(synth->right_buf, 0, FLUID_BUFSIZE * sizeof(fluid_real_t));
 
-    /* Effects audio buffers */
-    synth->fx_left_buf = FLUID_ARRAY(fluid_real_t, FLUID_BUFSIZE);
-    synth->fx_right_buf = FLUID_ARRAY(fluid_real_t, FLUID_BUFSIZE);
+    if(synth->with_reverb){
+        synth->fx_left_buf = FLUID_ARRAY(fluid_real_t, FLUID_BUFSIZE);
+        synth->fx_right_buf = FLUID_ARRAY(fluid_real_t, FLUID_BUFSIZE);
 
-    if ((synth->fx_left_buf == NULL) || (synth->fx_right_buf == NULL)) {
-        FLUID_LOG(FLUID_ERR, "Out of memory");
-        goto error_recovery;
+        if ((synth->fx_left_buf == NULL) || (synth->fx_right_buf == NULL)) {
+            FLUID_LOG(FLUID_ERR, "Out of memory");
+            goto error_recovery;
+        }
+
+        FLUID_MEMSET(synth->fx_left_buf, 0, FLUID_BUFSIZE * sizeof(fluid_real_t));
+        FLUID_MEMSET(synth->fx_right_buf, 0, FLUID_BUFSIZE * sizeof(fluid_real_t));
     }
 
-    FLUID_MEMSET(synth->fx_left_buf, 0, FLUID_BUFSIZE * sizeof(fluid_real_t));
-    FLUID_MEMSET(synth->fx_right_buf, 0, FLUID_BUFSIZE * sizeof(fluid_real_t));
+    if(synth->with_chorus){
+        synth->fx_left_buf2 = FLUID_ARRAY(fluid_real_t, FLUID_BUFSIZE);
+        synth->fx_right_buf2 = FLUID_ARRAY(fluid_real_t, FLUID_BUFSIZE);
+
+        if ((synth->fx_left_buf2 == NULL) || (synth->fx_right_buf2 == NULL)) {
+            FLUID_LOG(FLUID_ERR, "Out of memory");
+            goto error_recovery;
+        }
+
+        FLUID_MEMSET(synth->fx_left_buf2, 0, FLUID_BUFSIZE * sizeof(fluid_real_t));
+        FLUID_MEMSET(synth->fx_right_buf2, 0, FLUID_BUFSIZE * sizeof(fluid_real_t));
+    }
 
     synth->cur = FLUID_BUFSIZE;
 
@@ -1660,8 +1674,14 @@ int fluid_synth_one_block(fluid_synth_t *synth, int do_not_mix_fx_to_out) {
     FLUID_MEMSET(synth->left_buf, 0, byte_size);
     if (synth->right_buf != NULL) FLUID_MEMSET(synth->right_buf, 0, byte_size);
 
-    FLUID_MEMSET(synth->fx_left_buf, 0, byte_size);
-    FLUID_MEMSET(synth->fx_right_buf, 0, byte_size);
+    if(synth->with_reverb){
+        FLUID_MEMSET(synth->fx_left_buf, 0, byte_size);
+        FLUID_MEMSET(synth->fx_right_buf, 0, byte_size);
+    }
+    if(synth->with_chorus){
+        FLUID_MEMSET(synth->fx_left_buf2, 0, byte_size);
+        FLUID_MEMSET(synth->fx_right_buf2, 0, byte_size);
+    }
 
     /* Set up the reverb / chorus buffers only, when the effect is
      * enabled on synth level.  Nonexisting buffers are detected in the

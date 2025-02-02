@@ -2,10 +2,11 @@
 #define _MISC_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #define TEST_SUCCESS(FLUID_FUNCT) TEST_ASSERT((FLUID_FUNCT) != FLUID_FAILED)
 
-int float_eq(double a, double b);
+bool float_eq(double a, double b);
 
 void set_bit(uint8_t* value, uint8_t index);
 

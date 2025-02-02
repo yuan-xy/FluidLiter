@@ -62,6 +62,9 @@ gcc example/src/test_song.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm -
 ./test_song
 ./test_song u12
 
+gcc example/src/test_reverb_chorus.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm misc.o -o test_reverb_chorus
+./test_reverb_chorus
+
 # valgrind --dsymutil=yes --tool=callgrind --dump-instr=yes --collect-jumps=yes ./test_song u12
 # export QT_SCALE_FACTOR=2
 # kcachegrind callgrind.out.xx

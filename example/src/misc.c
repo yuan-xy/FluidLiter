@@ -5,7 +5,7 @@
 
 #define EPSILON 1e-3
 
-int float_eq(double a, double b) {
+bool float_eq(double a, double b) {
     return fabs(a - b) < EPSILON;
 }
 
