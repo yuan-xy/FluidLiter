@@ -10,6 +10,7 @@
 #include "utils.c"
 #include "fluid_sfont.h"
 #include "misc.h"
+#include "fluid_chorus.h"
 
 #define SAMPLE_RATE 44100
 
@@ -54,8 +55,10 @@ void gen_song(const char *name, fluid_synth_t *synth, const char *fontname){
 
 void assert_gen_GMGSx_1(fluid_synth_t *synth){
     assert(synth->voice[0]->amp_reverb > 1e-6);
+    assert(synth->voice[0]->gen[GEN_REVERBSEND].val == 800);
     assert(float_eq(synth->voice[0]->reverb_send, 0.5+0.3)); //ins:50 + global_preset:30
     assert(synth->voice[0]->amp_chorus > 1e-6);
+    assert(synth->voice[0]->gen[GEN_CHORUSSEND].val == 700);
     assert(float_eq(synth->voice[0]->chorus_send, 0.4+0.3)); //global_ins:40 + global_preset:30
 }
 
@@ -94,6 +97,10 @@ int main(){
 
     synth = NEW_FLUID_SYNTH(.with_reverb=true);
     assert(synth->reverb != NULL);
+    assert(float_eq(fluid_revmodel_getdamp(synth->reverb) , FLUID_REVERB_DEFAULT_DAMP));
+    assert(float_eq(fluid_revmodel_getlevel(synth->reverb) , FLUID_REVERB_DEFAULT_LEVEL));
+    assert(float_eq(fluid_revmodel_getroomsize(synth->reverb) , FLUID_REVERB_DEFAULT_ROOMSIZE));
+    assert(float_eq(fluid_revmodel_getwidth(synth->reverb) , FLUID_REVERB_DEFAULT_WIDTH));
     assert(synth->chorus == NULL);
     assert(synth->fx_left_buf != NULL);
     assert(synth->fx_left_buf2 == NULL);
@@ -109,6 +116,11 @@ int main(){
     assert(synth->fx_left_buf == NULL);
     assert(synth->fx_left_buf2 != NULL);
     assert(synth->chorus != NULL);
+    assert(synth->chorus->number_blocks == FLUID_CHORUS_DEFAULT_N);
+    assert(synth->chorus->level == FLUID_CHORUS_DEFAULT_LEVEL);
+    assert(synth->chorus->speed_Hz == FLUID_CHORUS_DEFAULT_SPEED);
+    assert(synth->chorus->depth_ms == FLUID_CHORUS_DEFAULT_DEPTH);
+    assert(synth->chorus->type == FLUID_CHORUS_DEFAULT_TYPE);
     gen_song("song_no_reverb_chorus", synth, "example/sf_/GMGSx_1.sf2");
     assert_gen_GMGSx_1(synth);
     delete_fluid_synth(synth);
@@ -120,18 +132,20 @@ int main(){
     assert(synth->chorus != NULL);
     assert(synth->fx_left_buf != NULL);
     assert(synth->fx_left_buf2 != NULL);
+    // synth->chorus->number_blocks = 99;
     gen_song("song_reverb_chorus", synth, "example/sf_/GMGSx_1.sf2");
     assert_gen_GMGSx_1(synth);
     delete_fluid_synth(synth);
 
     synth = NEW_FLUID_SYNTH(.with_reverb=true, .with_chorus=true);
-    assert(synth->with_reverb);
-    assert(synth->with_chorus);
-    assert(synth->reverb != NULL);
-    assert(synth->chorus != NULL);
-    assert(synth->fx_left_buf != NULL);
-    assert(synth->fx_left_buf2 != NULL);
     gen_song("song_reverb_chorus_but_no_effect", synth, "example/sf_/Boomwhacker.sf2");
+    assert_gen_Boomwhacker(synth);
+    delete_fluid_synth(synth);
+
+    synth = NEW_FLUID_SYNTH(.with_reverb=true, .with_chorus=true);
+    fluid_synth_cc(synth, 0, GEN_REVERBSEND, 90); //TODO：有什么效果？
+    fluid_synth_cc(synth, 0, GEN_CHORUSSEND, 90); //TODO：有什么效果？
+    gen_song("song_reverb_chorus_Boomwhacker", synth, "example/sf_/Boomwhacker.sf2");
     assert_gen_Boomwhacker(synth);
     delete_fluid_synth(synth);
 

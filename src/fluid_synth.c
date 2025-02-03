@@ -352,6 +352,8 @@ fluid_synth_t *new_fluid_synth(SynthParams sp) {
          FLUID_LOG(FLUID_ERR, "Out of memory");
          goto error_recovery;
        }
+       fluid_chorus_set(synth->chorus, FLUID_CHORUS_SET_ALL,  FLUID_CHORUS_DEFAULT_N,  FLUID_CHORUS_DEFAULT_LEVEL,
+            FLUID_CHORUS_DEFAULT_SPEED, FLUID_CHORUS_DEFAULT_DEPTH, FLUID_CHORUS_DEFAULT_TYPE);
     }
 
     // if(fluid_settings_str_equal(settings, "synth.drums-channel.active",

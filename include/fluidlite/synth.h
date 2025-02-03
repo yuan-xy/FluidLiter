@@ -302,16 +302,6 @@ FLUIDSYNTH_API double fluid_synth_get_reverb_width(fluid_synth_t *synth);
 #define FLUID_REVERB_DEFAULT_ROOMSIZE 0.5f  /**< Default reverb room size */
 #define FLUID_REVERB_DEFAULT_WIDTH 0.8f     /**< Default reverb width */
 
-
-/**
- * @defgroup chorus_effect Effect - Chorus
- * @ingroup synth
- *
- * Functions for configuring the built-in chorus effect
- *
- * @{
- */
-
 /**
  * Chorus modulation waveform type.
  */
@@ -320,6 +310,13 @@ enum fluid_chorus_mod
     FLUID_CHORUS_MOD_SINE = 0,            /**< Sine wave chorus modulation */
     FLUID_CHORUS_MOD_TRIANGLE = 1         /**< Triangle wave chorus modulation */
 };
+
+#define FLUID_CHORUS_DEFAULT_DEPTH 4.25f                 /**< Default chorus depth */
+#define FLUID_CHORUS_DEFAULT_LEVEL 0.6f                  /**< Default chorus level */
+#define FLUID_CHORUS_DEFAULT_N 3                         /**< Default chorus voice count */
+#define FLUID_CHORUS_DEFAULT_SPEED 0.2f                  /**< Default chorus speed */
+#define FLUID_CHORUS_DEFAULT_TYPE FLUID_CHORUS_MOD_SINE  /**< Default chorus waveform type */
+
 
 
 /** Returns the number of MIDI channels that the synthesizer uses
