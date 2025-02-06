@@ -10,6 +10,7 @@ include(GNUInstallDirs)
 list (APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 option(WITH_FLOAT "Use 32 bit float type samples (instead of 64 bit double type)" TRUE)
+option(USING_CALLOC "Use calloc instead of malloc" FALSE)
 option(CMAKE_POSITION_INDEPENDENT_CODE "Use PIC for building all sources" TRUE)
 
 string(TOLOWER "${CMAKE_BUILD_TYPE}" LOWERCASE_BUILD_TYPE)

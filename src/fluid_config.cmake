@@ -12,3 +12,5 @@
 
 /* if defined, the synth uses float (32 bit) samples, otherwise it uses double (64 bit) samples */
 #cmakedefine WITH_FLOAT
+
+#cmakedefine USING_CALLOC

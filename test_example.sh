@@ -62,8 +62,6 @@ gcc example/src/test_song.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm -
 ./test_song
 ./test_song u12
 
-gcc example/src/test_reverb_chorus.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm misc.o -o test_reverb_chorus
-./test_reverb_chorus
 
 # valgrind --dsymutil=yes --tool=callgrind --dump-instr=yes --collect-jumps=yes ./test_song u12
 # export QT_SCALE_FACTOR=2
@@ -91,3 +89,12 @@ gcc example/src/test_vel2.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm m
 gcc example/src/test_tuning.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm misc.o -o test_tuning
 ./test_tuning
 
+
+rm -rf Debug
+cmake -S . -B Debug -DCMAKE_BUILD_TYPE=Debug -DUSING_CALLOC=1
+cmake --build Debug/
+gcc example/src/test_reverb_chorus.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm misc.o -o test_reverb_chorus
+./test_reverb_chorus
+# valgrind --dsymutil=yes --tool=callgrind --dump-instr=yes --collect-jumps=yes ./test_reverb_chorus
+# massif-visualizer massif.out.xxx
+# valgrind --tool=massif  ./test_reverb_chorus
