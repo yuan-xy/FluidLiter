@@ -484,8 +484,8 @@ new_fluid_chorus(fluid_real_t sample_rate)
     chorus->sample_rate = sample_rate;
 
 #ifdef DEBUG_PRINT
-    printf("fluid_chorus_t:%d bytes\n", sizeof(fluid_chorus_t));
-    printf("fluid_real_t:%d bytes\n", sizeof(fluid_real_t));
+    printf("fluid_chorus_t:%ld bytes\n", sizeof(fluid_chorus_t));
+    printf("fluid_real_t:%ld bytes\n", sizeof(fluid_real_t));
 #endif
 
 #ifdef DEBUG_PRINT

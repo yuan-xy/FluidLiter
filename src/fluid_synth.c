@@ -334,14 +334,13 @@ fluid_synth_t *new_fluid_synth(SynthParams sp) {
 
     /* allocate the reverb module */
     if (synth->with_reverb) {
-        synth->reverb = new_fluid_revmodel();
+        synth->reverb = new_fluid_revmodel(48000.0, synth->sample_rate);
         if (synth->reverb == NULL) {
             FLUID_LOG(FLUID_ERR, "Out of memory");
             goto error_recovery;
         }
-
-        fluid_synth_set_reverb(
-            synth, FLUID_REVERB_DEFAULT_ROOMSIZE, FLUID_REVERB_DEFAULT_DAMP,
+        fluid_revmodel_set(synth->reverb, FLUID_REVMODEL_SET_ALL, 
+            FLUID_REVERB_DEFAULT_ROOMSIZE, FLUID_REVERB_DEFAULT_DAMP,
             FLUID_REVERB_DEFAULT_WIDTH, FLUID_REVERB_DEFAULT_LEVEL);
     }
 
@@ -1459,23 +1458,11 @@ int fluid_synth_program_reset(fluid_synth_t *synth) {
 int fluid_synth_set_reverb_preset(fluid_synth_t *synth, int i) {
     if (i < 0 || i >= sizeof(revmodel_preset) / sizeof(revmodel_preset[0]))
         return FLUID_FAILED;
-    fluid_revmodel_setroomsize(synth->reverb, revmodel_preset[i].roomsize);
-    fluid_revmodel_setdamp(synth->reverb, revmodel_preset[i].damp);
-    fluid_revmodel_setwidth(synth->reverb, revmodel_preset[i].width);
-    fluid_revmodel_setlevel(synth->reverb, revmodel_preset[i].level);
+    fluid_revmodel_set(synth->reverb, FLUID_REVMODEL_SET_ALL, revmodel_preset[i].roomsize,
+                        revmodel_preset[i].damp, revmodel_preset[i].width, revmodel_preset[i].level);
     return FLUID_OK;
 }
 
-/*
- * fluid_synth_set_reverb
- */
-void fluid_synth_set_reverb(fluid_synth_t *synth, double roomsize,
-                            double damping, double width, double level) {
-    fluid_revmodel_setroomsize(synth->reverb, roomsize);
-    fluid_revmodel_setdamp(synth->reverb, damping);
-    fluid_revmodel_setwidth(synth->reverb, width);
-    fluid_revmodel_setlevel(synth->reverb, level);
-}
 
 /*
  *  fluid_synth_write_float
@@ -2097,9 +2084,6 @@ fluid_sfont_t *fluid_synth_get_sfont(fluid_synth_t *synth, unsigned int num) {
     return (fluid_sfont_t *)fluid_list_get(fluid_list_nth(synth->sfont, num));
 }
 
-/* fluid_synth_get_sfont_by_id
- *
- */
 fluid_sfont_t *fluid_synth_get_sfont_by_id(fluid_synth_t *synth,
                                            unsigned int id) {
     fluid_list_t *list = synth->sfont;
@@ -2163,29 +2147,7 @@ void fluid_synth_get_voicelist(fluid_synth_t *synth, fluid_voice_t *buf[],
     buf[count++] = NULL;
 }
 
-/* Purpose:
- * Turns on / off the reverb unit in the synth */
-void fluid_synth_set_reverb_on(fluid_synth_t *synth, int on) {
-    synth->with_reverb = on;
-}
 
-/* Purpose:
- * Returns the current settings_old of the reverb unit */
-double fluid_synth_get_reverb_roomsize(fluid_synth_t *synth) {
-    return (double)fluid_revmodel_getroomsize(synth->reverb);
-}
-
-double fluid_synth_get_reverb_damp(fluid_synth_t *synth) {
-    return (double)fluid_revmodel_getdamp(synth->reverb);
-}
-
-double fluid_synth_get_reverb_level(fluid_synth_t *synth) {
-    return (double)fluid_revmodel_getlevel(synth->reverb);
-}
-
-double fluid_synth_get_reverb_width(fluid_synth_t *synth) {
-    return (double)fluid_revmodel_getwidth(synth->reverb);
-}
 
 /* Purpose:
  *

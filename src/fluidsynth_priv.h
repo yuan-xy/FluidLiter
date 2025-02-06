@@ -180,6 +180,59 @@ typedef FILE *fluid_file;
 #define M_PI 3.1415926535897932384626433832795
 #endif
 
+#ifndef M_LN2
+#define M_LN2 0.69314718055994530941723212145818
+#endif
+
+#ifndef M_LN10
+#define M_LN10 2.3025850929940456840179914546844
+#endif
+
+#define FLUID_M_PI      ((fluid_real_t)M_PI)
+#define FLUID_M_LN2     ((fluid_real_t)M_LN2)
+#define FLUID_M_LN10    ((fluid_real_t)M_LN10)
+
+
+
+/* Math functions */
+#if defined WITH_FLOAT && defined HAVE_SINF
+#define FLUID_SIN   sinf
+#else
+#define FLUID_SIN   (fluid_real_t)sin
+#endif
+
+#if defined WITH_FLOAT && defined HAVE_COSF
+#define FLUID_COS   cosf
+#else
+#define FLUID_COS   (fluid_real_t)cos
+#endif
+
+#if defined WITH_FLOAT && defined HAVE_FABSF
+#define FLUID_FABS  fabsf
+#else
+#define FLUID_FABS  (fluid_real_t)fabs
+#endif
+
+#if defined WITH_FLOAT && defined HAVE_POWF
+#define FLUID_POW   powf
+#else
+#define FLUID_POW   (fluid_real_t)pow
+#endif
+
+#if defined WITH_FLOAT && defined HAVE_SQRTF
+#define FLUID_SQRT  sqrtf
+#else
+#define FLUID_SQRT  (fluid_real_t)sqrt
+#endif
+
+#if defined WITH_FLOAT && defined HAVE_LOGF
+#define FLUID_LOGF  logf
+#else
+#define FLUID_LOGF  (fluid_real_t)log
+#endif
+
+
+
 #define FLUID_ASSERT(a, b)
 #define FLUID_ASSERT_P(a, b)
 
