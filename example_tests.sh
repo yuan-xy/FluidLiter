@@ -1,17 +1,23 @@
 #!/bin/bash
 set -e
 
-cmake -S . -B Debug -DCMAKE_BUILD_TYPE=Debug #-DWITH_FLOAT=0
-cmake --build Debug/
+DEFAULT_BUILD="Debug"
+BUILD=${1:-$DEFAULT_BUILD}
+
+echo $BUILD
+
+cmake -S . -B $BUILD -DCMAKE_BUILD_TYPE=$BUILD #-DWITH_FLOAT=0
+cmake --build $BUILD/
 # cmake -S . -B Release -DCMAKE_BUILD_TYPE=Release
 # cmake --build Release/
 
+
 rm instruments-test || true
-gcc example/src/instruments.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm -o instruments-test
+gcc example/src/instruments.c -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidlite -lm -o instruments-test
 ./instruments-test ./example/sf_/Boomwhacker.sf2
 
 rm fluidlite-test || true
-gcc example/src/main.c -g -Iinclude -IDebug -LDebug -lfluidlite -lm -o fluidlite-test
+gcc example/src/main.c -g -Iinclude -I$BUILD -L$BUILD -lfluidlite -lm -o fluidlite-test
 rm massif.out.* || true
 valgrind --tool=massif ./fluidlite-test ./example/sf_/GMGSx_1.sf2 output.pcm
 # ms_print massif.out.<pid>
@@ -28,37 +34,37 @@ valgrind --tool=massif ./fluidlite-test ./example/sf_/GMGSx_1.sf2 output.pcm
 
 
 rm mono-test || true
-gcc example/src/mono.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm -o mono-test
+gcc example/src/mono.c -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidlite -lm -o mono-test
 ./mono-test ./example/sf_/Boomwhacker.sf2 mono.pcm
 # ffmpeg -f s16le -ar 44100 -ac 1 -i mono.pcm mono.wav
 # ffprobe -v quiet -print_format json -show_format -show_streams mono.wav
 
-# gcc example/src/test2.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm -o test2
+# gcc example/src/test2.c -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidlite -lm -o test2
 # valgrind --tool=massif --massif-out-file=massif_test2 ./test2
 
 
 rm sfload_mem || true
-gcc example/src/sfload_mem.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm -o sfload_mem
+gcc example/src/sfload_mem.c -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidlite -lm -o sfload_mem
 valgrind --tool=massif --massif-out-file=massif_sfload_mem ./sfload_mem mem.pcm
 # massif-visualizer massif_sfload_mem
 
 rm test3 || true
-gcc example/src/test3.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm -o test3
+gcc example/src/test3.c -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidlite -lm -o test3
 ./test3 example/sf_/GMGSx_1.sf2 test3.pcm
 # ffmpeg -f s16le -ar 44100 -ac 1 -i test3.pcm test3.wav
 
-gcc example/src/test4.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm -o test4
+gcc example/src/test4.c -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidlite -lm -o test4
 ./test4 example/sf_/GMGSx_1.sf2 test4.pcm
 # ffmpeg -f s16le -ar 44100 -ac 1 -i test4.pcm test4.wav
 
-gcc example/src/misc.c -g -Iinclude -Isrc -IDebug -c
-gcc example/src/test5.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm misc.o -o test5
+gcc example/src/misc.c -g -Iinclude -Isrc -I$BUILD -c
+gcc example/src/test5.c -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidlite -lm misc.o -o test5
 ./test5 example/sf_/GMGSx_1.sf2
 
-gcc example/src/test_u8.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm -o test_u8
+gcc example/src/test_u8.c -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidlite -lm -o test_u8
 ./test_u8 example/sf_/GMGSx_1.sf2
 
-gcc example/src/test_song.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm -o test_song
+gcc example/src/test_song.c -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidlite -lm -o test_song
 ./test_song
 ./test_song u12
 
@@ -67,33 +73,33 @@ gcc example/src/test_song.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm -
 # export QT_SCALE_FACTOR=2
 # kcachegrind callgrind.out.xx
 
-gcc example/src/test_conv.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm misc.o -o test_conv
+gcc example/src/test_conv.c -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidlite -lm misc.o -o test_conv
 ./test_conv
 
-gcc example/src/test_vel.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm misc.o -o test_vel
+gcc example/src/test_vel.c -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidlite -lm misc.o -o test_vel
 ./test_vel
 
 
-gcc example/src/test_fpe.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm misc.o -o test_fpe
+gcc example/src/test_fpe.c -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidlite -lm misc.o -o test_fpe
 ./test_fpe
 
-gcc example/src/test_fpe2.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm misc.o -rdynamic -o test_fpe2
+gcc example/src/test_fpe2.c -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidlite -lm misc.o -rdynamic -o test_fpe2
 ./test_fpe2
 
-gcc example/src/test_vel2.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm misc.o -o test_vel2
+gcc example/src/test_vel2.c -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidlite -lm misc.o -o test_vel2
 ./test_vel2
 
-#gcc example/src/test_441.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm -o test_441
+#gcc example/src/test_441.c -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidlite -lm -o test_441
 #./test_441
 
-gcc example/src/test_tuning.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm misc.o -o test_tuning
+gcc example/src/test_tuning.c -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidlite -lm misc.o -o test_tuning
 ./test_tuning
 
 
-rm -rf Debug
-cmake -S . -B Debug -DCMAKE_BUILD_TYPE=Debug -DUSING_CALLOC=1
-cmake --build Debug/
-gcc example/src/test_reverb_chorus.c -g -Iinclude -Isrc -IDebug -LDebug -lfluidlite -lm misc.o -o test_reverb_chorus
+rm -rf $BUILD
+cmake -S . -B $BUILD -DCMAKE_BUILD_TYPE=$BUILD -DUSING_CALLOC=1
+cmake --build $BUILD/
+gcc example/src/test_reverb_chorus.c -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidlite -lm misc.o -o test_reverb_chorus
 ./test_reverb_chorus
 # valgrind --dsymutil=yes --tool=callgrind --dump-instr=yes --collect-jumps=yes ./test_reverb_chorus
 # massif-visualizer massif.out.xxx
