@@ -56,6 +56,7 @@ void gen_song(const char *name, fluid_synth_t *synth, const char *fontname){
 }
 
 void assert_gen_GMGSx_2(fluid_synth_t *synth){
+    assert(synth->voice[0]->mod_count == 9);
     assert(synth->voice[0]->amp_reverb > 1e-6);
     assert(synth->voice[0]->gen[GEN_REVERBSEND].val == 800);
     assert(float_eq(synth->voice[0]->reverb_send, 0.5+0.3)); //ins:50 + global_preset:30
@@ -67,6 +68,7 @@ void assert_gen_GMGSx_2(fluid_synth_t *synth){
 void assert_gen_zero(fluid_synth_t *synth){
     assert(synth->polyphony == synth->nvoice);
     assert(synth->polyphony == 10);
+    assert(synth->voice[0]->mod_count == 0);
     assert(synth->voice[0]->chan == NO_CHANNEL);
     assert(synth->voice[0]->amp_reverb == 0);
     assert(float_eq(synth->voice[0]->reverb_send, 0));
@@ -119,6 +121,7 @@ int main(){
 
     synth = NEW_FLUID_SYNTH(.with_reverb=false);
     assert_gen_zero(synth);
+    delete_fluid_synth(synth);
     synth = NEW_FLUID_SYNTH(.with_reverb=false, .with_chorus=true);
     assert_gen_zero(synth);
     assert(synth->reverb == NULL);
