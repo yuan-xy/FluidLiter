@@ -1,2 +1,2 @@
 rm -rf Debug/
-./test_example.sh
+./example_tests.sh

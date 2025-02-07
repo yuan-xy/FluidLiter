@@ -68,7 +68,6 @@ void assert_gen_GMGSx_2(fluid_synth_t *synth){
 void assert_gen_zero(fluid_synth_t *synth){
     assert(synth->polyphony == synth->nvoice);
     assert(synth->polyphony == 10);
-    assert(synth->voice[0]->mod_count == 0);
     assert(synth->voice[0]->chan == NO_CHANNEL);
     assert(synth->voice[0]->amp_reverb == 0);
     assert(float_eq(synth->voice[0]->reverb_send, 0));
@@ -88,6 +87,7 @@ int main(){
 
     synth = NEW_FLUID_SYNTH(.with_reverb=false);
     assert_gen_zero(synth);
+    assert(synth->voice[0]->mod_count == 0);
     assert(default_reverb_mod.src1 == 91);
     assert(default_chorus_mod.src1 == 93);
     assert(default_reverb_mod.amount == 200);
@@ -105,6 +105,7 @@ int main(){
 
     synth = NEW_FLUID_SYNTH(.with_reverb=true);
     assert_gen_zero(synth);
+    assert(synth->voice[0]->mod_count == 0);
     assert(synth->reverb != NULL);
     assert(float_eq(synth->reverb->damp, FLUID_REVERB_DEFAULT_DAMP));
     assert(float_eq(synth->reverb->level, FLUID_REVERB_DEFAULT_LEVEL));
@@ -121,6 +122,7 @@ int main(){
 
     synth = NEW_FLUID_SYNTH(.with_reverb=false);
     assert_gen_zero(synth);
+    assert(synth->voice[0]->mod_count == 0);
     delete_fluid_synth(synth);
     synth = NEW_FLUID_SYNTH(.with_reverb=false, .with_chorus=true);
     assert_gen_zero(synth);
@@ -141,6 +143,7 @@ int main(){
 
     synth = NEW_FLUID_SYNTH(.with_reverb=true, .with_chorus=true);
     assert_gen_zero(synth);
+    assert(synth->voice[0]->mod_count == 0);
     assert(synth->with_reverb);
     assert(synth->with_chorus);
     assert(synth->reverb != NULL);
@@ -157,6 +160,7 @@ int main(){
     //soundfont里没有设置reverb_send/chorus_send，下面的声音就没效果
     gen_song("song_reverb_chorus_but_no_effect", synth, "example/sf_/GMGSx_1.sf2");
     assert_gen_zero(synth);
+    assert(synth->voice[0]->mod_count == 9);
     delete_fluid_synth(synth);
 
     synth = NEW_FLUID_SYNTH(.with_reverb=true, .with_chorus=true);
