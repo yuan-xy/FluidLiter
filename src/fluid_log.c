@@ -4,7 +4,12 @@
 #define ERR_BUF_LEN 128
 #endif
 
+#if DEBUG
 static char fluid_errbuf[ERR_BUF_LEN]; /* buffer for error message */
+#else
+static char fluid_errbuf[0]; /* no buffer for error message when release */
+#endif
+
 
 const char *fluid_libname = "FL";
 
@@ -64,6 +69,7 @@ void fluid_default_log_function(enum fluid_log_level level, char *message) {
  * @param ... Arguments for printf 'fmt' message string
  * @return Always returns -1
  */
+#if DEBUG
 int fluid_log(enum fluid_log_level level, char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
@@ -75,3 +81,6 @@ int fluid_log(enum fluid_log_level level, char *fmt, ...) {
     }
     return FLUID_FAILED;
 }
+#else
+FLUID_INLINE int fluid_log(enum fluid_log_level level, char *fmt, ...) {return 0;}
+#endif
