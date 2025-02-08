@@ -70,7 +70,6 @@ void fluid_default_log_function(enum fluid_log_level level, char *message) {
  * @param ... Arguments for printf 'fmt' message string
  * @return Always returns -1
  */
-#if DEBUG
 int fluid_log(enum fluid_log_level level, char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
@@ -82,6 +81,3 @@ int fluid_log(enum fluid_log_level level, char *fmt, ...) {
     }
     return FLUID_FAILED;
 }
-#else
-FLUID_INLINE int fluid_log(enum fluid_log_level level, char *fmt, ...) {return 0;}
-#endif

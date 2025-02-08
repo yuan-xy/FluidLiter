@@ -174,7 +174,11 @@ typedef FILE *fluid_file;
 #define FLUID_FLUSH() fflush(stdout)
 #endif
 
+#if DEBUG
 #define FLUID_LOG fluid_log
+#else
+#define FLUID_LOG(...) (void)0;
+#endif
 
 #ifndef M_PI
 #define M_PI 3.1415926535897932384626433832795
