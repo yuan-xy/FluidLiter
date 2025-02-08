@@ -422,6 +422,7 @@ int fluid_voice_write(fluid_voice_t *voice, fluid_real_t *dsp_left_buf,
     /* calculate the frequency of the resonant filter in Hz */
     fres = fluid_ct2hz(voice->fres + voice->modlfo_val * voice->modlfo_to_fc +
                        voice->modenv_val * voice->modenv_to_fc);
+    // FLUID_LOG(FLUID_DBG, "resonant filter fres:%f", fres);
 
     /* FIXME - Still potential for a click during turn on, can we interpolate
        between 20khz cutoff and 0 Q? */
@@ -490,7 +491,7 @@ int fluid_voice_write(fluid_voice_t *voice, fluid_real_t *dsp_left_buf,
             voice->b1 = b1_temp;
             voice->filter_coeff_incr_count = 0;
             voice->filter_startup = 0;
-            //       printf("Setting initial filter coefficients.\n");
+            // FLUID_LOG(FLUID_DBG, "Setting initial filter coefficients.");
         } else {
             /* The filter frequency is changed.  Calculate an increment
              * factor, so that the new setting is reached after one buffer
@@ -1021,6 +1022,7 @@ void fluid_voice_update_param(fluid_voice_t *voice, int gen) {
          * function [PH,20021214]
          */
         voice->fres = _GEN(voice, GEN_FILTERFC);
+        FLUID_LOG(FLUID_DBG, "GEN_FILTERFC fres:%f", voice->fres);
 
         /* The synthesis loop will have to recalculate the filter
          * coefficients. */

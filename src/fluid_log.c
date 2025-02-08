@@ -34,7 +34,8 @@ void fluid_default_log_function(enum fluid_log_level level, char *message) {
 #if defined(WIN32)
     out = stdout;
 #else
-    out = stderr;
+    if(level < FLUID_INFO) out = stderr;
+    else out = stdout;
 #endif
 
     switch (level) {

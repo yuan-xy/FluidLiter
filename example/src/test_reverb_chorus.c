@@ -83,6 +83,7 @@ void assert_gen_zero(fluid_synth_t *synth){
 extern fluid_mod_t default_reverb_mod, default_chorus_mod;
 
 int main(){
+    set_log_level(FLUID_DBG);
     assert(GEN_REVERBSEND==16);
     assert(GEN_CHORUSSEND==15);
 
