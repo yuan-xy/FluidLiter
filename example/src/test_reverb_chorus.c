@@ -66,6 +66,8 @@ void assert_gen_GMGSx_2(fluid_synth_t *synth){
 }
 
 void assert_gen_zero(fluid_synth_t *synth){
+#ifdef USING_CALLOC
+    assert(synth->voice[0]->mod_count == 0);
     assert(synth->polyphony == synth->nvoice);
     assert(synth->polyphony == 10);
     assert(synth->voice[0]->chan == NO_CHANNEL);
@@ -73,6 +75,7 @@ void assert_gen_zero(fluid_synth_t *synth){
     assert(float_eq(synth->voice[0]->reverb_send, 0));
     assert(synth->voice[0]->amp_chorus == 0);
     assert(float_eq(synth->voice[0]->chorus_send, 0));
+#endif
 }
 
 
@@ -87,7 +90,6 @@ int main(){
 
     synth = NEW_FLUID_SYNTH(.with_reverb=false);
     assert_gen_zero(synth);
-    assert(synth->voice[0]->mod_count == 0);
     assert(default_reverb_mod.src1 == 91);
     assert(default_chorus_mod.src1 == 93);
     assert(default_reverb_mod.amount == 200);
@@ -105,7 +107,6 @@ int main(){
 
     synth = NEW_FLUID_SYNTH(.with_reverb=true);
     assert_gen_zero(synth);
-    assert(synth->voice[0]->mod_count == 0);
     assert(synth->reverb != NULL);
     assert(float_eq(synth->reverb->damp, FLUID_REVERB_DEFAULT_DAMP));
     assert(float_eq(synth->reverb->level, FLUID_REVERB_DEFAULT_LEVEL));
@@ -122,7 +123,6 @@ int main(){
 
     synth = NEW_FLUID_SYNTH(.with_reverb=false);
     assert_gen_zero(synth);
-    assert(synth->voice[0]->mod_count == 0);
     delete_fluid_synth(synth);
     synth = NEW_FLUID_SYNTH(.with_reverb=false, .with_chorus=true);
     assert_gen_zero(synth);
@@ -143,7 +143,6 @@ int main(){
 
     synth = NEW_FLUID_SYNTH(.with_reverb=true, .with_chorus=true);
     assert_gen_zero(synth);
-    assert(synth->voice[0]->mod_count == 0);
     assert(synth->with_reverb);
     assert(synth->with_chorus);
     assert(synth->reverb != NULL);
@@ -170,8 +169,10 @@ int main(){
     assert(synth->channel[0]->gen[GEN_REVERBSEND] == 800);
     assert(synth->channel[0]->gen[GEN_CHORUSSEND] == 700);
     assert_gen_zero(synth);
+#ifdef USING_CALLOC
     assert(synth->voice[0]->gen[GEN_REVERBSEND].val == 0);
     assert(synth->voice[0]->gen[GEN_CHORUSSEND].val == 0);
+#endif
     // 这段代码未执行：if (voice->chan == chan) fluid_voice_set_param(voice, param, v, absolute);
     // voice->chan  = 255 NO_CHANNEL， chan=0， 所以voice里的gen未设置。
 

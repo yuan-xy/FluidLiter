@@ -45,7 +45,9 @@ typedef enum
 /*-------------------------------------------------------------------------------------
   Private
 --------------------------------------------------------------------------------------*/
+#if DEBUG
 #define DEBUG_PRINT // allows message to be printed on the console.
+#endif
 
 #define MAX_CHORUS    99   /* number maximum of block */
 #define MAX_LEVEL     10   /* max output level */

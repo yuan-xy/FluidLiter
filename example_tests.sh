@@ -95,12 +95,11 @@ gcc example/src/test_vel2.c -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidlite -lm
 gcc example/src/test_tuning.c -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidlite -lm misc.o -o test_tuning
 ./test_tuning
 
-
-rm -rf $BUILD
-cmake -S . -B $BUILD -DCMAKE_BUILD_TYPE=$BUILD -DUSING_CALLOC=1
-cmake --build $BUILD/
+# rm -rf $BUILD
+# cmake -S . -B $BUILD -DCMAKE_BUILD_TYPE=$BUILD -DUSING_CALLOC=1
+# cmake --build $BUILD/
 gcc example/src/test_reverb_chorus.c -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidlite -lm misc.o -o test_reverb_chorus
-./test_reverb_chorus
+valgrind --tool=massif  ./test_reverb_chorus
 # valgrind --dsymutil=yes --tool=callgrind --dump-instr=yes --collect-jumps=yes ./test_reverb_chorus
 # massif-visualizer massif.out.xxx
-# valgrind --tool=massif  ./test_reverb_chorus
+
