@@ -2178,7 +2178,7 @@ void fluid_synth_release_voice_on_same_note(fluid_synth_t *synth, int chan,
  * If chan is < 0, then set the interpolation method on all channels.
  */
 int fluid_synth_set_interp_method(fluid_synth_t *synth, int chan,
-                                  int interp_method) {
+                                  uint8_t interp_method) {
     int i;
     for (i = 0; i < synth->midi_channels; i++) {
         if (synth->channel[i] == NULL) {

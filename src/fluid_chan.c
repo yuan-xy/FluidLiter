@@ -349,15 +349,11 @@ int fluid_channel_get_num(fluid_channel_t *chan) {
  * Sets the index of the interpolation method used on this channel,
  * as in fluid_interp in fluidlite.h
  */
-void fluid_channel_set_interp_method(fluid_channel_t *chan, int new_method) {
+void fluid_channel_set_interp_method(fluid_channel_t *chan, uint8_t new_method) {
     chan->interp_method = new_method;
 }
 
-/* Purpose:
- * Returns the index of the interpolation method used on this channel,
- * as in fluid_interp in fluidlite.h
- */
-int fluid_channel_get_interp_method(fluid_channel_t *chan) {
+uint8_t fluid_channel_get_interp_method(fluid_channel_t *chan) {
     return chan->interp_method;
 }
 

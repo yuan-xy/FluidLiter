@@ -2,6 +2,7 @@
 #ifndef _FLUID_VOICE_H
 #define _FLUID_VOICE_H
 
+#include <stdbool.h>
 #include "fluid_phase.h"
 #include "fluid_gen.h"
 #include "fluid_mod.h"
@@ -49,13 +50,11 @@ struct _fluid_voice_t {
     fluid_gen_t gen[GEN_LAST];
     fluid_mod_t mod[FLUID_NUM_MOD];
     uint8_t mod_count;
-    int has_looped; /* Flag that is set as soon as the first loop is completed.
-                     */
-    fluid_sample_t *sample;
+    bool has_looped; /* Flag that is set as soon as the first loop is completed. */
     uint8_t check_sample_sanity_flag; /* Flag that initiates, that sample-related
                      parameters have to be checked. */
 
-    /* basic parameters */
+    fluid_sample_t *sample;
     fluid_real_t output_rate; /* the sample rate of the synthesizer */
 
     unsigned int start_time;
@@ -130,7 +129,7 @@ struct _fluid_voice_t {
     fluid_real_t q_lin;        /* the q-factor on a linear scale */
     fluid_real_t filter_gain;  /* Gain correction factor, depends on q */
     fluid_real_t hist1, hist2; /* Sample history for the IIR filter */
-    uint8_t filter_startup;    /* Flag: If set, the filter will be set directly. Else it changes
+    bool filter_startup;    /* Flag: If set, the filter will be set directly. Else it changes
                                   smoothly. */
 
     /* filter coefficients */
@@ -161,7 +160,7 @@ struct _fluid_voice_t {
     fluid_real_t amp_chorus;
 
     /* interpolation method, as in fluid_interp in fluidlite.h */
-    int interp_method;
+    uint8_t interp_method;
 };
 
 fluid_voice_t *new_fluid_voice(fluid_real_t output_rate);

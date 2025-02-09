@@ -360,7 +360,7 @@ FLUIDSYNTH_API int fluid_synth_get_internal_bufsize(fluid_synth_t *synth);
 /** Set the interpolation method for one channel or all channels (chan = -1) */
 FLUIDSYNTH_API
 int fluid_synth_set_interp_method(fluid_synth_t *synth, int chan,
-                                  int interp_method);
+                                  uint8_t interp_method);
 
 /* Flags to choose the interpolation method */
 enum fluid_interp {
