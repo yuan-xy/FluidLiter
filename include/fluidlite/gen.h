@@ -91,7 +91,7 @@ enum fluid_gen_type {
 typedef struct _fluid_sf_gen_t {
     uint8_t num;
     double val;          /**< The nominal value */
-} fluid_sf_gen_t; //TODO：和SFGen重复
+} fluid_sf_gen_t; //TODO：similar to SFGen
 
 
 typedef struct _fluid_gen_t {

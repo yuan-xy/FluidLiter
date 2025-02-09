@@ -699,7 +699,7 @@ int fluid_defpreset_noteon(fluid_defpreset_t *preset, fluid_synth_t *synth,
           uint8_t preset_excluded[GEN_LAST]={0};
           fluid_sf_gen_t *gen;
           fluid_list_t *p;
-          
+
           p = preset_zone->sf_gen;
           while (p != NULL) {
             gen = (fluid_sf_gen_t *) p->data;
@@ -1339,7 +1339,7 @@ int delete_fluid_inst_zone(fluid_inst_zone_t *zone) {
         FLUID_FREE(tmp);
         gen = fluid_list_next(gen);
     }
-    //TODO: fluid_list_t gen本身也要被free吧？
+    delete_fluid_list(zone->sf_gen);
 
     if (zone->name) FLUID_FREE(zone->name);
     FLUID_FREE(zone);
