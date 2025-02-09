@@ -88,6 +88,12 @@ enum fluid_gen_type {
 /**
  * SoundFont generator structure.
  */
+typedef struct _fluid_sf_gen_t {
+    uint8_t num;
+    double val;          /**< The nominal value */
+} fluid_sf_gen_t; //TODO：和SFGen重复
+
+
 typedef struct _fluid_gen_t {
     unsigned char flags; /**< Is the generator set or not (#fluid_gen_flags) */
     double val;          /**< The nominal value */

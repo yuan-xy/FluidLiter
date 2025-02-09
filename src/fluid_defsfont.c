@@ -1,6 +1,6 @@
 #include "fluid_defsfont.h"
 #include "fluid_sfont.h"
-
+#include "fluid_gen.h"
 
 /***************************************************************
  *
@@ -614,29 +614,33 @@ int fluid_defpreset_noteon(fluid_defpreset_t *preset, fluid_synth_t *synth,
                     }
 
                     /* Instrument level, generators */
+        if(1){
+          uint8_t inst_excluded[GEN_LAST]={0};
+          fluid_sf_gen_t *gen;
+          fluid_list_t *p;
 
-                    for (i = 0; i < GEN_LAST; i++) {
-                        /* SF 2.01 section 9.4 'bullet' 4:
-                         *
-                         * A generator in a local instrument zone supersedes a
-                         * global instrument zone generator.  Both cases
-                         * supersede the default generator -> voice_gen_set */
+          
+          p = inst_zone->sf_gen;
+          while (p != NULL) {
+            gen = (fluid_sf_gen_t *) p->data;
+            uint8_t i = gen->num;
+            fluid_voice_gen_set(voice, i, gen->val);
+            inst_excluded[i]=1;
+            p = fluid_list_next(p);
+          }
 
-                        if (inst_zone->gen[i].flags) {
-                            fluid_voice_gen_set(voice, i,
-                                                inst_zone->gen[i].val);
-                        } else if ((global_inst_zone != NULL) &&
-                                   (global_inst_zone->gen[i].flags)) {
-                            fluid_voice_gen_set(voice, i,
-                                                global_inst_zone->gen[i].val);
-                        } else {
-                            /* The generator has not been defined in this
-                             * instrument. Do nothing, leave it at the default.
-                             */
-                        }
-
-                    } /* for all generators */
-
+          if (global_inst_zone) {
+            p = global_inst_zone->sf_gen;
+            while (p != NULL) {
+              gen = (fluid_sf_gen_t *) p->data;
+              uint8_t i = gen->num;
+              if(!inst_excluded[i])
+                fluid_voice_gen_set(voice, i, gen->val);
+              
+              p = fluid_list_next(p);
+            }
+          }
+        }
                     /* global instrument zone, modulators: Put them all into a
                      * list. */
 
@@ -690,40 +694,64 @@ int fluid_defpreset_noteon(fluid_defpreset_t *preset, fluid_synth_t *synth,
                     }
 
                     /* Preset level, generators */
-                    for (i = 0; i < GEN_LAST; i++) {
-                        /* SF 2.01 section 8.5 page 58: If some generators are
-                         * encountered at preset level, they should be ignored
-                         */
-                        if ((i != GEN_STARTADDROFS) && (i != GEN_ENDADDROFS) &&
-                            (i != GEN_STARTLOOPADDROFS) &&
-                            (i != GEN_ENDLOOPADDROFS) &&
-                            (i != GEN_STARTADDRCOARSEOFS) &&
-                            (i != GEN_ENDADDRCOARSEOFS) &&
-                            (i != GEN_STARTLOOPADDRCOARSEOFS) &&
-                            (i != GEN_KEYNUM) && (i != GEN_VELOCITY) &&
-                            (i != GEN_ENDLOOPADDRCOARSEOFS) &&
-                            (i != GEN_SAMPLEMODE) &&
-                            (i != GEN_EXCLUSIVECLASS) &&
-                            (i != GEN_OVERRIDEROOTKEY)) {
-                            /* SF 2.01 section 9.4 'bullet' 9: A generator in a
-                             * local preset zone supersedes a global preset zone
-                             * generator.  The effect is -added- to the
-                             * destination summing node -> voice_gen_incr */
 
-                            if (preset_zone->gen[i].flags) {
-                                fluid_voice_gen_incr(voice, i,
-                                                     preset_zone->gen[i].val);
-                            } else if ((global_preset_zone != NULL) &&
-                                       global_preset_zone->gen[i].flags) {
-                                fluid_voice_gen_incr(
-                                    voice, i, global_preset_zone->gen[i].val);
-                            } else {
-                                /* The generator has not been defined in this
-                                 * preset Do nothing, leave it unchanged.
-                                 */
-                            }
-                        } /* if available at preset level */
-                    }     /* for all generators */
+        if(1){
+          uint8_t preset_excluded[GEN_LAST]={0};
+          fluid_sf_gen_t *gen;
+          fluid_list_t *p;
+          
+          p = preset_zone->sf_gen;
+          while (p != NULL) {
+            gen = (fluid_sf_gen_t *) p->data;
+            uint8_t i = gen->num;
+            if ((i != GEN_STARTADDROFS)
+                && (i != GEN_ENDADDROFS)
+                && (i != GEN_STARTLOOPADDROFS)
+                && (i != GEN_ENDLOOPADDROFS)
+                && (i != GEN_STARTADDRCOARSEOFS)
+                && (i != GEN_ENDADDRCOARSEOFS)
+                && (i != GEN_STARTLOOPADDRCOARSEOFS)
+                && (i != GEN_KEYNUM)
+                && (i != GEN_VELOCITY)
+                && (i != GEN_ENDLOOPADDRCOARSEOFS)
+                && (i != GEN_SAMPLEMODE)
+                && (i != GEN_EXCLUSIVECLASS)
+                && (i != GEN_OVERRIDEROOTKEY)) {
+              fluid_voice_gen_incr(voice, i, gen->val);
+              preset_excluded[i]=1;
+            }
+            p = fluid_list_next(p);
+          }
+
+          if (global_preset_zone) {
+            p = global_preset_zone->sf_gen;
+            while (p != NULL) {
+              gen = (fluid_sf_gen_t *) p->data;
+              uint8_t i = gen->num;
+              if ((i != GEN_STARTADDROFS)
+              && (i != GEN_ENDADDROFS)
+              && (i != GEN_STARTLOOPADDROFS)
+              && (i != GEN_ENDLOOPADDROFS)
+              && (i != GEN_STARTADDRCOARSEOFS)
+              && (i != GEN_ENDADDRCOARSEOFS)
+              && (i != GEN_STARTLOOPADDRCOARSEOFS)
+              && (i != GEN_KEYNUM)
+              && (i != GEN_VELOCITY)
+              && (i != GEN_ENDLOOPADDRCOARSEOFS)
+              && (i != GEN_SAMPLEMODE)
+              && (i != GEN_EXCLUSIVECLASS)
+              && (i != GEN_OVERRIDEROOTKEY)) {
+                if(!preset_excluded[i])
+                  fluid_voice_gen_incr(voice, i, gen->val);
+              }
+              p = fluid_list_next(p);
+            } //end while
+          } //end if
+          
+        }
+
+
+
 
                     /* Global preset zone, modulators: put them all into a
                      * list. */
@@ -900,11 +928,7 @@ fluid_preset_zone_t *new_fluid_preset_zone(char *name) {
     zone->keyhi = 128;
     zone->vello = 0;
     zone->velhi = 128;
-
-    /* Flag all generators as unused (default, they will be set when they are
-     * found in the sound font). This also sets the generator values to default,
-     * but that is of no concern here.*/
-    fluid_gen_set_default_values(&zone->gen[0]);
+    zone->sf_gen = NULL;
     zone->mod = NULL; /* list of modulators */
     return zone;
 }
@@ -934,13 +958,12 @@ int delete_fluid_preset_zone(fluid_preset_zone_t *zone) {
     return FLUID_OK;
 }
 
-/*
- * fluid_preset_zone_import_sfont
- */
+
 int fluid_preset_zone_import_sfont(fluid_preset_zone_t *zone, SFZone *sfzone,
                                    fluid_defsfont_t *sfont) {
     fluid_list_t *r;
     SFGen *sfgen;
+    fluid_sf_gen_t *gen=NULL;
     int count;
     for (count = 0, r = sfzone->gen; r != NULL; count++) {
         sfgen = (SFGen *)r->data;
@@ -954,10 +977,18 @@ int fluid_preset_zone_import_sfont(fluid_preset_zone_t *zone, SFZone *sfzone,
             zone->velhi = (int)sfgen->amount.range.hi;
             break;
         default:
-            /* FIXME: some generators have an unsigne word amount value but i
-             * don't know which ones */
-            zone->gen[sfgen->id].val = (fluid_real_t)sfgen->amount.sword;
-            zone->gen[sfgen->id].flags = GEN_SET;
+            if(fluid_gen_info[sfgen->id].def != (fluid_real_t) sfgen->amount.sword) {
+                gen=fluid_sf_gen_get(zone->sf_gen,sfgen->id);
+                if(!gen) {
+                    gen=fluid_sf_gen_create(sfgen->id);
+                    gen->val=(fluid_real_t) sfgen->amount.sword;
+                    zone->sf_gen=fluid_list_append(zone->sf_gen, gen);
+                }else{
+                    FLUID_LOG(FLUID_WARN, "unexpect preset gen(%d, %f) exsits.", gen->num, gen->val);
+                }
+            }else{
+                FLUID_LOG(FLUID_WARN, "good news: don't repeat create preset gen(%d, %d).", sfgen->id, sfgen->amount.sword);
+            }
             break;
         }
         r = fluid_list_next(r);
@@ -1283,11 +1314,7 @@ fluid_inst_zone_t *new_fluid_inst_zone(char *name) {
     zone->keyhi = 128;
     zone->vello = 0;
     zone->velhi = 128;
-
-    /* Flag the generators as unused.
-     * This also sets the generator values to default, but they will be
-     * overwritten anyway, if used.*/
-    fluid_gen_set_default_values(&zone->gen[0]);
+    zone->sf_gen = NULL;
     zone->mod = NULL; /* list of modulators */
     return zone;
 }
@@ -1306,6 +1333,14 @@ int delete_fluid_inst_zone(fluid_inst_zone_t *zone) {
         fluid_mod_delete(tmp);
     }
 
+    fluid_list_t *gen = zone->sf_gen;
+    while (gen != NULL) {
+        fluid_sf_gen_t *tmp = (fluid_sf_gen_t *)gen->data;
+        FLUID_FREE(tmp);
+        gen = fluid_list_next(gen);
+    }
+    //TODO: fluid_list_t gen本身也要被free吧？
+
     if (zone->name) FLUID_FREE(zone->name);
     FLUID_FREE(zone);
     return FLUID_OK;
@@ -1318,13 +1353,11 @@ fluid_inst_zone_t *fluid_inst_zone_next(fluid_inst_zone_t *zone) {
     return zone->next;
 }
 
-/*
- * fluid_inst_zone_import_sfont
- */
 int fluid_inst_zone_import_sfont(fluid_inst_zone_t *zone, SFZone *sfzone,
                                  fluid_defsfont_t *sfont) {
     fluid_list_t *r;
     SFGen *sfgen;
+    fluid_sf_gen_t *gen=NULL;
     int count;
 
     for (count = 0, r = sfzone->gen; r != NULL; count++) {
@@ -1339,10 +1372,18 @@ int fluid_inst_zone_import_sfont(fluid_inst_zone_t *zone, SFZone *sfzone,
             zone->velhi = (int)sfgen->amount.range.hi;
             break;
         default:
-            /* FIXME: some generators have an unsigned word amount value but
-         i don't know which ones */
-            zone->gen[sfgen->id].val = (fluid_real_t)sfgen->amount.sword;
-            zone->gen[sfgen->id].flags = GEN_SET;
+            if(fluid_gen_info[sfgen->id].def != (fluid_real_t) sfgen->amount.sword) {
+                gen=fluid_sf_gen_get(zone->sf_gen,sfgen->id);
+                if(!gen) {
+                    gen=fluid_sf_gen_create(sfgen->id);
+                    gen->val=(fluid_real_t) sfgen->amount.sword;
+                    zone->sf_gen=fluid_list_append(zone->sf_gen, gen);
+                }else{
+                    FLUID_LOG(FLUID_WARN, "unexpect gen(%d, %f) exsits.", gen->num, gen->val);
+                }
+            }else{
+                FLUID_LOG(FLUID_WARN, "good news: don't repeat create gen(%d, %d).", sfgen->id, sfgen->amount.sword);
+            }
             break;
         }
         r = fluid_list_next(r);

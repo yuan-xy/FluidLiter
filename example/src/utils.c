@@ -47,11 +47,15 @@ void print_voice_modulator(fluid_voice_t* voice){
 
 
 
-#define print_gen(iz, desc) for(int i=0; i<GEN_LAST; i++){ \
-      fluid_gen_t gen = iz->gen[i];\
-      if(!gen.flags) continue;\
-      printf("%s %d_%s,\t n_v:%.2f, \tmod:%.2f, \tnrpn:%.2f\n", desc, i, get_gen_name(i), gen.val, gen.mod, gen.nrpn);\
+#define print_sf_gen(iz, desc) {\
+    fluid_sf_gen_t *gen;\
+    fluid_list_t *p = iz->sf_gen;\
+    while (p != NULL) {\
+        gen = (fluid_sf_gen_t *) p->data;\
+        printf("%s %d_%s,\t n_v:%.2f\n", desc, gen->num, get_gen_name(gen->num), gen->val);\
+        p = fluid_list_next(p);\
     }\
+}\
 
 
 #define print_mod(iz, desc)    fluid_mod_t * mod = iz->mod;\
@@ -66,7 +70,7 @@ void print_fluid_preset_zone_global(fluid_preset_zone_t *pz){
     printf("global_preset_zone: %s,\t keylo:%d, hi:%d,\t velLo:%d, hi:%d\n",
       pz->name, pz->keylo, pz->keyhi, pz->vello, pz->velhi);
     
-    print_gen(pz, "global_preset_gen");
+    print_sf_gen(pz, "global_preset_gen");
     print_mod(pz, "global_preset_mod");
 
     assert(pz->inst==NULL);
@@ -77,7 +81,7 @@ void print_fluid_preset_zone(fluid_preset_zone_t *pz){
     printf("preset_zone: %s,\t keylo:%d, hi:%d,\t velLo:%d, hi:%d\n",
       pz->name, pz->keylo, pz->keyhi, pz->vello, pz->velhi);
 
-    print_gen(pz, "preset_gen");
+    print_sf_gen(pz, "preset_gen");
     print_mod(pz, "preset_mod");
 }
 
@@ -87,7 +91,7 @@ void print_fluid_inst_zone_global(fluid_inst_zone_t *iz){
     printf("global_inst_zone: %s,\t keylo:%d, hi:%d,\t velLo:%d, hi:%d\n",
       iz->name, iz->keylo, iz->keyhi, iz->vello, iz->velhi);
 
-    print_gen(iz, "global_inst_gen");
+    print_sf_gen(iz, "global_inst_gen");
     print_mod(iz, "global_inst_mod");
 
     assert(iz->sample==NULL);
@@ -98,7 +102,7 @@ void print_fluid_inst_zone(fluid_inst_zone_t *iz){
     printf("\tinst_zone:\t%s,\t keylo:%d, hi:%d,\t velLo:%d, hi:%d\n",
       iz->name, iz->keylo, iz->keyhi, iz->vello, iz->velhi);
     
-    print_gen(iz, "\tinst_gen");
+    print_sf_gen(iz, "\tinst_gen");
     print_mod(iz, "inst_mod");
 
     fluid_sample_t* sample = iz->sample;

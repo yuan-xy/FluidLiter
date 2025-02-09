@@ -530,7 +530,7 @@ struct _fluid_preset_zone_t {
     int keyhi;
     int vello;
     int velhi;
-    fluid_gen_t gen[GEN_LAST];
+    fluid_list_t *sf_gen;
     fluid_mod_t *mod; /* List of modulators */
 };
 
@@ -565,7 +565,7 @@ struct _fluid_inst_zone_t {
     int keyhi;
     int vello;
     int velhi;
-    fluid_gen_t gen[GEN_LAST];
+    fluid_list_t *sf_gen;
     fluid_mod_t *mod; /* List of modulators */
 };
 
