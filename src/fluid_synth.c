@@ -2486,9 +2486,8 @@ int fluid_synth_tuning_dump(fluid_synth_t *synth, int bank, int prog,
     return FLUID_OK;
 }
 
-int fluid_synth_set_gen(fluid_synth_t *synth, int chan, int param,
-                        float value) {
-    return fluid_synth_set_gen2(synth, chan, param, value, 0, 1);
+int fluid_synth_set_gen(fluid_synth_t *synth, int chan, int param, float value) {
+    return fluid_synth_set_gen2(synth, chan, param, value, 1);
 }
 
 /** Change the value of a generator. This function allows to control
@@ -2500,22 +2499,13 @@ int fluid_synth_set_gen(fluid_synth_t *synth, int chan, int param,
     specification, paragraph 8.1.3, page 48. See also
     'fluid_gen_type'.
 
-    Using the fluid_synth_set_gen2() function, it is possible to set
-    the absolute value of a generator. This is an extension to the
-    SoundFont standard. If 'absolute' is non-zero, the value of the
-    generator specified in the SoundFont is completely ignored and the
-    generator is fixed to the value passed as argument. To undo this
-    behavior, you must call fluid_synth_set_gen2 again, with
-    'absolute' set to 0 (and possibly 'value' set to zero).
-
     If 'normalized' is non-zero, the value is supposed to be
     normalized between 0 and 1. Before applying the value, it will be
     scaled and shifted to the range defined in the SoundFont
     specifications.
 
  */
-int fluid_synth_set_gen2(fluid_synth_t *synth, int chan, int param, float value,
-                         int absolute, int normalized) {
+int fluid_synth_set_gen2(fluid_synth_t *synth, int chan, int param, float value, int normalized) {
     int i;
     fluid_voice_t *voice;
     float v;
@@ -2532,12 +2522,12 @@ int fluid_synth_set_gen2(fluid_synth_t *synth, int chan, int param, float value,
 
     v = (normalized) ? fluid_gen_scale(param, value) : value;
 
-    fluid_channel_set_gen(synth->channel[chan], param, v, absolute);
+    fluid_channel_set_gen(synth->channel[chan], param, v);
 
     for (i = 0; i < synth->polyphony; i++) {
         voice = synth->voice[i];
         if (voice->chan == chan) {
-            fluid_voice_set_param(voice, param, v, absolute);
+            fluid_voice_set_param(voice, param, v);
         }
     }
 

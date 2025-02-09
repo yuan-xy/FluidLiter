@@ -107,7 +107,6 @@ typedef struct _fluid_gen_t {
 enum fluid_gen_flags {
     GEN_UNUSED,  /**< Generator value is not set */
     GEN_SET,     /**< Generator value is set */
-    GEN_ABS_NRPN /**< DOCME */
 };
 
 FLUIDSYNTH_API int fluid_gen_set_default_values(fluid_gen_t *gen);

@@ -157,6 +157,6 @@ int fluid_synth_program_select2(fluid_synth_t *synth, int chan,
 fluid_sfont_t *fluid_synth_get_sfont_by_name(fluid_synth_t *synth, char *name);
 
 int fluid_synth_set_gen2(fluid_synth_t *synth, int chan, int param, float value,
-                         int absolute, int normalized);
+                         int normalized);
 
 #endif /* _FLUID_SYNTH_H */

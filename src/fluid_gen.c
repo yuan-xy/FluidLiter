@@ -31,13 +31,6 @@ int fluid_gen_init(fluid_gen_t *gen, fluid_channel_t *channel) {
 
     for (i = 0; i < GEN_LAST; i++) {
         gen[i].nrpn = fluid_channel_get_gen(channel, i);
-
-        /* This is an extension to the SoundFont standard. More
-         * documentation is available at the fluid_synth_set_gen2()
-         * function. */
-        if (fluid_channel_get_gen_abs(channel, i)) {
-            gen[i].flags = GEN_ABS_NRPN;
-        }
     }
 
     return FLUID_OK;

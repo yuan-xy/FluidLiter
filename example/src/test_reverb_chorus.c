@@ -26,6 +26,7 @@ void gen_song(const char *name, fluid_synth_t *synth, const char *fontname){
     
     int sfid = fluid_synth_sfload(synth, fontname, 1);
     fluid_synth_program_select(synth, 0, sfid, 0, 0);
+    print_gen_values(synth, 0, TRUE);
 
 
     int notes[] = {NN3, NN6, NN1+12, NN7, NN6, NN1+12, NN6, NN7, NN6, NN4, NN5, NN3};
@@ -43,6 +44,7 @@ void gen_song(const char *name, fluid_synth_t *synth, const char *fontname){
         fwrite(buffer, sizeof(int16_t), samples, file);
         fluid_synth_noteoff(synth, 0, notes[i]);
     }
+    print_gen_values(synth, 0, TRUE);
 
     fclose(file);
 

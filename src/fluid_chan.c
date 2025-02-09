@@ -55,7 +55,6 @@ void fluid_channel_init_ctrl(fluid_channel_t *chan, int is_all_ctrl_off) {
 
     for (i = 0; i < GEN_LAST; i++) {
         chan->gen[i] = 0.0f;
-        chan->gen_abs[i] = 0;
     }
 
     if (is_all_ctrl_off) {
@@ -149,46 +148,34 @@ int fluid_channel_set_preset(fluid_channel_t *chan, fluid_preset_t *preset) {
     return FLUID_OK;
 }
 
-/*
- * fluid_channel_get_preset
- */
+
 fluid_preset_t *fluid_channel_get_preset(fluid_channel_t *chan) {
     return chan->preset;
 }
 
-/*
- * fluid_channel_get_banknum
- */
+
 unsigned int fluid_channel_get_banknum(fluid_channel_t *chan) {
     return chan->banknum;
 }
 
-/*
- * fluid_channel_set_prognum
- */
+
 int fluid_channel_set_prognum(fluid_channel_t *chan, int prognum) {
     chan->prognum = prognum;
     return FLUID_OK;
 }
 
-/*
- * fluid_channel_get_prognum
- */
+
 int fluid_channel_get_prognum(fluid_channel_t *chan) {
     return chan->prognum;
 }
 
-/*
- * fluid_channel_set_banknum
- */
+
 int fluid_channel_set_banknum(fluid_channel_t *chan, unsigned int banknum) {
     chan->banknum = banknum;
     return FLUID_OK;
 }
 
-/*
- * fluid_channel_cc
- */
+
 int fluid_channel_cc(fluid_channel_t *chan, int num, int value) {
     chan->cc[num] = value;
 

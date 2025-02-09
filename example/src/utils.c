@@ -439,6 +439,6 @@ void print_gen_values(fluid_synth_t* synth, int ch, bool all) {
     printf("Generator for Channel %d:\n", chan->channum);
     for (int i = 0; i < GEN_LAST; i++) {
         if(all || chan->gen[i]!=0)
-        printf("GEN_%d: %s, value=%f, \t gen_abs=%d\n", i, get_gen_name(i), chan->gen[i], chan->gen_abs[i]);
+        printf("GEN_%d: %s, value=%f\n", i, get_gen_name(i), chan->gen[i]);
     }
 }
