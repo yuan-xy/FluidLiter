@@ -3,6 +3,7 @@
 
 #include "fluidsynth_priv.h"
 #include "fluid_list.h"
+#include "fluid_defsfont.h"
 
 typedef struct _fluid_gen_info_t {
     char num;        /* Generator number */
@@ -90,7 +91,7 @@ fluid_real_t fluid_gen_scale_nrpn(int gen, int nrpn);
 int fluid_gen_init(fluid_gen_t *gen, fluid_channel_t *channel);
 
 
-fluid_sf_gen_t * fluid_sf_gen_create(uint8_t num);
+fluid_sf_gen_t * fluid_sf_gen_create(SFGen *sfgen);
 fluid_sf_gen_t *fluid_sf_gen_get(fluid_list_t *gen_list, uint8_t num);
 
 #endif /* _FLUID_GEN_H */

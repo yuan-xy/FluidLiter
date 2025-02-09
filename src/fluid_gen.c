@@ -56,10 +56,10 @@ fluid_real_t fluid_gen_scale_nrpn(int gen, int data) {
 
 
 
-fluid_sf_gen_t * fluid_sf_gen_create(uint8_t num) {
+fluid_sf_gen_t * fluid_sf_gen_create(SFGen *sfgen) {
     fluid_sf_gen_t *gen = FLUID_NEW(fluid_sf_gen_t);
-    gen->num = num;
-    gen->val = fluid_gen_info[num].def;
+    gen->num = sfgen->id;
+    gen->val = (fluid_real_t) sfgen->amount.sword;
     return gen;
 }
 

@@ -980,8 +980,7 @@ int fluid_preset_zone_import_sfont(fluid_preset_zone_t *zone, SFZone *sfzone,
             if(fluid_gen_info[sfgen->id].def != (fluid_real_t) sfgen->amount.sword) {
                 gen=fluid_sf_gen_get(zone->sf_gen,sfgen->id);
                 if(!gen) {
-                    gen=fluid_sf_gen_create(sfgen->id);
-                    gen->val=(fluid_real_t) sfgen->amount.sword;
+                    gen=fluid_sf_gen_create(sfgen);
                     zone->sf_gen=fluid_list_append(zone->sf_gen, gen);
                 }else{
                     FLUID_LOG(FLUID_WARN, "unexpect preset gen(%d, %f) exsits.", gen->num, gen->val);
@@ -1375,8 +1374,7 @@ int fluid_inst_zone_import_sfont(fluid_inst_zone_t *zone, SFZone *sfzone,
             if(fluid_gen_info[sfgen->id].def != (fluid_real_t) sfgen->amount.sword) {
                 gen=fluid_sf_gen_get(zone->sf_gen,sfgen->id);
                 if(!gen) {
-                    gen=fluid_sf_gen_create(sfgen->id);
-                    gen->val=(fluid_real_t) sfgen->amount.sword;
+                    gen=fluid_sf_gen_create(sfgen);
                     zone->sf_gen=fluid_list_append(zone->sf_gen, gen);
                 }else{
                     FLUID_LOG(FLUID_WARN, "unexpect gen(%d, %f) exsits.", gen->num, gen->val);
