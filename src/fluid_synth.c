@@ -517,7 +517,7 @@ int fluid_synth_noteoff(fluid_synth_t *synth, int chan, int key) {
     for (i = 0; i < synth->polyphony; i++) {
         voice = synth->voice[i];
         if (_ON(voice) && (voice->chan == chan) && (voice->key == key)) {
-            if (get_log_level() >= FLUID_DBG) {
+            #if DEBUG
                 int used_voices = 0;
                 int k;
                 for (k = 0; k < synth->polyphony; k++) {
@@ -532,7 +532,7 @@ int fluid_synth_noteoff(fluid_synth_t *synth, int chan, int key) {
                           (float)(voice->start_time + voice->ticks) /
                               synth->sample_rate,
                           voice->ticks, used_voices);
-            } /* if FLUID_DBG */
+            #endif
             fluid_voice_noteoff(voice);
             status = FLUID_OK;
         } /* if voice on */
@@ -1830,7 +1830,7 @@ fluid_voice_t *fluid_synth_alloc_voice(fluid_synth_t *synth,
         return NULL;
     }
 
-    if (get_log_level() >= FLUID_DBG) {
+    #if DEBUG
         k = 0;
         for (i = 0; i < synth->polyphony; i++) {
             if (!_AVAILABLE(synth->voice[i])) {
@@ -1846,7 +1846,7 @@ fluid_voice_t *fluid_synth_alloc_voice(fluid_synth_t *synth,
                   "\t\t%s\ttype:%d\trate:%d\torigpitch:%d\trefcount:%d",
                   sample->name, sample->sampletype, sample->samplerate,
                   sample->origpitch, sample->refcount);
-    }
+    #endif
 
     if (chan >= 0) {
         channel = synth->channel[chan];
