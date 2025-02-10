@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
         start = rdtsc();
         task();
         end = rdtsc();
-        printf("Cycles used: %lu\n", end - start);
+        printf("Cycles used: %llu\n", end - start);
     };
     {
         struct timespec start, end;

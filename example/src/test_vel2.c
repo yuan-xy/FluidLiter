@@ -25,7 +25,10 @@
 
 int main(int argc, char *argv[])
 {
-    printf("sizeof(fluid_real_t): %ld\n", sizeof(fluid_real_t));
+    printf("sizeof(fluid_real_t): %u\n", sizeof(fluid_real_t));
+#ifdef WITH_FLOAT
+    assert(sizeof(fluid_real_t)==4);
+#endif
     set_log_level(FLUID_WARN);
     fluid_synth_t *synth = NEW_FLUID_SYNTH();
     
