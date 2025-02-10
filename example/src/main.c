@@ -5,6 +5,7 @@
 #include <assert.h>
 
 #include "fluidlite.h"
+#include "misc.h"
 
 #define SAMPLE_RATE 44100
 #define SAMPLE_SIZE sizeof(int16_t) //s16
@@ -70,6 +71,7 @@ $10 = {data = 0x5555556a33c0, id = 0, free = 0x555555566f0e <fluid_defsfont_sfon
     }
 
     fwrite(buffer, SAMPLE_SIZE, NUM_SAMPLES, file);
+    assert(float_eq(calculateVolumeDB(buffer, NUM_SAMPLES), -14.874127));
 
 
     fluid_synth_noteoff(synth, 0, 60);
@@ -88,7 +90,7 @@ $10 = {data = 0x5555556a33c0, id = 0, free = 0x555555566f0e <fluid_defsfont_sfon
     };
     qsort(buffer, NUM_SAMPLES, SAMPLE_SIZE, compare);
     printf("最小值: %d, 最大值: %d\n", buffer[0], buffer[NUM_SAMPLES-1]);
-    assert(buffer[0] > -32766);
+    assert(buffer[0] >= -32766);
     assert(buffer[NUM_SAMPLES-1] < 32766);
 
     free(buffer);

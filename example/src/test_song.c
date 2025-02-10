@@ -26,7 +26,8 @@ int main(int argc, char *argv[])
 
     fluid_synth_t *synth = NEW_FLUID_SYNTH();
     printf("sizeof(fluid_voice_t)=%d\n", sizeof(fluid_voice_t));
-    //assert(2712 == sizeof(fluid_voice_t));
+    //double:assert(2712 == sizeof(fluid_voice_t));
+    //float: sizeof(fluid_voice_t)=1752   
     
     int sfid = fluid_synth_sfload(synth, "example/sf_/GMGSx_1.sf2", 1);
     fluid_synth_program_select(synth, 0, sfid, 0, 0);

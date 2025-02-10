@@ -2,8 +2,6 @@
 #ifndef _FLUIDLITE_PRIV_H
 #define _FLUIDLITE_PRIV_H
 
-#include "fluid_config.h"
-
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -35,11 +33,6 @@ else \
  *         BASIC TYPES
  */
 
-#if defined(WITH_FLOAT)
-typedef float fluid_real_t;
-#else
-typedef double fluid_real_t;
-#endif
 
 typedef enum { FLUID_OK = 0, FLUID_FAILED = -1 } fluid_status;
 

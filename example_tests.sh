@@ -11,13 +11,14 @@ cmake --build $BUILD/
 # cmake -S . -B Release -DCMAKE_BUILD_TYPE=Release
 # cmake --build Release/
 
+gcc example/src/misc.c -g -Iinclude -Isrc -I$BUILD -c
 
 rm instruments-test || true
 gcc example/src/instruments.c -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidlite -lm -o instruments-test
 ./instruments-test ./example/sf_/Boomwhacker.sf2
 
 rm fluidlite-test || true
-gcc example/src/main.c -g -Iinclude -I$BUILD -L$BUILD -lfluidlite -lm -o fluidlite-test
+gcc example/src/main.c -g -Iinclude -I$BUILD -L$BUILD -lfluidlite -lm misc.o -o fluidlite-test
 rm massif.out.* || true
 valgrind --tool=massif ./fluidlite-test ./example/sf_/GMGSx_1.sf2 output.pcm
 # ms_print massif.out.<pid>
@@ -57,7 +58,6 @@ gcc example/src/test4.c -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidlite -lm -o 
 ./test4 example/sf_/GMGSx_1.sf2 test4.pcm
 # ffmpeg -f s16le -ar 44100 -ac 1 -i test4.pcm test4.wav
 
-gcc example/src/misc.c -g -Iinclude -Isrc -I$BUILD -c
 gcc example/src/test5.c -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidlite -lm misc.o -o test5
 ./test5 example/sf_/GMGSx_1.sf2
 

@@ -90,15 +90,15 @@ enum fluid_gen_type {
  */
 typedef struct _fluid_sf_gen_t {
     uint8_t num;
-    double val;          /**< The nominal value */
+    fluid_real_t val;          /**< The nominal value */
 } fluid_sf_gen_t; //TODO：similar to SFGen
 
 
 typedef struct _fluid_gen_t {
     unsigned char flags; /**< Is the generator set or not (#fluid_gen_flags) */
-    double val;          /**< The nominal value */
-    double mod;          /**< Change by modulators */
-    double nrpn;         /**< Change by NRPN messages */
+    fluid_real_t val;          /**< The nominal value */
+    fluid_real_t mod;          /**< Change by modulators */
+    fluid_real_t nrpn;         /**< Change by NRPN messages */
 } fluid_gen_t;
 
 /**
