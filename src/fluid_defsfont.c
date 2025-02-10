@@ -1387,12 +1387,6 @@ int fluid_inst_zone_import_sfont(fluid_inst_zone_t *zone, SFZone *sfzone,
         r = fluid_list_next(r);
     }
 
-    /* FIXME */
-    /*    if (zone->gen[GEN_EXCLUSIVECLASS].flags == GEN_SET) { */
-    /*      FLUID_LOG(FLUID_DBG, "ExclusiveClass=%d\n", (int)
-     * zone->gen[GEN_EXCLUSIVECLASS].val); */
-    /*    } */
-
     if ((sfzone->instsamp != NULL) && (sfzone->instsamp->data != NULL)) {
         zone->sample = fluid_defsfont_get_sample(
             sfont, ((SFSample *)sfzone->instsamp->data)->name);

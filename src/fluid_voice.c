@@ -178,12 +178,10 @@ int fluid_voice_init(fluid_voice_t *voice, fluid_sample_t *sample,
 
 void fluid_voice_gen_set(fluid_voice_t *voice, int i, float val) {
     voice->gen[i].val = val;
-    voice->gen[i].flags = GEN_SET;
 }
 
 void fluid_voice_gen_incr(fluid_voice_t *voice, int i, float val) {
     voice->gen[i].val += val;
-    voice->gen[i].flags = GEN_SET;
 }
 
 float fluid_voice_gen_get(fluid_voice_t *voice, int gen) {
@@ -1866,7 +1864,6 @@ void fluid_voice_check_sample_sanity(fluid_voice_t *voice) {
 
 int fluid_voice_set_param(fluid_voice_t *voice, int gen, fluid_real_t nrpn_value) {
     voice->gen[gen].nrpn = nrpn_value;
-    voice->gen[gen].flags = GEN_SET;
     fluid_voice_update_param(voice, gen);
     return FLUID_OK;
 }

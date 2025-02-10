@@ -11,7 +11,6 @@ int fluid_gen_set_default_values(fluid_gen_t *gen) {
     int i;
 
     for (i = 0; i < GEN_LAST; i++) {
-        gen[i].flags = GEN_UNUSED;
         gen[i].mod = 0.0;
         gen[i].nrpn = 0.0;
         gen[i].val = fluid_gen_info[i].def;

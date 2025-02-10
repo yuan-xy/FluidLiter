@@ -95,19 +95,11 @@ typedef struct _fluid_sf_gen_t {
 
 
 typedef struct _fluid_gen_t {
-    unsigned char flags; /**< Is the generator set or not (#fluid_gen_flags) */
     fluid_real_t val;          /**< The nominal value */
     fluid_real_t mod;          /**< Change by modulators */
     fluid_real_t nrpn;         /**< Change by NRPN messages */
 } fluid_gen_t;
 
-/**
- * Enum value for 'flags' field of #_fluid_gen_t (not really flags).
- */
-enum fluid_gen_flags {
-    GEN_UNUSED,  /**< Generator value is not set */
-    GEN_SET,     /**< Generator value is set */
-};
 
 int fluid_gen_set_default_values(fluid_gen_t *gen);
 
