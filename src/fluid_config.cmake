@@ -3,9 +3,6 @@
 /* Activate debugging message */
 #cmakedefine01 DEBUG
 
-/* Version number of the package */
-#define VERSION "@fluidlite_VERSION@"
-
 /* Defined to 1 if the processor stores words with the most significant byte
    first (like Motorola and SPARC, unlike Intel and VAX). */
 #cmakedefine WORDS_BIGENDIAN
