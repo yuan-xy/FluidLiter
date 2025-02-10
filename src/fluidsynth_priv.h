@@ -28,73 +28,16 @@ else \
  fluid_return_if_fail(cond) (val)
 
 
-/***************************************************************
- *
- *         BASIC TYPES
- */
-
 
 typedef enum { FLUID_OK = 0, FLUID_FAILED = -1 } fluid_status;
 
-// socket disabled
-
-/** Integer types  */
-
-#if 1 /**/
-typedef signed char sint8;
-typedef unsigned char uint8;
-typedef signed short sint16;
-typedef unsigned short uint16;
-typedef signed int sint32;
-typedef unsigned int uint32;
-typedef int64_t sint64;
-typedef uint64_t uint64;
 
 #if defined(__LP64__) || defined(_WIN64)
-typedef uint64 uintptr;
+typedef uint64_t uintptr;
 #else
-typedef uint32 uintptr;
+typedef uint32_t uintptr;
 #endif
 
-#else /**/
-#if defined(MINGW32)
-
-/* Windows using MinGW32 */
-typedef int8_t sint8;
-typedef uint8_t uint8;
-typedef int16_t sint16;
-typedef uint16_t uint16;
-typedef int32_t sint32;
-typedef uint32_t uint32;
-typedef int64_t sint64;
-typedef uint64_t uint64;
-
-#elif defined(_WIN32)
-
-/* Windows */
-typedef signed __int8 sint8;
-typedef unsigned __int8 uint8;
-typedef signed __int16 sint16;
-typedef unsigned __int16 uint16;
-typedef signed __int32 sint32;
-typedef unsigned __int32 uint32;
-typedef signed __int64 sint64;
-typedef unsigned __int64 uint64;
-
-#else
-
-/* Linux & Darwin */
-typedef int8_t sint8;
-typedef u_int8_t uint8;
-typedef int16_t sint16;
-typedef u_int16_t uint16;
-typedef int32_t sint32;
-typedef u_int32_t uint32;
-typedef int64_t sint64;
-typedef u_int64_t uint64;
-
-#endif
-#endif /* */
 
 /***************************************************************
  *
@@ -228,12 +171,6 @@ typedef FILE *fluid_file;
 #define FLUID_LOGF  (fluid_real_t)log
 #endif
 
-
-
-#define FLUID_ASSERT(a, b)
-#define FLUID_ASSERT_P(a, b)
-
-char *fluid_error(void);
 
 /* Internationalization */
 #define _(s) s
