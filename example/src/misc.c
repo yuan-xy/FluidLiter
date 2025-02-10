@@ -24,7 +24,9 @@ void change_bit(uint8_t* value, uint8_t index, uint8_t bit){
 	else unset_bit(value, index);
 }
 
-
+bool get_bit(uint8_t num, uint8_t index) {
+    return (num >> index) & 1;
+}
 
 // 计算音量（dB）
 float calculateVolumeDB(int16_t *pcmData, int length) {

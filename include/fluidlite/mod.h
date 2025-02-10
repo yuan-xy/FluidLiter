@@ -10,9 +10,7 @@ extern "C" {
 /* Maximum number of modulators in a voice */
 #define FLUID_NUM_MOD 9 // only support default modulators
 
-/*
- *  fluid_mod_t
- */
+
 struct _fluid_mod_t {
     unsigned char dest;
     unsigned char src1;
@@ -20,13 +18,18 @@ struct _fluid_mod_t {
     unsigned char src2;
     unsigned char flags2;
     fluid_real_t amount;
-    /* The 'next' field allows to link modulators into a list.  It is
-     * not used in fluid_voice.c, there each voice allocates memory for a
-     * fixed number of modulators.  Since there may be a huge number of
-     * different zones, this is more efficient.
-     */
-    fluid_mod_t *next;
 };
+
+struct _fluid_mod_list_t {
+    unsigned char dest;
+    unsigned char src1;
+    unsigned char flags1;
+    unsigned char src2;
+    unsigned char flags2;
+    fluid_real_t amount;
+    struct _fluid_mod_list_t *next;
+};
+typedef struct _fluid_mod_list_t fluid_mod_list_t;
 
 /* Flags telling the polarity of a modulator.  Compare with SF2.01
    section 8.2. Note: The numbers of the bits are different!  (for
@@ -58,10 +61,10 @@ enum fluid_mod_src {
 };
 
 /* Allocates memory for a new modulator */
-fluid_mod_t *fluid_mod_new(void);
+fluid_mod_list_t *fluid_mod_list_new(void);
 
 /* Frees the modulator */
-void fluid_mod_delete(fluid_mod_t *mod);
+void fluid_mod_list_delete(fluid_mod_list_t *mod);
 
 void fluid_mod_set_source1(fluid_mod_t *mod, int src, int flags);
 void fluid_mod_set_source2(fluid_mod_t *mod, int src, int flags);

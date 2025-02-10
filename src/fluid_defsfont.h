@@ -531,7 +531,7 @@ struct _fluid_preset_zone_t {
     int vello;
     int velhi;
     fluid_list_t *sf_gen;
-    fluid_mod_t *mod; /* List of modulators */
+    fluid_mod_list_t *mod; /* List of modulators */
 };
 
 fluid_preset_zone_t *new_fluid_preset_zone(char *name);
@@ -566,7 +566,7 @@ struct _fluid_inst_zone_t {
     int vello;
     int velhi;
     fluid_list_t *sf_gen;
-    fluid_mod_t *mod; /* List of modulators */
+    fluid_mod_list_t *mod; /* List of modulators */
 };
 
 fluid_inst_zone_t *new_fluid_inst_zone(char *name);

@@ -574,8 +574,8 @@ int fluid_defpreset_noteon(fluid_defpreset_t *preset, fluid_synth_t *synth,
     fluid_inst_zone_t *inst_zone, *global_inst_zone;
     fluid_sample_t *sample;
     fluid_voice_t *voice;
-    fluid_mod_t *mod;
-    fluid_mod_t
+    fluid_mod_list_t *mod;
+    fluid_mod_list_t
         *mod_list[FLUID_NUM_MOD]; /* list for 'sorting' preset modulators */
     int mod_list_count;
     int i;
@@ -668,7 +668,7 @@ int fluid_defpreset_noteon(fluid_defpreset_t *preset, fluid_synth_t *synth,
 
                         for (i = 0; i < mod_list_count; i++) {
                             if (mod_list[i] &&
-                                fluid_mod_test_identity(mod, mod_list[i])) {
+                                fluid_mod_test_identity((fluid_mod_t *)mod, (fluid_mod_t *)mod_list[i])) {
                                 mod_list[i] = NULL;
                             }
                         }
@@ -688,7 +688,7 @@ int fluid_defpreset_noteon(fluid_defpreset_t *preset, fluid_synth_t *synth,
                             /* Instrument modulators -supersede- existing
                              * (default) modulators.  SF 2.01 page 69, 'bullet'
                              * 6 */
-                            fluid_voice_add_mod(voice, mod,
+                            fluid_voice_add_mod(voice, (fluid_mod_t *)mod,
                                                 FLUID_VOICE_OVERWRITE);
                         }
                     }
@@ -772,7 +772,7 @@ int fluid_defpreset_noteon(fluid_defpreset_t *preset, fluid_synth_t *synth,
                     while (mod) {
                         for (i = 0; i < mod_list_count; i++) {
                             if (mod_list[i] &&
-                                fluid_mod_test_identity(mod, mod_list[i])) {
+                                fluid_mod_test_identity((fluid_mod_t *)mod, (fluid_mod_t *)mod_list[i])) {
                                 mod_list[i] = NULL;
                             }
                         }
@@ -791,7 +791,7 @@ int fluid_defpreset_noteon(fluid_defpreset_t *preset, fluid_synth_t *synth,
                             /* Preset modulators -add- to existing instrument /
                              * default modulators.  SF2.01 page 70 first bullet
                              * on page */
-                            fluid_voice_add_mod(voice, mod, FLUID_VOICE_ADD);
+                            fluid_voice_add_mod(voice, (fluid_mod_t *)mod, FLUID_VOICE_ADD);
                         }
                     }
 
@@ -938,18 +938,16 @@ fluid_preset_zone_t *new_fluid_preset_zone(char *name) {
  *                           PRESET_ZONE
  */
 
-/*
- * delete_fluid_preset_zone
- */
+
 int delete_fluid_preset_zone(fluid_preset_zone_t *zone) {
-    fluid_mod_t *mod, *tmp;
+    fluid_mod_list_t *mod, *tmp;
 
     mod = zone->mod;
     while (mod) /* delete the modulators */
     {
         tmp = mod;
         mod = mod->next;
-        fluid_mod_delete(tmp);
+        fluid_mod_list_delete(tmp);
     }
 
     if (zone->name) FLUID_FREE(zone->name);
@@ -1008,7 +1006,7 @@ int fluid_preset_zone_import_sfont(fluid_preset_zone_t *zone, SFZone *sfzone,
     /* Import the modulators (only SF2.1 and higher) */
     for (count = 0, r = sfzone->mod; r != NULL; count++) {
         SFMod *mod_src = (SFMod *)r->data;
-        fluid_mod_t *mod_dest = fluid_mod_new();
+        fluid_mod_list_t *mod_dest = fluid_mod_list_new();
         int type;
 
         if (mod_dest == NULL) {
@@ -1127,7 +1125,7 @@ int fluid_preset_zone_import_sfont(fluid_preset_zone_t *zone, SFZone *sfzone,
         if (count == 0) {
             zone->mod = mod_dest;
         } else {
-            fluid_mod_t *last_mod = zone->mod;
+            fluid_mod_list_t *last_mod = zone->mod;
 
             /* Find the end of the list */
             while (last_mod->next != NULL) {
@@ -1318,18 +1316,16 @@ fluid_inst_zone_t *new_fluid_inst_zone(char *name) {
     return zone;
 }
 
-/*
- * delete_fluid_inst_zone
- */
+
 int delete_fluid_inst_zone(fluid_inst_zone_t *zone) {
-    fluid_mod_t *mod, *tmp;
+    fluid_mod_list_t *mod, *tmp;
 
     mod = zone->mod;
     while (mod) /* delete the modulators */
     {
         tmp = mod;
         mod = mod->next;
-        fluid_mod_delete(tmp);
+        fluid_mod_list_delete(tmp);
     }
 
     fluid_list_t *gen = zone->sf_gen;
@@ -1400,9 +1396,9 @@ int fluid_inst_zone_import_sfont(fluid_inst_zone_t *zone, SFZone *sfzone,
     for (count = 0, r = sfzone->mod; r != NULL; count++) {
         SFMod *mod_src = (SFMod *)r->data;
         int type;
-        fluid_mod_t *mod_dest;
+        fluid_mod_list_t *mod_dest;
 
-        mod_dest = fluid_mod_new();
+        mod_dest = fluid_mod_list_new();
         if (mod_dest == NULL) {
             return FLUID_FAILED;
         }
@@ -1520,7 +1516,7 @@ int fluid_inst_zone_import_sfont(fluid_inst_zone_t *zone, SFZone *sfzone,
         if (count == 0) {
             zone->mod = mod_dest;
         } else {
-            fluid_mod_t *last_mod = zone->mod;
+            fluid_mod_list_t *last_mod = zone->mod;
             /* Find the end of the list */
             while (last_mod->next != NULL) {
                 last_mod = last_mod->next;

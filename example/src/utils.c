@@ -58,10 +58,10 @@ void print_voice_modulator(fluid_voice_t* voice){
 }\
 
 
-#define print_mod(iz, desc)    fluid_mod_t * mod = iz->mod;\
+#define print_mod(iz, desc)    fluid_mod_list_t * mod = iz->mod;\
     while(mod != NULL){\
         printf("\t%s ", desc);\
-        print_modulator(mod);\
+        print_modulator((fluid_mod_t *)mod);\
         mod = mod->next;\
     }\
 

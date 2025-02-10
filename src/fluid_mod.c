@@ -314,11 +314,10 @@ fluid_real_t fluid_mod_get_value(fluid_mod_t *mod, fluid_channel_t *chan,
     return (fluid_real_t)mod->amount * v1 * v2;
 }
 
-/*
- * fluid_mod_new
- */
-fluid_mod_t *fluid_mod_new() {
-    fluid_mod_t *mod = FLUID_NEW(fluid_mod_t);
+
+
+fluid_mod_list_t *fluid_mod_list_new() {
+    fluid_mod_list_t *mod = FLUID_NEW(fluid_mod_list_t);
     if (mod == NULL) {
         FLUID_LOG(FLUID_ERR, "Out of memory");
         return NULL;
@@ -326,10 +325,8 @@ fluid_mod_t *fluid_mod_new() {
     return mod;
 }
 
-/*
- * fluid_mod_delete
- */
-void fluid_mod_delete(fluid_mod_t *mod) {
+
+void fluid_mod_list_delete(fluid_mod_list_t *mod) {
     FLUID_FREE(mod);
 }
 
