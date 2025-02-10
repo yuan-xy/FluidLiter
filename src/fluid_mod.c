@@ -40,8 +40,8 @@ void fluid_mod_set_dest(fluid_mod_t *mod, int dest) {
 /*
  * fluid_mod_set_amount
  */
-void fluid_mod_set_amount(fluid_mod_t *mod, double amount) {
-    mod->amount = (double)amount;
+void fluid_mod_set_amount(fluid_mod_t *mod, fluid_real_t amount) {
+    mod->amount = amount;
 }
 
 int fluid_mod_get_source1(fluid_mod_t *mod) {
@@ -64,8 +64,8 @@ int fluid_mod_get_dest(fluid_mod_t *mod) {
     return mod->dest;
 }
 
-double fluid_mod_get_amount(fluid_mod_t *mod) {
-    return (fluid_real_t)mod->amount;
+fluid_real_t fluid_mod_get_amount(fluid_mod_t *mod) {
+    return mod->amount;
 }
 
 /*

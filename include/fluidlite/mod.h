@@ -19,7 +19,7 @@ struct _fluid_mod_t {
     unsigned char flags1;
     unsigned char src2;
     unsigned char flags2;
-    double amount;
+    fluid_real_t amount;
     /* The 'next' field allows to link modulators into a list.  It is
      * not used in fluid_voice.c, there each voice allocates memory for a
      * fixed number of modulators.  Since there may be a huge number of
@@ -66,14 +66,14 @@ FLUIDSYNTH_API void fluid_mod_delete(fluid_mod_t *mod);
 FLUIDSYNTH_API void fluid_mod_set_source1(fluid_mod_t *mod, int src, int flags);
 FLUIDSYNTH_API void fluid_mod_set_source2(fluid_mod_t *mod, int src, int flags);
 FLUIDSYNTH_API void fluid_mod_set_dest(fluid_mod_t *mod, int dst);
-FLUIDSYNTH_API void fluid_mod_set_amount(fluid_mod_t *mod, double amount);
+FLUIDSYNTH_API void fluid_mod_set_amount(fluid_mod_t *mod, fluid_real_t amount);
 
 FLUIDSYNTH_API int fluid_mod_get_source1(fluid_mod_t *mod);
 FLUIDSYNTH_API int fluid_mod_get_flags1(fluid_mod_t *mod);
 FLUIDSYNTH_API int fluid_mod_get_source2(fluid_mod_t *mod);
 FLUIDSYNTH_API int fluid_mod_get_flags2(fluid_mod_t *mod);
 FLUIDSYNTH_API int fluid_mod_get_dest(fluid_mod_t *mod);
-FLUIDSYNTH_API double fluid_mod_get_amount(fluid_mod_t *mod);
+FLUIDSYNTH_API fluid_real_t fluid_mod_get_amount(fluid_mod_t *mod);
 
 /* Determines, if two modulators are 'identical' (all parameters
    except the amount match) */
