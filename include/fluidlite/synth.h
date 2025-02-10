@@ -35,7 +35,7 @@ typedef struct {
  *
  * \return a newly allocated synthesizer or NULL in case of error
  */
-FLUIDSYNTH_API fluid_synth_t *new_fluid_synth(SynthParams sp);
+fluid_synth_t *new_fluid_synth(SynthParams sp);
 
 #define NEW_FLUID_SYNTH(...)                                                   \
     new_fluid_synth((SynthParams){.polyphony = 10,                             \
@@ -46,7 +46,7 @@ FLUIDSYNTH_API fluid_synth_t *new_fluid_synth(SynthParams sp);
                                   .midi_channels = 1,                          \
                                   __VA_ARGS__})
 
-FLUIDSYNTH_API void fluid_synth_set_sample_rate(fluid_synth_t *synth,
+void fluid_synth_set_sample_rate(fluid_synth_t *synth,
                                                 float sample_rate);
 
 /**
@@ -55,7 +55,7 @@ FLUIDSYNTH_API void fluid_synth_set_sample_rate(fluid_synth_t *synth,
  * \param synth the synthesizer object
  * \return 0 if no error occured, -1 otherwise
  */
-FLUIDSYNTH_API int delete_fluid_synth(fluid_synth_t *synth);
+int delete_fluid_synth(fluid_synth_t *synth);
 
 /*
  *
@@ -64,59 +64,59 @@ FLUIDSYNTH_API int delete_fluid_synth(fluid_synth_t *synth);
  */
 
 /** Send a noteon message. Returns 0 if no error occurred, -1 otherwise. */
-FLUIDSYNTH_API int fluid_synth_noteon(fluid_synth_t *synth, int chan, int key,
+int fluid_synth_noteon(fluid_synth_t *synth, int chan, int key,
                                       int vel);
 
 /** Send a noteoff message. Returns 0 if no error occurred, -1 otherwise.  */
-FLUIDSYNTH_API int fluid_synth_noteoff(fluid_synth_t *synth, int chan, int key);
+int fluid_synth_noteoff(fluid_synth_t *synth, int chan, int key);
 
 /** Send a control change message. Returns 0 if no error occurred, -1 otherwise.
  */
-FLUIDSYNTH_API int fluid_synth_cc(fluid_synth_t *synth, int chan, int ctrl,
+int fluid_synth_cc(fluid_synth_t *synth, int chan, int ctrl,
                                   int val);
 
 /** Get a control value. Returns 0 if no error occurred, -1 otherwise.  */
-FLUIDSYNTH_API int fluid_synth_get_cc(fluid_synth_t *synth, int chan, int ctrl,
+int fluid_synth_get_cc(fluid_synth_t *synth, int chan, int ctrl,
                                       int *pval);
 
 /** Send a pitch bend message. Returns 0 if no error occurred, -1 otherwise.  */
-FLUIDSYNTH_API int fluid_synth_pitch_bend(fluid_synth_t *synth, int chan,
+int fluid_synth_pitch_bend(fluid_synth_t *synth, int chan,
                                           int val);
 
 /** Get the pitch bend value. Returns 0 if no error occurred, -1 otherwise. */
-FLUIDSYNTH_API
+
 int fluid_synth_get_pitch_bend(fluid_synth_t *synth, int chan,
                                int *ppitch_bend);
 
 /** Set the pitch wheel sensitivity. Returns 0 if no error occurred, -1
  * otherwise. */
-FLUIDSYNTH_API int fluid_synth_pitch_wheel_sens(fluid_synth_t *synth, int chan,
+int fluid_synth_pitch_wheel_sens(fluid_synth_t *synth, int chan,
                                                 int val);
 
 /** Get the pitch wheel sensitivity. Returns 0 if no error occurred, -1
  * otherwise. */
-FLUIDSYNTH_API int fluid_synth_get_pitch_wheel_sens(fluid_synth_t *synth,
+int fluid_synth_get_pitch_wheel_sens(fluid_synth_t *synth,
                                                     int chan, int *pval);
 
 /** Send a program change message. Returns 0 if no error occurred, -1 otherwise.
  */
-FLUIDSYNTH_API int fluid_synth_program_change(fluid_synth_t *synth, int chan,
+int fluid_synth_program_change(fluid_synth_t *synth, int chan,
                                               int program);
 
-FLUIDSYNTH_API int fluid_synth_channel_pressure(fluid_synth_t *synth, int chan,
+int fluid_synth_channel_pressure(fluid_synth_t *synth, int chan,
                                                 int val);
-FLUIDSYNTH_API int fluid_synth_key_pressure(fluid_synth_t *synth, int chan,
+int fluid_synth_key_pressure(fluid_synth_t *synth, int chan,
                                             int key, int val);
-FLUIDSYNTH_API int fluid_synth_sysex(fluid_synth_t *synth, const char *data,
+int fluid_synth_sysex(fluid_synth_t *synth, const char *data,
                                      int len, char *response, int *response_len,
                                      int *handled, int dryrun);
 
 /** Select a bank. Returns 0 if no error occurred, -1 otherwise. */
-FLUIDSYNTH_API
+
 int fluid_synth_bank_select(fluid_synth_t *synth, int chan, unsigned int bank);
 
 /** Select a sfont. Returns 0 if no error occurred, -1 otherwise. */
-FLUIDSYNTH_API
+
 int fluid_synth_sfont_select(fluid_synth_t *synth, int chan,
                              unsigned int sfont_id);
 
@@ -132,14 +132,14 @@ int fluid_synth_sfont_select(fluid_synth_t *synth, int chan,
     \param preset_num The preset number
     \return 0 if no errors occured, -1 otherwise
 */
-FLUIDSYNTH_API
+
 int fluid_synth_program_select(fluid_synth_t *synth, int chan,
                                unsigned int sfont_id, unsigned int bank_num,
                                unsigned int preset_num);
 
 /** Returns the program, bank, and SoundFont number of the preset on
     a given channel. Returns 0 if no error occurred, -1 otherwise. */
-FLUIDSYNTH_API
+
 int fluid_synth_get_program(fluid_synth_t *synth, int chan,
                             unsigned int *sfont_id, unsigned int *bank_num,
                             unsigned int *preset_num);
@@ -148,11 +148,11 @@ int fluid_synth_get_program(fluid_synth_t *synth, int chan,
  *  reinitialize the preset of the channel. This function is useful
  *  mainly after a SoundFont has been loaded, unloaded or
  *  reloaded. . Returns 0 if no error occurred, -1 otherwise. */
-FLUIDSYNTH_API int fluid_synth_program_reset(fluid_synth_t *synth);
+int fluid_synth_program_reset(fluid_synth_t *synth);
 
 /** Send a reset. A reset turns all the notes off and resets the
     controller values. */
-FLUIDSYNTH_API int fluid_synth_system_reset(fluid_synth_t *synth);
+int fluid_synth_system_reset(fluid_synth_t *synth);
 
 /*
  *
@@ -162,16 +162,16 @@ FLUIDSYNTH_API int fluid_synth_system_reset(fluid_synth_t *synth);
 
 /** Create and start voices using a preset. The id passed as
  * argument will be used as the voice group id.  */
-FLUIDSYNTH_API int fluid_synth_start(fluid_synth_t *synth, unsigned int id,
+int fluid_synth_start(fluid_synth_t *synth, unsigned int id,
                                      fluid_preset_t *preset, int audio_chan,
                                      int midi_chan, int key, int vel);
 
 /** Stop the voices in the voice group defined by id. */
-FLUIDSYNTH_API int fluid_synth_stop(fluid_synth_t *synth, unsigned int id);
+int fluid_synth_stop(fluid_synth_t *synth, unsigned int id);
 
 /** Change the value of a generator of the voices in the voice group
  * defined by id. */
-/* FLUIDSYNTH_API int fluid_synth_ctrl(fluid_synth_t* synth, int id,  */
+/* int fluid_synth_ctrl(fluid_synth_t* synth, int id,  */
 /* 				    int gen, float value,  */
 /* 				    int absolute, int normalized); */
 
@@ -188,7 +188,7 @@ FLUIDSYNTH_API int fluid_synth_stop(fluid_synth_t *synth, unsigned int id);
 
     \param callback Pointer to the function
 */
-FLUIDSYNTH_API
+
 void fluid_synth_set_preset_callback(void *callback);
 
 /** Loads a SoundFont file and creates a new SoundFont. The newly
@@ -202,7 +202,7 @@ void fluid_synth_set_preset_callback(void *callback);
     \param reset_presets If non-zero, the presets on the channels will be reset
     \returns The ID of the loaded SoundFont, or -1 in case of error
 */
-FLUIDSYNTH_API
+
 int fluid_synth_sfload(fluid_synth_t *synth, const char *filename,
                        int reset_presets);
 
@@ -214,7 +214,7 @@ int fluid_synth_sfload(fluid_synth_t *synth, const char *filename,
     \param reset_presets If TRUE then presets will be reset for all channels
     \returns 0 if no error, -1 otherwise
 */
-FLUIDSYNTH_API int fluid_synth_sfunload(fluid_synth_t *synth, unsigned int id,
+int fluid_synth_sfunload(fluid_synth_t *synth, unsigned int id,
                                         int reset_presets);
 
 /** Add a SoundFont. The SoundFont will be put on top of
@@ -224,7 +224,7 @@ FLUIDSYNTH_API int fluid_synth_sfunload(fluid_synth_t *synth, unsigned int id,
     \param sfont The SoundFont
     \returns The ID of the loaded SoundFont, or -1 in case of error
 */
-FLUIDSYNTH_API int fluid_synth_add_sfont(fluid_synth_t *synth,
+int fluid_synth_add_sfont(fluid_synth_t *synth,
                                          fluid_sfont_t *sfont);
 
 /** Remove a SoundFont that was previously added using
@@ -234,7 +234,7 @@ FLUIDSYNTH_API int fluid_synth_add_sfont(fluid_synth_t *synth,
     \param synth The synthesizer object
     \param sfont The SoundFont
 */
-FLUIDSYNTH_API void fluid_synth_remove_sfont(fluid_synth_t *synth,
+void fluid_synth_remove_sfont(fluid_synth_t *synth,
                                              fluid_sfont_t *sfont);
 
 /** Count the number of loaded SoundFonts.
@@ -242,7 +242,7 @@ FLUIDSYNTH_API void fluid_synth_remove_sfont(fluid_synth_t *synth,
     \param synth The synthesizer object
     \returns The number of loaded SoundFonts
 */
-FLUIDSYNTH_API int fluid_synth_sfcount(fluid_synth_t *synth);
+int fluid_synth_sfcount(fluid_synth_t *synth);
 
 /** Get a SoundFont. The SoundFont is specified by its index on the
     stack. The top of the stack has index zero.
@@ -251,7 +251,7 @@ FLUIDSYNTH_API int fluid_synth_sfcount(fluid_synth_t *synth);
     \param num The number of the SoundFont (0 <= num < sfcount)
     \returns A pointer to the SoundFont
 */
-FLUIDSYNTH_API fluid_sfont_t *fluid_synth_get_sfont(fluid_synth_t *synth,
+fluid_sfont_t *fluid_synth_get_sfont(fluid_synth_t *synth,
                                                     unsigned int num);
 
 /** Get a SoundFont. The SoundFont is specified by its ID.
@@ -260,20 +260,20 @@ FLUIDSYNTH_API fluid_sfont_t *fluid_synth_get_sfont(fluid_synth_t *synth,
     \param id The id of the sfont
     \returns A pointer to the SoundFont
 */
-FLUIDSYNTH_API fluid_sfont_t *fluid_synth_get_sfont_by_id(fluid_synth_t *synth,
+fluid_sfont_t *fluid_synth_get_sfont_by_id(fluid_synth_t *synth,
                                                           unsigned int id);
 
 /** Get the preset of a channel */
-FLUIDSYNTH_API fluid_preset_t *
+fluid_preset_t *
 fluid_synth_get_channel_preset(fluid_synth_t *synth, int chan);
 
 /** Offset the bank numbers in a SoundFont. Returns -1 if an error
  * occured (out of memory or negative offset) */
-FLUIDSYNTH_API int fluid_synth_set_bank_offset(fluid_synth_t *synth,
+int fluid_synth_set_bank_offset(fluid_synth_t *synth,
                                                int sfont_id, int offset);
 
 /** Get the offset of the bank numbers in a SoundFont. */
-FLUIDSYNTH_API int fluid_synth_get_bank_offset(fluid_synth_t *synth,
+int fluid_synth_get_bank_offset(fluid_synth_t *synth,
                                                int sfont_id);
 
 /*
@@ -283,18 +283,18 @@ FLUIDSYNTH_API int fluid_synth_get_bank_offset(fluid_synth_t *synth,
  */
 
 /** Set the parameters for the built-in reverb unit */
-FLUIDSYNTH_API void fluid_synth_set_reverb(fluid_synth_t *synth,
+void fluid_synth_set_reverb(fluid_synth_t *synth,
                                            double roomsize, double damping,
                                            double width, double level);
 
 /** Turn on (1) / off (0) the built-in reverb unit */
-FLUIDSYNTH_API void fluid_synth_set_reverb_on(fluid_synth_t *synth, int on);
+void fluid_synth_set_reverb_on(fluid_synth_t *synth, int on);
 
 /** Query the current state of the reverb. */
-FLUIDSYNTH_API double fluid_synth_get_reverb_roomsize(fluid_synth_t *synth);
-FLUIDSYNTH_API double fluid_synth_get_reverb_damp(fluid_synth_t *synth);
-FLUIDSYNTH_API double fluid_synth_get_reverb_level(fluid_synth_t *synth);
-FLUIDSYNTH_API double fluid_synth_get_reverb_width(fluid_synth_t *synth);
+double fluid_synth_get_reverb_roomsize(fluid_synth_t *synth);
+double fluid_synth_get_reverb_damp(fluid_synth_t *synth);
+double fluid_synth_get_reverb_level(fluid_synth_t *synth);
+double fluid_synth_get_reverb_width(fluid_synth_t *synth);
 
 /* Those are the default settings for the reverb */
 #define FLUID_REVERB_DEFAULT_DAMP 0.3f      /**< Default reverb damping */
@@ -321,11 +321,11 @@ enum fluid_chorus_mod
 
 /** Returns the number of MIDI channels that the synthesizer uses
     internally */
-FLUIDSYNTH_API int fluid_synth_count_midi_channels(fluid_synth_t *synth);
+int fluid_synth_count_midi_channels(fluid_synth_t *synth);
 
 /** Returns the number of effects channels that the synthesizer uses
     internally */
-FLUIDSYNTH_API int fluid_synth_count_effects_channels(fluid_synth_t *synth);
+int fluid_synth_count_effects_channels(fluid_synth_t *synth);
 
 /*
  *
@@ -334,17 +334,17 @@ FLUIDSYNTH_API int fluid_synth_count_effects_channels(fluid_synth_t *synth);
  */
 
 /** Set the master gain */
-FLUIDSYNTH_API void fluid_synth_set_gain(fluid_synth_t *synth, float gain);
+void fluid_synth_set_gain(fluid_synth_t *synth, float gain);
 
 /** Get the master gain */
-FLUIDSYNTH_API float fluid_synth_get_gain(fluid_synth_t *synth);
+float fluid_synth_get_gain(fluid_synth_t *synth);
 
 /** Set the polyphony limit (FluidSynth >= 1.0.6) */
-FLUIDSYNTH_API int fluid_synth_set_polyphony(fluid_synth_t *synth,
+int fluid_synth_set_polyphony(fluid_synth_t *synth,
                                              int polyphony);
 
 /** Get the polyphony limit (FluidSynth >= 1.0.6) */
-FLUIDSYNTH_API int fluid_synth_get_polyphony(fluid_synth_t *synth);
+int fluid_synth_get_polyphony(fluid_synth_t *synth);
 
 /** Get the internal buffer size. The internal buffer size if not the
     same thing as the buffer size specified in the
@@ -355,10 +355,10 @@ FLUIDSYNTH_API int fluid_synth_get_polyphony(fluid_synth_t *synth);
     synthesizer with a variable buffer length. The internal buffer
     size is useful for client who want to optimize their buffer sizes.
 */
-FLUIDSYNTH_API int fluid_synth_get_internal_bufsize(fluid_synth_t *synth);
+int fluid_synth_get_internal_bufsize(fluid_synth_t *synth);
 
 /** Set the interpolation method for one channel or all channels (chan = -1) */
-FLUIDSYNTH_API
+
 int fluid_synth_set_interp_method(fluid_synth_t *synth, int chan,
                                   uint8_t interp_method);
 
@@ -394,7 +394,7 @@ enum fluid_interp {
     \param value The parameter value.
     \returns Your favorite dish.
 */
-FLUIDSYNTH_API
+
 int fluid_synth_set_gen(fluid_synth_t *synth, int chan, int param, float value);
 
 /** Retreive the value of a generator. This function returns the value
@@ -405,7 +405,7 @@ int fluid_synth_set_gen(fluid_synth_t *synth, int chan, int param, float value);
     \param param The generator number.
     \returns The value of the generator.
 */
-FLUIDSYNTH_API float fluid_synth_get_gen(fluid_synth_t *synth, int chan,
+float fluid_synth_get_gen(fluid_synth_t *synth, int chan,
                                          int param);
 
 /*
@@ -425,7 +425,7 @@ FLUIDSYNTH_API float fluid_synth_get_gen(fluid_synth_t *synth, int chan,
     \param name The name of the tuning
     \param pitch The array of pitch values. The array length has to be 128.
 */
-FLUIDSYNTH_API
+
 int fluid_synth_create_key_tuning(fluid_synth_t *synth, int tuning_bank,
                                   int tuning_prog, const char *name,
                                   double *pitch);
@@ -442,12 +442,12 @@ int fluid_synth_create_key_tuning(fluid_synth_t *synth, int tuning_bank,
     \param name The name of the tuning
     \param pitch The array of pitch derivations. The array length has to be 12.
 */
-FLUIDSYNTH_API
+
 int fluid_synth_create_octave_tuning(fluid_synth_t *synth, int tuning_bank,
                                      int tuning_prog, const char *name,
                                      const double *pitch);
 
-FLUIDSYNTH_API
+
 int fluid_synth_activate_octave_tuning(fluid_synth_t *synth, int bank, int prog,
                                        const char *name, const double *pitch,
                                        int apply);
@@ -467,7 +467,7 @@ int fluid_synth_activate_octave_tuning(fluid_synth_t *synth, int bank, int prog,
     \param apply Flag to indicate whether to changes should be applied in
    real-time.
 */
-FLUIDSYNTH_API
+
 int fluid_synth_tune_notes(fluid_synth_t *synth, int tuning_bank,
                            int tuning_prog, int len, int *keys, double *pitch,
                            int apply);
@@ -479,7 +479,7 @@ int fluid_synth_tune_notes(fluid_synth_t *synth, int tuning_bank,
 \param tuning_bank The tuning bank number [0-127]
 \param tuning_prog The tuning program number [0-127]
 */
-FLUIDSYNTH_API
+
 int fluid_synth_select_tuning(fluid_synth_t *synth, int chan, int tuning_bank,
                               int tuning_prog);
 
@@ -491,13 +491,13 @@ int fluid_synth_activate_tuning(fluid_synth_t *synth, int chan, int bank,
 \param synth The synthesizer object
 \param chan The channel number [0-max channels]
 */
-FLUIDSYNTH_API int fluid_synth_reset_tuning(fluid_synth_t *synth, int chan);
+int fluid_synth_reset_tuning(fluid_synth_t *synth, int chan);
 
 /** Start the iteration throught the list of available tunings.
 
 \param synth The synthesizer object
 */
-FLUIDSYNTH_API void fluid_synth_tuning_iteration_start(fluid_synth_t *synth);
+void fluid_synth_tuning_iteration_start(fluid_synth_t *synth);
 
 /** Get the next tuning in the iteration. This functions stores the
     bank and program number of the next tuning in the pointers given as
@@ -508,7 +508,7 @@ FLUIDSYNTH_API void fluid_synth_tuning_iteration_start(fluid_synth_t *synth);
     \param prog Pointer to an int to store the program number
     \returns 1 if there is a next tuning, 0 otherwise
 */
-FLUIDSYNTH_API
+
 int fluid_synth_tuning_iteration_next(fluid_synth_t *synth, int *bank,
                                       int *prog);
 
@@ -523,7 +523,7 @@ int fluid_synth_tuning_iteration_next(fluid_synth_t *synth, int *bank,
     \param len The length of the name buffer
     \param pitch Pointer to buffer to store the pitch values
 */
-FLUIDSYNTH_API int fluid_synth_tuning_dump(fluid_synth_t *synth, int bank,
+int fluid_synth_tuning_dump(fluid_synth_t *synth, int bank,
                                            int prog, char *name, int len,
                                            double *pitch);
 
@@ -542,23 +542,23 @@ FLUIDSYNTH_API int fluid_synth_tuning_dump(fluid_synth_t *synth, int bank,
  * right buffer \returns 0 if no error occured, non-zero otherwise
  */
 
-FLUIDSYNTH_API int fluid_synth_write_s16(fluid_synth_t *synth, int len,
+int fluid_synth_write_s16(fluid_synth_t *synth, int len,
                                          void *lout, int loff, int lincr,
                                          void *rout, int roff, int rincr);
 
-FLUIDSYNTH_API int fluid_synth_write_s16_mono(fluid_synth_t *synth, int len,
+int fluid_synth_write_s16_mono(fluid_synth_t *synth, int len,
                                               void *out);
 
-FLUIDSYNTH_API int fluid_synth_write_u12(fluid_synth_t *synth, int len,
+int fluid_synth_write_u12(fluid_synth_t *synth, int len,
                                          uint16_t *out, int channel);
 
-FLUIDSYNTH_API int fluid_synth_write_u12_mono(fluid_synth_t *synth, int len,
+int fluid_synth_write_u12_mono(fluid_synth_t *synth, int len,
                                               uint16_t *out);
 
-FLUIDSYNTH_API int fluid_synth_write_u8(fluid_synth_t *synth, int len,
+int fluid_synth_write_u8(fluid_synth_t *synth, int len,
                                         uint8_t *out, int channel);
 
-FLUIDSYNTH_API int fluid_synth_write_u8_mono(fluid_synth_t *synth, int len,
+int fluid_synth_write_u8_mono(fluid_synth_t *synth, int len,
                                              uint8_t *out);
 
 /** Generate a number of samples. This function expects two floating
@@ -576,7 +576,7 @@ FLUIDSYNTH_API int fluid_synth_write_u8_mono(fluid_synth_t *synth, int len,
  * right buffer \returns 0 if no error occured, non-zero otherwise
  */
 
-FLUIDSYNTH_API int fluid_synth_write_float(fluid_synth_t *synth, int len,
+int fluid_synth_write_float(fluid_synth_t *synth, int len,
                                            void *lout, int loff, int lincr,
                                            void *rout, int roff, int rincr);
 
@@ -592,7 +592,7 @@ typedef int (*fluid_audio_callback_t)(fluid_synth_t *synth, int len, void *out1,
 /** Add a SoundFont loader to the synthesizer. Note that SoundFont
     loader don't necessarily load SoundFonts. They can load any type
     of wavetable data but export a SoundFont interface. */
-FLUIDSYNTH_API void fluid_synth_add_sfloader(fluid_synth_t *synth,
+void fluid_synth_add_sfloader(fluid_synth_t *synth,
                                              fluid_sfloader_t *loader);
 
 /** Allocate a synthesis voice. This function is called by a
@@ -601,7 +601,7 @@ FLUIDSYNTH_API void fluid_synth_add_sfloader(fluid_synth_t *synth,
    (velocity-to-attenuation, velocity to filter, ...) Note: A single noteon
    event may create any number of voices, when the preset is layered. Typically
    1 (mono) or 2 (stereo).*/
-FLUIDSYNTH_API fluid_voice_t *fluid_synth_alloc_voice(fluid_synth_t *synth,
+fluid_voice_t *fluid_synth_alloc_voice(fluid_synth_t *synth,
                                                       fluid_sample_t *sample,
                                                       int channum, int key,
                                                       int vel);
@@ -611,19 +611,19 @@ FLUIDSYNTH_API fluid_voice_t *fluid_synth_alloc_voice(fluid_synth_t *synth,
     has been allocated with fluid_synth_alloc_voice() and
     initialized.
     Exclusive classes are processed here.*/
-FLUIDSYNTH_API void fluid_synth_start_voice(fluid_synth_t *synth,
+void fluid_synth_start_voice(fluid_synth_t *synth,
                                             fluid_voice_t *voice);
 
 /** Write a list of all voices matching ID into buf, but not more than bufsize
  * voices. If ID <0, return all voices. */
-FLUIDSYNTH_API void fluid_synth_get_voicelist(fluid_synth_t *synth,
+void fluid_synth_get_voicelist(fluid_synth_t *synth,
                                               fluid_voice_t *buf[], int bufsize,
                                               int ID);
 
 /* midi router disabled */
 #if 0
   /** This is a hack to get command handlers working */
-FLUIDSYNTH_API void fluid_synth_set_midi_router(fluid_synth_t* synth,
+void fluid_synth_set_midi_router(fluid_synth_t* synth,
 					      fluid_midi_router_t* router);
 #endif
 

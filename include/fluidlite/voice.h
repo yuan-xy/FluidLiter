@@ -14,7 +14,7 @@ extern "C" {
     This is only necessary after changing a generator of an already operating
    voice. Most applications will not need this function.*/
 
-FLUIDSYNTH_API void fluid_voice_update_param(fluid_voice_t *voice, int gen);
+void fluid_voice_update_param(fluid_voice_t *voice, int gen);
 
 /* for fluid_voice_add_mod */
 enum fluid_voice_add_mod {
@@ -24,18 +24,18 @@ enum fluid_voice_add_mod {
 };
 
 /* Add a modulator to a voice (SF2.1 only). */
-FLUIDSYNTH_API void fluid_voice_add_mod(fluid_voice_t *voice, fluid_mod_t *mod,
+void fluid_voice_add_mod(fluid_voice_t *voice, fluid_mod_t *mod,
                                         int mode);
 
 /** Set the value of a generator */
-FLUIDSYNTH_API void fluid_voice_gen_set(fluid_voice_t *voice, int gen,
+void fluid_voice_gen_set(fluid_voice_t *voice, int gen,
                                         float val);
 
 /** Get the value of a generator */
-FLUIDSYNTH_API float fluid_voice_gen_get(fluid_voice_t *voice, int gen);
+float fluid_voice_gen_get(fluid_voice_t *voice, int gen);
 
 /** Modify the value of a generator by val */
-FLUIDSYNTH_API void fluid_voice_gen_incr(fluid_voice_t *voice, int gen,
+void fluid_voice_gen_incr(fluid_voice_t *voice, int gen,
                                          float val);
 
 /** Return the unique ID of the noteon-event. A sound font loader
@@ -49,9 +49,9 @@ FLUIDSYNTH_API void fluid_voice_gen_incr(fluid_voice_t *voice, int gen,
  * - that the ID is still the same
  * Otherwise the voice has finished playing.
  */
-FLUIDSYNTH_API unsigned int fluid_voice_get_id(fluid_voice_t *voice);
+unsigned int fluid_voice_get_id(fluid_voice_t *voice);
 
-FLUIDSYNTH_API int fluid_voice_is_playing(fluid_voice_t *voice);
+int fluid_voice_is_playing(fluid_voice_t *voice);
 
 /** If the peak volume during the loop is known, then the voice can
  * be released earlier during the release phase. Otherwise, the
@@ -65,7 +65,7 @@ FLUIDSYNTH_API int fluid_voice_is_playing(fluid_voice_t *voice);
  * on each sample once.
  */
 
-FLUIDSYNTH_API int fluid_voice_optimize_sample(fluid_sample_t *s);
+int fluid_voice_optimize_sample(fluid_sample_t *s);
 
 #ifdef __cplusplus
 }

@@ -111,13 +111,13 @@ struct _fluid_fileapi_t {
     long (*ftell)(void *handle);
 };
 
-FLUIDSYNTH_API void fluid_init_default_fileapi(fluid_fileapi_t *fileapi);
+void fluid_init_default_fileapi(fluid_fileapi_t *fileapi);
 
-FLUIDSYNTH_API void fluid_set_default_fileapi(fluid_fileapi_t *fileapi);
+void fluid_set_default_fileapi(fluid_fileapi_t *fileapi);
 
-FLUIDSYNTH_API fluid_sfloader_t *new_fluid_defsfloader();
+fluid_sfloader_t *new_fluid_defsfloader();
 
-FLUIDSYNTH_API int delete_fluid_defsfloader(fluid_sfloader_t *loader);
+int delete_fluid_defsfloader(fluid_sfloader_t *loader);
 
 /*
  * fluid_sfont_t

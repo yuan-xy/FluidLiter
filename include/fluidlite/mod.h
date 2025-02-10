@@ -58,26 +58,26 @@ enum fluid_mod_src {
 };
 
 /* Allocates memory for a new modulator */
-FLUIDSYNTH_API fluid_mod_t *fluid_mod_new(void);
+fluid_mod_t *fluid_mod_new(void);
 
 /* Frees the modulator */
-FLUIDSYNTH_API void fluid_mod_delete(fluid_mod_t *mod);
+void fluid_mod_delete(fluid_mod_t *mod);
 
-FLUIDSYNTH_API void fluid_mod_set_source1(fluid_mod_t *mod, int src, int flags);
-FLUIDSYNTH_API void fluid_mod_set_source2(fluid_mod_t *mod, int src, int flags);
-FLUIDSYNTH_API void fluid_mod_set_dest(fluid_mod_t *mod, int dst);
-FLUIDSYNTH_API void fluid_mod_set_amount(fluid_mod_t *mod, fluid_real_t amount);
+void fluid_mod_set_source1(fluid_mod_t *mod, int src, int flags);
+void fluid_mod_set_source2(fluid_mod_t *mod, int src, int flags);
+void fluid_mod_set_dest(fluid_mod_t *mod, int dst);
+void fluid_mod_set_amount(fluid_mod_t *mod, fluid_real_t amount);
 
-FLUIDSYNTH_API int fluid_mod_get_source1(fluid_mod_t *mod);
-FLUIDSYNTH_API int fluid_mod_get_flags1(fluid_mod_t *mod);
-FLUIDSYNTH_API int fluid_mod_get_source2(fluid_mod_t *mod);
-FLUIDSYNTH_API int fluid_mod_get_flags2(fluid_mod_t *mod);
-FLUIDSYNTH_API int fluid_mod_get_dest(fluid_mod_t *mod);
-FLUIDSYNTH_API fluid_real_t fluid_mod_get_amount(fluid_mod_t *mod);
+int fluid_mod_get_source1(fluid_mod_t *mod);
+int fluid_mod_get_flags1(fluid_mod_t *mod);
+int fluid_mod_get_source2(fluid_mod_t *mod);
+int fluid_mod_get_flags2(fluid_mod_t *mod);
+int fluid_mod_get_dest(fluid_mod_t *mod);
+fluid_real_t fluid_mod_get_amount(fluid_mod_t *mod);
 
 /* Determines, if two modulators are 'identical' (all parameters
    except the amount match) */
-FLUIDSYNTH_API int fluid_mod_test_identity(fluid_mod_t *mod1,
+int fluid_mod_test_identity(fluid_mod_t *mod1,
                                            fluid_mod_t *mod2);
 
 #ifdef __cplusplus

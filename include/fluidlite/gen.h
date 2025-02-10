@@ -109,7 +109,7 @@ enum fluid_gen_flags {
     GEN_SET,     /**< Generator value is set */
 };
 
-FLUIDSYNTH_API int fluid_gen_set_default_values(fluid_gen_t *gen);
+int fluid_gen_set_default_values(fluid_gen_t *gen);
 
 #ifdef __cplusplus
 }
