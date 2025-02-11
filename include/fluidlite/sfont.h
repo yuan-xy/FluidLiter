@@ -40,9 +40,6 @@ extern "C" {
 
 enum { FLUID_PRESET_SELECTED, FLUID_PRESET_UNSELECTED, FLUID_SAMPLE_DONE };
 
-/*
- * fluid_sfloader_t
- */
 
 struct _fluid_sfloader_t {
     /** Private data */
@@ -183,12 +180,8 @@ struct _fluid_sample_t {
     /* Set this to zero, when submitting a new sample. */
     int amplitude_that_reaches_noise_floor_is_valid;
     double amplitude_that_reaches_noise_floor;
-
-    /** Count the number of playing voices that use this sample. */
-    unsigned int refcount;
 };
 
-#define fluid_sample_refcount(_sample) ((_sample)->refcount)
 
 /** Sample types */
 

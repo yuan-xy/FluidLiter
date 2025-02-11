@@ -169,10 +169,6 @@ int fluid_voice_init(fluid_voice_t *voice, fluid_sample_t *sample,
     voice->amplitude_that_reaches_noise_floor_loop =
         FLUID_NOISE_FLOOR / voice->synth_gain;
 
-    /* Increment the reference count of the sample to prevent the
-       unloading of the soundfont while this voice is playing. */
-    fluid_sample_incr_ref(voice->sample);
-
     return FLUID_OK;
 }
 
@@ -1568,12 +1564,6 @@ int fluid_voice_off(fluid_voice_t *voice) {
     voice->modenv_section = FLUID_VOICE_ENVFINISHED;
     voice->modenv_count = 0;
     voice->status = FLUID_VOICE_OFF;
-
-    /* Decrement the reference count of the sample. */
-    if (voice->sample) {
-        fluid_sample_decr_ref(voice->sample);
-        voice->sample = NULL;
-    }
 
     return FLUID_OK;
 }

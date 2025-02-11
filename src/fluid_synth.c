@@ -1843,9 +1843,9 @@ fluid_voice_t *fluid_synth_alloc_voice(fluid_synth_t *synth,
                   chan, key, vel, synth->storeid, synth->noteid, synth->ticks,
                   k);
         FLUID_LOG(FLUID_INFO,
-                  "\t\t%s\ttype:%d\trate:%d\torigpitch:%d\trefcount:%d",
+                  "\t\tname:%s\ttype:%d\trate:%d\torigpitch:%d",
                   sample->name, sample->sampletype, sample->samplerate,
-                  sample->origpitch, sample->refcount);
+                  sample->origpitch);
     #endif
 
     if (chan >= 0) {

@@ -224,15 +224,6 @@ fluid_defsfont_t *new_fluid_defsfont() {
 int delete_fluid_defsfont(fluid_defsfont_t *sfont) {
     fluid_list_t *list;
     fluid_defpreset_t *preset;
-    fluid_sample_t *sample;
-
-    /* Check that no samples are currently used */
-    for (list = sfont->sample; list; list = fluid_list_next(list)) {
-        sample = (fluid_sample_t *)fluid_list_get(list);
-        if (fluid_sample_refcount(sample) != 0) {
-            return -1;
-        }
-    }
 
     if (sfont->filename != NULL) {
         FLUID_FREE(sfont->filename);

@@ -48,10 +48,4 @@
 #define fluid_preset_noteon(_preset, _synth, _ch, _key, _vel)                  \
     (*(_preset)->noteon)(_preset, _synth, _ch, _key, _vel)
 
-#define fluid_sample_incr_ref(_sample)                                         \
-    { (_sample)->refcount++; }
-
-#define fluid_sample_decr_ref(_sample)                                         \
-    (_sample)->refcount--;                                                     
-
 #endif /* _PRIV_FLUID_SFONT_H */
