@@ -559,7 +559,6 @@ fluid_inst_zone_t *fluid_inst_get_global_zone(fluid_inst_t *inst);
 
 struct _fluid_inst_zone_t {
     fluid_inst_zone_t *next;
-    char *name;
     fluid_sample_t *sample;
     int keylo;
     int keyhi;
@@ -569,7 +568,7 @@ struct _fluid_inst_zone_t {
     fluid_mod_list_t *mod; /* List of modulators */
 };
 
-fluid_inst_zone_t *new_fluid_inst_zone(char *name);
+fluid_inst_zone_t *new_fluid_inst_zone();
 int delete_fluid_inst_zone(fluid_inst_zone_t *zone);
 fluid_inst_zone_t *fluid_inst_zone_next(fluid_inst_zone_t *zone);
 int fluid_inst_zone_import_sfont(fluid_inst_zone_t *zone, SFZone *sfzone,

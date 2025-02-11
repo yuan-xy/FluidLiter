@@ -1217,7 +1217,6 @@ int fluid_inst_import_sfont(fluid_inst_t *inst, SFInst *sfinst,
     fluid_list_t *p;
     SFZone *sfzone;
     fluid_inst_zone_t *zone;
-    char zone_name[256];
     int count;
 
     p = sfinst->zone;
@@ -1230,9 +1229,7 @@ int fluid_inst_import_sfont(fluid_inst_t *inst, SFInst *sfinst,
     count = 0;
     while (p != NULL) {
         sfzone = (SFZone *)p->data;
-        sprintf(zone_name, "%s/%d", inst->name, count);
-
-        zone = new_fluid_inst_zone(zone_name);
+        zone = new_fluid_inst_zone();
         if (zone == NULL) {
             return FLUID_FAILED;
         }
@@ -1253,9 +1250,7 @@ int fluid_inst_import_sfont(fluid_inst_t *inst, SFInst *sfinst,
     return FLUID_OK;
 }
 
-/*
- * fluid_inst_add_zone
- */
+
 int fluid_inst_add_zone(fluid_inst_t *inst, fluid_inst_zone_t *zone) {
     if (inst->zone == NULL) {
         zone->next = NULL;
@@ -1286,26 +1281,14 @@ fluid_inst_zone_t *fluid_inst_get_global_zone(fluid_inst_t *inst) {
  *                           INST_ZONE
  */
 
-/*
- * new_fluid_inst_zone
- */
-fluid_inst_zone_t *new_fluid_inst_zone(char *name) {
-    int size;
-    fluid_inst_zone_t *zone = NULL;
-    zone = FLUID_NEW(fluid_inst_zone_t);
+
+fluid_inst_zone_t *new_fluid_inst_zone() {
+    fluid_inst_zone_t *zone = FLUID_NEW(fluid_inst_zone_t);
     if (zone == NULL) {
         FLUID_LOG(FLUID_ERR, "Out of memory");
         return NULL;
     }
     zone->next = NULL;
-    size = 1 + FLUID_STRLEN(name);
-    zone->name = FLUID_MALLOC(size);
-    if (zone->name == NULL) {
-        FLUID_LOG(FLUID_ERR, "Out of memory");
-        FLUID_FREE(zone);
-        return NULL;
-    }
-    FLUID_STRCPY(zone->name, name);
     zone->sample = NULL;
     zone->keylo = 0;
     zone->keyhi = 128;
@@ -1336,14 +1319,11 @@ int delete_fluid_inst_zone(fluid_inst_zone_t *zone) {
     }
     delete_fluid_list(zone->sf_gen);
 
-    if (zone->name) FLUID_FREE(zone->name);
     FLUID_FREE(zone);
     return FLUID_OK;
 }
 
-/*
- * fluid_inst_zone_next
- */
+
 fluid_inst_zone_t *fluid_inst_zone_next(fluid_inst_zone_t *zone) {
     return zone->next;
 }

@@ -88,8 +88,8 @@ void print_fluid_preset_zone(fluid_preset_zone_t *pz){
 
 void print_fluid_inst_zone_global(fluid_inst_zone_t *iz){
     if(iz == NULL) return;
-    printf("global_inst_zone: %s,\t keylo:%d, hi:%d,\t velLo:%d, hi:%d\n",
-      iz->name, iz->keylo, iz->keyhi, iz->vello, iz->velhi);
+    printf("global_inst_zone: \t keylo:%d, hi:%d,\t velLo:%d, hi:%d\n",
+            iz->keylo, iz->keyhi, iz->vello, iz->velhi);
 
     print_sf_gen(iz, "global_inst_gen");
     print_mod(iz, "global_inst_mod");
@@ -99,8 +99,8 @@ void print_fluid_inst_zone_global(fluid_inst_zone_t *iz){
 }
 
 void print_fluid_inst_zone(fluid_inst_zone_t *iz){
-    printf("\tinst_zone:\t%s,\t keylo:%d, hi:%d,\t velLo:%d, hi:%d\n",
-      iz->name, iz->keylo, iz->keyhi, iz->vello, iz->velhi);
+    printf("\tinst_zone:\t keylo:%d, hi:%d,\t velLo:%d, hi:%d\n",
+            iz->keylo, iz->keyhi, iz->vello, iz->velhi);
     
     print_sf_gen(iz, "\tinst_gen");
     print_mod(iz, "inst_mod");
