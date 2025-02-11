@@ -967,7 +967,7 @@ int fluid_preset_zone_import_sfont(fluid_preset_zone_t *zone, SFZone *sfzone,
                     FLUID_LOG(FLUID_WARN, "unexpect preset gen(%d, %f) exsits.", gen->num, gen->val);
                 }
             }else{
-                FLUID_LOG(FLUID_WARN, "good news: don't repeat create preset gen(%d, %d).", sfgen->id, sfgen->amount.sword);
+                FLUID_LOG(FLUID_DBG, "good news: don't repeat create preset gen(%d, %d).", sfgen->id, sfgen->amount.sword);
             }
             break;
         }
@@ -1326,7 +1326,7 @@ int fluid_inst_zone_import_sfont(fluid_inst_zone_t *zone, SFZone *sfzone,
                     FLUID_LOG(FLUID_WARN, "unexpect gen(%d, %f) exsits.", gen->num, gen->val);
                 }
             }else{
-                FLUID_LOG(FLUID_WARN, "good news: don't repeat create gen(%d, %d).", sfgen->id, sfgen->amount.sword);
+                FLUID_LOG(FLUID_DBG, "good news: don't repeat create gen(%d, %d).", sfgen->id, sfgen->amount.sword);
             }
             break;
         }

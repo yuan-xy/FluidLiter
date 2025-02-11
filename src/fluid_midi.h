@@ -4,20 +4,6 @@
 #include "fluidsynth_priv.h"
 #include "fluid_list.h"
 
-typedef struct _fluid_midi_parser_t fluid_midi_parser_t;
-
-fluid_midi_parser_t *new_fluid_midi_parser(void);
-int delete_fluid_midi_parser(fluid_midi_parser_t *parser);
-fluid_midi_event_t *fluid_midi_parser_parse(fluid_midi_parser_t *parser,
-                                            unsigned char c);
-
-int fluid_midi_send_event(fluid_synth_t *synth, fluid_player_t *player,
-                          fluid_midi_event_t *evt);
-
-/***************************************************************
- *
- *                   CONSTANTS & ENUM
- */
 
 #define MAX_NUMBER_OF_TRACKS 128
 
@@ -199,17 +185,6 @@ enum midi_sysex_tuning_msg_id {
 #define MIDI_SYSEX_GM_ON 0x01  /**< Enable GM mode */
 #define MIDI_SYSEX_GM_OFF 0x02 /**< Disable GM mode */
 
-enum fluid_player_status {
-    FLUID_PLAYER_READY,
-    FLUID_PLAYER_PLAYING,
-    FLUID_PLAYER_DONE
-};
-
-enum fluid_driver_status {
-    FLUID_MIDI_READY,
-    FLUID_MIDI_LISTENING,
-    FLUID_MIDI_DONE
-};
 
 /***************************************************************
  *
