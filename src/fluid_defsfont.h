@@ -542,7 +542,6 @@ int fluid_preset_zone_inside_range(fluid_preset_zone_t *zone, int key, int vel);
 fluid_inst_t *fluid_preset_zone_get_inst(fluid_preset_zone_t *zone);
 
 struct _fluid_inst_t {
-    char name[21];
     fluid_inst_zone_t *global_zone;
     fluid_inst_zone_t *zone;
 };

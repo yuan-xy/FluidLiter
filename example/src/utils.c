@@ -125,8 +125,6 @@ void print_preset_info(fluid_preset_t *preset){
     print_fluid_preset_zone(preset_zone);
 
     fluid_inst_t *inst = preset_zone->inst;
-    // printf("fluid_inst_t->name: %s\n", inst->name);  
-
     print_fluid_inst_zone_global(inst->global_zone);
 
     fluid_inst_zone_t *cur_zone = inst->zone;

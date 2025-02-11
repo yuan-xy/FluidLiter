@@ -1145,16 +1145,13 @@ int fluid_preset_zone_inside_range(fluid_preset_zone_t *zone, int key,
  *                           INST
  */
 
-/*
- * new_fluid_inst
- */
+
 fluid_inst_t *new_fluid_inst() {
     fluid_inst_t *inst = FLUID_NEW(fluid_inst_t);
     if (inst == NULL) {
         FLUID_LOG(FLUID_ERR, "Out of memory");
         return NULL;
     }
-    inst->name[0] = 0;
     inst->global_zone = NULL;
     inst->zone = NULL;
     return inst;
@@ -1184,17 +1181,11 @@ int delete_fluid_inst(fluid_inst_t *inst) {
     return err;
 }
 
-/*
- * fluid_inst_set_global_zone
- */
 int fluid_inst_set_global_zone(fluid_inst_t *inst, fluid_inst_zone_t *zone) {
     inst->global_zone = zone;
     return FLUID_OK;
 }
 
-/*
- * fluid_inst_import_sfont
- */
 int fluid_inst_import_sfont(fluid_inst_t *inst, SFInst *sfinst,
                             fluid_defsfont_t *sfont) {
     fluid_list_t *p;
@@ -1204,9 +1195,7 @@ int fluid_inst_import_sfont(fluid_inst_t *inst, SFInst *sfinst,
 
     p = sfinst->zone;
     if (FLUID_STRLEN(sfinst->name) > 0) {
-        FLUID_STRCPY(inst->name, sfinst->name);
-    } else {
-        FLUID_STRCPY(inst->name, "<untitled>");
+        FLUID_LOG(FLUID_INFO, "ignore inst->name: %s.", sfinst->name);
     }
 
     count = 0;
@@ -1245,9 +1234,7 @@ int fluid_inst_add_zone(fluid_inst_t *inst, fluid_inst_zone_t *zone) {
     return FLUID_OK;
 }
 
-/*
- * fluid_inst_get_zone
- */
+
 fluid_inst_zone_t *fluid_inst_get_zone(fluid_inst_t *inst) {
     return inst->zone;
 }
