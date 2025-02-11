@@ -135,37 +135,38 @@ typedef FILE *fluid_file;
 
 
 /* Math functions */
-#if defined WITH_FLOAT && defined HAVE_SINF
+#if defined WITH_FLOAT
 #define FLUID_SIN   sinf
 #else
 #define FLUID_SIN   (fluid_real_t)sin
 #endif
 
-#if defined WITH_FLOAT && defined HAVE_COSF
+
+#if defined WITH_FLOAT
 #define FLUID_COS   cosf
 #else
 #define FLUID_COS   (fluid_real_t)cos
 #endif
 
-#if defined WITH_FLOAT && defined HAVE_FABSF
+#if defined WITH_FLOAT
 #define FLUID_FABS  fabsf
 #else
 #define FLUID_FABS  (fluid_real_t)fabs
 #endif
 
-#if defined WITH_FLOAT && defined HAVE_POWF
+#if defined WITH_FLOAT
 #define FLUID_POW   powf
 #else
 #define FLUID_POW   (fluid_real_t)pow
 #endif
 
-#if defined WITH_FLOAT && defined HAVE_SQRTF
+#if defined WITH_FLOAT
 #define FLUID_SQRT  sqrtf
 #else
 #define FLUID_SQRT  (fluid_real_t)sqrt
 #endif
 
-#if defined WITH_FLOAT && defined HAVE_LOGF
+#if defined WITH_FLOAT
 #define FLUID_LOGF  logf
 #else
 #define FLUID_LOGF  (fluid_real_t)log
