@@ -105,3 +105,5 @@ valgrind --tool=massif  ./test_reverb_chorus
 # valgrind --dsymutil=yes --tool=callgrind --dump-instr=yes --collect-jumps=yes ./test_reverb_chorus
 # massif-visualizer massif.out.xxx
 
+gcc example/src/test_effects.c -m32 -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidlite -lm misc.o -o test_effects
+./test_effects
