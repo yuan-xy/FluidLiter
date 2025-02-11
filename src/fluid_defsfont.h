@@ -524,7 +524,6 @@ int fluid_defpreset_noteon(fluid_defpreset_t *preset, fluid_synth_t *synth,
 
 struct _fluid_preset_zone_t {
     fluid_preset_zone_t *next;
-    char *name;
     fluid_inst_t *inst;
     int keylo;
     int keyhi;
@@ -534,7 +533,7 @@ struct _fluid_preset_zone_t {
     fluid_mod_list_t *mod; /* List of modulators */
 };
 
-fluid_preset_zone_t *new_fluid_preset_zone(char *name);
+fluid_preset_zone_t *new_fluid_preset_zone();
 int delete_fluid_preset_zone(fluid_preset_zone_t *zone);
 fluid_preset_zone_t *fluid_preset_zone_next(fluid_preset_zone_t *preset);
 int fluid_preset_zone_import_sfont(fluid_preset_zone_t *zone, SFZone *sfzone,

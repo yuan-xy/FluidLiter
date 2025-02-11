@@ -67,8 +67,8 @@ void print_voice_modulator(fluid_voice_t* voice){
 
 void print_fluid_preset_zone_global(fluid_preset_zone_t *pz){
     if(pz == NULL) return;
-    printf("global_preset_zone: %s,\t keylo:%d, hi:%d,\t velLo:%d, hi:%d\n",
-      pz->name, pz->keylo, pz->keyhi, pz->vello, pz->velhi);
+    printf("global_preset_zone: \t keylo:%d, hi:%d,\t velLo:%d, hi:%d\n",
+            pz->keylo, pz->keyhi, pz->vello, pz->velhi);
     
     print_sf_gen(pz, "global_preset_gen");
     print_mod(pz, "global_preset_mod");
@@ -78,8 +78,8 @@ void print_fluid_preset_zone_global(fluid_preset_zone_t *pz){
 }
 
 void print_fluid_preset_zone(fluid_preset_zone_t *pz){
-    printf("preset_zone: %s,\t keylo:%d, hi:%d,\t velLo:%d, hi:%d\n",
-      pz->name, pz->keylo, pz->keyhi, pz->vello, pz->velhi);
+    printf("preset_zone: \t keylo:%d, hi:%d,\t velLo:%d, hi:%d\n",
+            pz->keylo, pz->keyhi, pz->vello, pz->velhi);
 
     print_sf_gen(pz, "preset_gen");
     print_mod(pz, "preset_mod");

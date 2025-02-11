@@ -834,7 +834,6 @@ int fluid_defpreset_import_sfont(fluid_defpreset_t *preset, SFPreset *sfpreset,
     SFZone *sfzone;
     fluid_preset_zone_t *zone;
     int count;
-    char zone_name[256];
     if (FLUID_STRLEN(sfpreset->name) > 0) {
         FLUID_STRCPY(preset->name, sfpreset->name);
     } else {
@@ -847,8 +846,7 @@ int fluid_defpreset_import_sfont(fluid_defpreset_t *preset, SFPreset *sfpreset,
     count = 0;
     while (p != NULL) {
         sfzone = (SFZone *)p->data;
-        sprintf(zone_name, "%s/%d", preset->name, count);
-        zone = new_fluid_preset_zone(zone_name);
+        zone = new_fluid_preset_zone();
         if (zone == NULL) {
             return FLUID_FAILED;
         }
@@ -896,33 +894,19 @@ fluid_defpreset_get_global_zone(fluid_defpreset_t *preset) {
     return preset->global_zone;
 }
 
-/*
- * fluid_preset_zone_next
- */
+
 fluid_preset_zone_t *fluid_preset_zone_next(fluid_preset_zone_t *preset) {
     return preset->next;
 }
 
-/*
- * new_fluid_preset_zone
- */
-fluid_preset_zone_t *new_fluid_preset_zone(char *name) {
-    int size;
-    fluid_preset_zone_t *zone = NULL;
-    zone = FLUID_NEW(fluid_preset_zone_t);
+
+fluid_preset_zone_t *new_fluid_preset_zone() {
+    fluid_preset_zone_t *zone = FLUID_NEW(fluid_preset_zone_t);
     if (zone == NULL) {
         FLUID_LOG(FLUID_ERR, "Out of memory");
         return NULL;
     }
     zone->next = NULL;
-    size = 1 + FLUID_STRLEN(name);
-    zone->name = FLUID_MALLOC(size);
-    if (zone->name == NULL) {
-        FLUID_LOG(FLUID_ERR, "Out of memory");
-        FLUID_FREE(zone);
-        return NULL;
-    }
-    FLUID_STRCPY(zone->name, name);
     zone->inst = NULL;
     zone->keylo = 0;
     zone->keyhi = 128;
@@ -950,7 +934,6 @@ int delete_fluid_preset_zone(fluid_preset_zone_t *zone) {
         fluid_mod_list_delete(tmp);
     }
 
-    if (zone->name) FLUID_FREE(zone->name);
     if (zone->inst) delete_fluid_inst(zone->inst);
     FLUID_FREE(zone);
     return FLUID_OK;
