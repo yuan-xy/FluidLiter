@@ -134,7 +134,7 @@ int main(int argc, char *argv[]) {
 //   loader->free = delete_fluid_defsfloader;
 //   loader->load = fluid_defsfloader_load;
 
-    fluid_synth_add_sfloader(synth, my_sfloader);
+    synth->loader = my_sfloader;
 
 
     char abused_filename[64];

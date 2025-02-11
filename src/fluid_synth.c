@@ -248,14 +248,12 @@ fluid_synth_t *new_fluid_synth(SynthParams sp) {
     synth->ticks = 0;
     synth->tuning = NULL;
 
-    /* allocate and add the default sfont loader */
     loader = new_fluid_defsfloader();
-
     if (loader == NULL) {
         FLUID_LOG(FLUID_WARN, "Failed to create the default SoundFont loader");
-    } else {
-        fluid_synth_add_sfloader(synth, loader);
+        goto error_recovery;
     }
+    synth->loader = loader;
 
     /* allocate all channel objects */
     synth->channel = FLUID_ARRAY(fluid_channel_t *, synth->midi_channels);
@@ -374,7 +372,6 @@ int delete_fluid_synth(fluid_synth_t *synth) {
     fluid_list_t *list;
     fluid_sfont_t *sfont;
     fluid_bank_offset_t *bank_offset;
-    fluid_sfloader_t *loader;
 
     if (synth == NULL) {
         return FLUID_OK;
@@ -406,14 +403,7 @@ int delete_fluid_synth(fluid_synth_t *synth) {
 
     delete_fluid_list(synth->bank_offsets);
 
-    /* delete all the SoundFont loaders */
-
-    for (list = synth->loaders; list; list = fluid_list_next(list)) {
-        loader = (fluid_sfloader_t *)fluid_list_get(list);
-        fluid_sfloader_delete(loader);
-    }
-
-    delete_fluid_list(synth->loaders);
+    fluid_sfloader_delete(synth->loader);
 
     if (synth->channel != NULL) {
         for (i = 0; i < synth->midi_channels; i++) {
@@ -1952,9 +1942,6 @@ void fluid_synth_kill_by_exclusive_class(fluid_synth_t *synth,
     };
 }
 
-/*
- * fluid_synth_start_voice
- */
 void fluid_synth_start_voice(fluid_synth_t *synth, fluid_voice_t *voice) {
     /* Find the exclusive class of this voice. If set, kill all voices
      * that match the exclusive class and are younger than the first
@@ -1966,49 +1953,31 @@ void fluid_synth_start_voice(fluid_synth_t *synth, fluid_voice_t *voice) {
     fluid_voice_start(voice);
 }
 
-/*
- * fluid_synth_add_sfloader
- */
-void fluid_synth_add_sfloader(fluid_synth_t *synth, fluid_sfloader_t *loader) {
-    synth->loaders = fluid_list_prepend(synth->loaders, loader);
-}
-
-/*
- * fluid_synth_sfload
- */
 int fluid_synth_sfload(fluid_synth_t *synth, const char *filename,
                        int reset_presets) {
     fluid_sfont_t *sfont;
-    fluid_list_t *list;
-    fluid_sfloader_t *loader;
 
     if (filename == NULL) {
         FLUID_LOG(FLUID_ERR, "Invalid filename");
         return FLUID_FAILED;
     }
 
-    for (list = synth->loaders; list; list = fluid_list_next(list)) {
-        loader = (fluid_sfloader_t *)fluid_list_get(list);
+    sfont = fluid_sfloader_load(synth->loader, filename);
+    if (sfont == NULL) return -1;
 
-        sfont = fluid_sfloader_load(loader, filename);
-        if (sfont == NULL) return -1;
+    sfont->id = ++synth->sfont_id;
+    synth->sfont = fluid_list_prepend(synth->sfont, sfont);
 
-        sfont->id = ++synth->sfont_id;
-        synth->sfont = fluid_list_prepend(synth->sfont, sfont);
-
-        if (reset_presets) {
-            fluid_synth_program_reset(synth);
-        }
-        return (int)sfont->id;
+    if (reset_presets) {
+        fluid_synth_program_reset(synth);
     }
+    return (int)sfont->id;
 
     FLUID_LOG(FLUID_ERR, "Failed to load SoundFont \"%s\"", filename);
     return -1;
 }
 
-/*
- * fluid_synth_sfunload
- */
+
 int fluid_synth_sfunload(fluid_synth_t *synth, unsigned int id,
                          int reset_presets) {
     fluid_sfont_t *sfont = fluid_synth_get_sfont_by_id(synth, id);
@@ -2038,9 +2007,7 @@ int fluid_synth_sfunload(fluid_synth_t *synth, unsigned int id,
     return FLUID_OK;
 }
 
-/*
- * fluid_synth_add_sfont
- */
+
 int fluid_synth_add_sfont(fluid_synth_t *synth, fluid_sfont_t *sfont) {
     sfont->id = ++synth->sfont_id;
 

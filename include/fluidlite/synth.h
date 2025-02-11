@@ -580,20 +580,6 @@ int fluid_synth_write_float(fluid_synth_t *synth, int len,
                                            void *lout, int loff, int lincr,
                                            void *rout, int roff, int rincr);
 
-/* Type definition of the synthesizer's audio callback function. */
-typedef int (*fluid_audio_callback_t)(fluid_synth_t *synth, int len, void *out1,
-                                      int loff, int lincr, void *out2, int roff,
-                                      int rincr);
-
-/*
- *  Synthesizer's interface to handle SoundFont loaders
- */
-
-/** Add a SoundFont loader to the synthesizer. Note that SoundFont
-    loader don't necessarily load SoundFonts. They can load any type
-    of wavetable data but export a SoundFont interface. */
-void fluid_synth_add_sfloader(fluid_synth_t *synth,
-                                             fluid_sfloader_t *loader);
 
 /** Allocate a synthesis voice. This function is called by a
     soundfont's preset in response to a noteon event.

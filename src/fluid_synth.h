@@ -58,7 +58,7 @@ struct _fluid_synth_t {
     unsigned int state; /** the synthesizer state */
     unsigned int ticks; /** the number of audio samples since the start */
 
-    fluid_list_t *loaders; /** the soundfont loaders */
+    fluid_sfloader_t *loader; /** the soundfont loader */
     fluid_list_t *sfont;   /** the loaded soundfont */
     unsigned int sfont_id;
     fluid_list_t *bank_offsets; /** the offsets of the soundfont banks */
