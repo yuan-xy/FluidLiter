@@ -155,8 +155,6 @@ fluid_preset_t *fluid_defsfont_sfont_get_preset(fluid_sfont_t *sfont,
     preset->get_banknum = fluid_defpreset_preset_get_banknum;
     preset->get_num = fluid_defpreset_preset_get_num;
     preset->noteon = fluid_defpreset_preset_noteon;
-    preset->notify = NULL;
-
     return preset;
 }
 
@@ -171,7 +169,6 @@ int fluid_defsfont_sfont_iteration_next(fluid_sfont_t *sfont,
     preset->get_banknum = fluid_defpreset_preset_get_banknum;
     preset->get_num = fluid_defpreset_preset_get_num;
     preset->noteon = fluid_defpreset_preset_noteon;
-    preset->notify = NULL;
 
     return fluid_defsfont_iteration_next((fluid_defsfont_t *)sfont->data,
                                          preset);

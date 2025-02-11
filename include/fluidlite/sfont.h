@@ -160,10 +160,6 @@ struct _fluid_preset_t {
     /** handle a noteon event. Returns 0 if no error occured. */
     int (*noteon)(fluid_preset_t *preset, fluid_synth_t *synth, int chan,
                   int key, int vel);
-
-    /** Implement this function if the preset needs to be notified about
-        preset select and unselect events. */
-    int (*notify)(fluid_preset_t *preset, int reason, int chan);
 };
 
 struct _fluid_sample_t {
@@ -190,13 +186,6 @@ struct _fluid_sample_t {
 
     /** Count the number of playing voices that use this sample. */
     unsigned int refcount;
-
-    /** Implement this function if the sample or SoundFont needs to be
-        notified when the sample is no longer used. */
-    int (*notify)(fluid_sample_t *sample, int reason);
-
-    /** Pointer to SoundFont specific data */
-    void *userdata;
 };
 
 #define fluid_sample_refcount(_sample) ((_sample)->refcount)
