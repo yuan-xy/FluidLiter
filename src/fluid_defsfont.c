@@ -275,7 +275,7 @@ void fluid_synth_set_preset_callback(void *callback) {
 }
 
 
-int fluid_defsfont_load(fluid_defsfont_t *sfont, const char *file,
+int fluid_defsfont_load(fluid_defsfont_t *sfont, const char *filename,
                         fluid_fileapi_t *fapi) {
     SFData *sfdata;
     fluid_list_t *p;
@@ -284,15 +284,10 @@ int fluid_defsfont_load(fluid_defsfont_t *sfont, const char *file,
     fluid_sample_t *sample;
     fluid_defpreset_t *preset;
 
-    sfont->filename = FLUID_MALLOC(1 + FLUID_STRLEN(file));
-    if (sfont->filename == NULL) {
-        FLUID_LOG(FLUID_ERR, "Out of memory");
-        return FLUID_FAILED;
-    }
-    FLUID_STRCPY(sfont->filename, file);
+    sfont->filename = FLUID_STRDUP(filename);
 
     /* The actual loading is done in the sfont and sffile files */
-    sfdata = sfload_file(file, fapi);
+    sfdata = sfload_file(filename, fapi);
     if (sfdata == NULL) {
         FLUID_LOG(FLUID_ERR, "Couldn't load soundfont file");
         return FLUID_FAILED;

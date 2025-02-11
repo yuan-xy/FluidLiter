@@ -88,10 +88,10 @@ typedef FILE *fluid_file;
 #define FLUID_STRLEN(_s) strlen(_s)
 #define FLUID_STRCMP(_s, _t) strcmp(_s, _t)
 #define FLUID_STRNCMP(_s, _t, _n) strncmp(_s, _t, _n)
-#define FLUID_STRCPY(_dst, _src) strcpy(_dst, _src)
+#define FLUID_STRCPY(_dst, _src) snprintf(_dst, sizeof(_dst), "%s", _src)
 #define FLUID_STRCHR(_s, _c) strchr(_s, _c)
 #define FLUID_STRDUP(s)                                                        \
-    FLUID_STRCPY((char *)FLUID_MALLOC(FLUID_STRLEN(s) + 1), s)
+    strcpy((char *)calloc(FLUID_STRLEN(s) + 1), s)
 #define FLUID_FPRINTF fprintf
 
 #define fluid_clip(_val, _min, _max)                                           \
