@@ -68,10 +68,6 @@ fluid_sfont_t *fluid_soundfont_load(fluid_fileapi_t *fileapi, const char *filena
     sfont->sampledata = NULL;
     sfont->preset = NULL;
 
-    sfont->free = delete_fluid_sfont;
-    sfont->get_name = fluid_sfont_get_name;
-    sfont->get_preset = fluid_sfont_get_preset;
-
     if (fluid_sfont_load(sfont, filename, fileapi) == FLUID_FAILED) {
         delete_fluid_sfont(sfont);
         return NULL;
