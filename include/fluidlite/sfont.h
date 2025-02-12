@@ -83,35 +83,14 @@ struct _fluid_fileapi_t {
     long (*ftell)(void *handle);
 };
 
-void fluid_init_default_fileapi(fluid_fileapi_t *fileapi);
-
 void fluid_set_default_fileapi(fluid_fileapi_t *fileapi);
 
+#define fluid_fileapi_delete(_fileapi)                                         \
+    {                                                                          \
+        if ((_fileapi) && (_fileapi)->free) (*(_fileapi)->free)(_fileapi);     \
+    }
 
-struct _fluid_sfont_t {
-    void *data;
-    unsigned int id;
-
-    /** The 'free' callback function should return 0 when it was able to
-        free all resources. It should return a non-zero value if some of
-        the samples could not be freed because they are still in use. */
-    int (*free)(fluid_sfont_t *sfont);
-
-    /** Return the name of the sfont */
-    char *(*get_name)(fluid_sfont_t *sfont);
-
-    /** Return the preset with the specified bank and preset number. All
-     *  the fields, including the 'sfont' field, should * be filled
-     *  in. If the preset cannot be found, the function returns NULL. */
-    fluid_preset_t *(*get_preset)(fluid_sfont_t *sfont, unsigned int bank,
-                                  unsigned int prenum);
-
-    void (*iteration_start)(fluid_sfont_t *sfont);
-
-    /* return 0 when no more presets are available, 1 otherwise */
-    int (*iteration_next)(fluid_sfont_t *sfont, fluid_preset_t *preset);
-};
-
+    
 #define fluid_sfont_get_id(_sf) ((_sf)->id)
 
 struct _fluid_preset_t {

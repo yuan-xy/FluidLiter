@@ -26,7 +26,7 @@ int main(int argc, char** argv)
     /* Enumeration of banks and programs */
     sfont = fluid_synth_get_sfont_by_id(synth, sfid);
     if (sfont != NULL) {
-		char *fontname = fluid_defsfont_get_name((fluid_defsfont_t *)sfont->data);
+		char *fontname = fluid_sfont_get_name(sfont);
 		printf("%s\n", fontname);
         fluid_preset_t struct_preset;
 		fluid_preset_t *preset = &struct_preset;

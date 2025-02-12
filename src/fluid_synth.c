@@ -1988,15 +1988,7 @@ int fluid_synth_sfunload(fluid_synth_t *synth, unsigned int id,
     } else {
         fluid_synth_update_presets(synth);
     }
-
-    if (delete_fluid_sfont(sfont) != 0) {
-        int r = delete_fluid_sfont(sfont);
-        if (r == 0) {
-            FLUID_LOG(FLUID_DBG, "Unloaded SoundFont");
-        }
-    }
-
-    return FLUID_OK;
+    return delete_fluid_sfont(sfont);
 }
 
 

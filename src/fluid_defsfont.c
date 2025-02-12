@@ -33,20 +33,16 @@ static int safe_fread(void *buf, int count, void *handle) {
 
 static int safe_fseek(void *handle, long ofs, int whence) {
     if (FLUID_FSEEK((FILE *)handle, ofs, whence) != 0) {
-        FLUID_LOG(FLUID_ERR,
-                  _("File seek failed with offset = %ld and whence = %d"), ofs,
-                  whence);
+        FLUID_LOG(FLUID_ERR, _("File seek failed with offset = %ld and whence = %d"), ofs, whence);
         return FLUID_FAILED;
     }
     return FLUID_OK;
 }
 
-static const fluid_fileapi_t default_fileapi = {
-    NULL,       default_fopen,  safe_fread,   NULL,
-    safe_fseek, default_fclose, default_ftell};
+static const fluid_fileapi_t default_fileapi = {NULL,       default_fopen,  safe_fread,   NULL,
+                                                safe_fseek, default_fclose, default_ftell};
 
-static fluid_fileapi_t *fluid_default_fileapi =
-    (fluid_fileapi_t *)&default_fileapi;
+static fluid_fileapi_t *fluid_default_fileapi = (fluid_fileapi_t *)&default_fileapi;
 
 void fluid_set_default_fileapi(fluid_fileapi_t *fileapi) {
     if (fileapi == NULL) return;
@@ -58,34 +54,26 @@ fluid_fileapi_t *fluid_get_default_fileapi(void) {
     return fluid_default_fileapi;
 }
 
-
-fluid_sfont_t *fluid_soundfont_load(fluid_fileapi_t *fileapi,
-                                      const char *filename) {
-    fluid_defsfont_t *defsfont;
-    fluid_sfont_t *sfont;
-
-    defsfont = new_fluid_defsfont();
-
-    if (defsfont == NULL) {
-        return NULL;
-    }
-
-    sfont = FLUID_NEW(fluid_sfont_t);
+fluid_sfont_t *fluid_soundfont_load(fluid_fileapi_t *fileapi, const char *filename) {
+    fluid_sfont_t *sfont = FLUID_NEW(fluid_sfont_t);
     if (sfont == NULL) {
         FLUID_LOG(FLUID_ERR, "Out of memory");
         return NULL;
     }
 
-    sfont->data = defsfont;
-    sfont->free = fluid_defsfont_sfont_delete;
-    sfont->get_name = fluid_defsfont_sfont_get_name;
-    sfont->get_preset = fluid_defsfont_sfont_get_preset;
-    sfont->iteration_start = fluid_defsfont_sfont_iteration_start;
-    sfont->iteration_next = fluid_defsfont_sfont_iteration_next;
+    sfont->filename = NULL;
+    sfont->samplepos = 0;
+    sfont->samplesize = 0;
+    sfont->sample = NULL;
+    sfont->sampledata = NULL;
+    sfont->preset = NULL;
 
-    if (fluid_defsfont_load(defsfont, filename, fileapi) ==
-        FLUID_FAILED) {
-        delete_fluid_defsfont(defsfont);
+    sfont->free = delete_fluid_sfont;
+    sfont->get_name = fluid_sfont_get_name;
+    sfont->get_preset = fluid_sfont_get_preset;
+
+    if (fluid_sfont_load(sfont, filename, fileapi) == FLUID_FAILED) {
+        delete_fluid_sfont(sfont);
         return NULL;
     }
 
@@ -97,26 +85,12 @@ fluid_sfont_t *fluid_soundfont_load(fluid_fileapi_t *fileapi,
  *                           PUBLIC INTERFACE
  */
 
-int fluid_defsfont_sfont_delete(fluid_sfont_t *sfont) {
-    if (delete_fluid_defsfont(sfont->data) != 0) {
-        return -1;
-    }
-    FLUID_FREE(sfont);
-    return 0;
-}
-
-char *fluid_defsfont_sfont_get_name(fluid_sfont_t *sfont) {
-    return fluid_defsfont_get_name((fluid_defsfont_t *)sfont->data);
-}
-
-fluid_preset_t *fluid_defsfont_sfont_get_preset(fluid_sfont_t *sfont,
-                                                unsigned int bank,
+fluid_preset_t *fluid_sfont_get_preset(fluid_sfont_t *sfont, unsigned int bank,
                                                 unsigned int prenum) {
     fluid_preset_t *preset;
     fluid_defpreset_t *defpreset;
 
-    defpreset = fluid_defsfont_get_preset((fluid_defsfont_t *)sfont->data, bank,
-                                          prenum);
+    defpreset = fluid_sfont_get_defpreset(sfont, bank, prenum);
 
     if (defpreset == NULL) {
         return NULL;
@@ -136,22 +110,6 @@ fluid_preset_t *fluid_defsfont_sfont_get_preset(fluid_sfont_t *sfont,
     preset->get_num = fluid_defpreset_preset_get_num;
     preset->noteon = fluid_defpreset_preset_noteon;
     return preset;
-}
-
-void fluid_defsfont_sfont_iteration_start(fluid_sfont_t *sfont) {
-    fluid_defsfont_iteration_start((fluid_defsfont_t *)sfont->data);
-}
-
-int fluid_defsfont_sfont_iteration_next(fluid_sfont_t *sfont,
-                                        fluid_preset_t *preset) {
-    preset->free = fluid_defpreset_preset_delete;
-    preset->get_name = fluid_defpreset_preset_get_name;
-    preset->get_banknum = fluid_defpreset_preset_get_banknum;
-    preset->get_num = fluid_defpreset_preset_get_num;
-    preset->noteon = fluid_defpreset_preset_noteon;
-
-    return fluid_defsfont_iteration_next((fluid_defsfont_t *)sfont->data,
-                                         preset);
 }
 
 int fluid_defpreset_preset_delete(fluid_preset_t *preset) {
@@ -174,34 +132,13 @@ int fluid_defpreset_preset_get_num(fluid_preset_t *preset) {
     return fluid_defpreset_get_num((fluid_defpreset_t *)preset->data);
 }
 
-int fluid_defpreset_preset_noteon(fluid_preset_t *preset, fluid_synth_t *synth,
-                                  int chan, int key, int vel) {
-    return fluid_defpreset_noteon((fluid_defpreset_t *)preset->data, synth,
-                                  chan, key, vel);
+int fluid_defpreset_preset_noteon(fluid_preset_t *preset, fluid_synth_t *synth, int chan, int key,
+                                  int vel) {
+    return fluid_defpreset_noteon((fluid_defpreset_t *)preset->data, synth, chan, key, vel);
 }
 
 
-fluid_defsfont_t *new_fluid_defsfont() {
-    fluid_defsfont_t *sfont;
-
-    sfont = FLUID_NEW(fluid_defsfont_t);
-    if (sfont == NULL) {
-        FLUID_LOG(FLUID_ERR, "Out of memory");
-        return NULL;
-    }
-
-    sfont->filename = NULL;
-    sfont->samplepos = 0;
-    sfont->samplesize = 0;
-    sfont->sample = NULL;
-    sfont->sampledata = NULL;
-    sfont->preset = NULL;
-
-    return sfont;
-}
-
-
-int delete_fluid_defsfont(fluid_defsfont_t *sfont) {
+int delete_fluid_sfont(fluid_sfont_t *sfont) {
     fluid_list_t *list;
     fluid_defpreset_t *preset;
 
@@ -232,8 +169,7 @@ int delete_fluid_defsfont(fluid_defsfont_t *sfont) {
     return FLUID_OK;
 }
 
-
-char *fluid_defsfont_get_name(fluid_defsfont_t *sfont) {
+char *fluid_sfont_get_name(fluid_sfont_t *sfont) {
     return sfont->filename;
 }
 
@@ -242,9 +178,7 @@ void fluid_synth_set_preset_callback(void *callback) {
     preset_callback = callback;
 }
 
-
-int fluid_defsfont_load(fluid_defsfont_t *sfont, const char *filename,
-                        fluid_fileapi_t *fapi) {
+int fluid_sfont_load(fluid_sfont_t *sfont, const char *filename, fluid_fileapi_t *fapi) {
     SFData *sfdata;
     fluid_list_t *p;
     SFPreset *sfpreset;
@@ -267,7 +201,7 @@ int fluid_defsfont_load(fluid_defsfont_t *sfont, const char *filename,
     sfont->samplesize = sfdata->samplesize;
 
     /* load sample data in one block */
-    if (fluid_defsfont_load_sampledata(sfont, fapi) != FLUID_OK) goto err_exit;
+    if (fluid_sfont_load_sampledata(sfont, fapi) != FLUID_OK) goto err_exit;
 
     /* Create all the sample headers */
     p = sfdata->sample;
@@ -277,10 +211,9 @@ int fluid_defsfont_load(fluid_defsfont_t *sfont, const char *filename,
         sample = new_fluid_sample();
         if (sample == NULL) goto err_exit;
 
-        if (fluid_sample_import_sfont(sample, sfsample, sfont) != FLUID_OK)
-            goto err_exit;
+        if (fluid_sample_import_sfont(sample, sfsample, sfont) != FLUID_OK) goto err_exit;
 
-        fluid_defsfont_add_sample(sfont, sample);
+        fluid_sfont_add_sample(sfont, sample);
         fluid_voice_optimize_sample(sample);
         p = fluid_list_next(p);
     }
@@ -292,12 +225,10 @@ int fluid_defsfont_load(fluid_defsfont_t *sfont, const char *filename,
         preset = new_fluid_defpreset(sfont);
         if (preset == NULL) goto err_exit;
 
-        if (fluid_defpreset_import_sfont(preset, sfpreset, sfont) != FLUID_OK)
-            goto err_exit;
+        if (fluid_defpreset_import_sfont(preset, sfpreset, sfont) != FLUID_OK) goto err_exit;
 
-        fluid_defsfont_add_preset(sfont, preset);
-        if (preset_callback)
-            preset_callback(preset->bank, preset->num, preset->name);
+        fluid_sfont_add_preset(sfont, preset);
+        if (preset_callback) preset_callback(preset->bank, preset->num, preset->name);
         p = fluid_list_next(p);
     }
     sfont_close(sfdata, fapi);
@@ -309,21 +240,20 @@ err_exit:
     return FLUID_FAILED;
 }
 
-/* fluid_defsfont_add_sample
+/* fluid_sfont_add_sample
  *
  * Add a sample to the SoundFont
  */
-int fluid_defsfont_add_sample(fluid_defsfont_t *sfont, fluid_sample_t *sample) {
+int fluid_sfont_add_sample(fluid_sfont_t *sfont, fluid_sample_t *sample) {
     sfont->sample = fluid_list_append(sfont->sample, sample);
     return FLUID_OK;
 }
 
-/* fluid_defsfont_add_preset
+/* fluid_sfont_add_preset
  *
  * Add a preset to the SoundFont
  */
-int fluid_defsfont_add_preset(fluid_defsfont_t *sfont,
-                              fluid_defpreset_t *preset) {
+int fluid_sfont_add_preset(fluid_sfont_t *sfont, fluid_defpreset_t *preset) {
     fluid_defpreset_t *cur, *prev;
     if (sfont->preset == NULL) {
         preset->next = NULL;
@@ -354,10 +284,9 @@ int fluid_defsfont_add_preset(fluid_defsfont_t *sfont,
 }
 
 /*
- * fluid_defsfont_load_sampledata
+ * fluid_sfont_load_sampledata
  */
-int fluid_defsfont_load_sampledata(fluid_defsfont_t *sfont,
-                                   fluid_fileapi_t *fapi) {
+int fluid_sfont_load_sampledata(fluid_sfont_t *sfont, fluid_fileapi_t *fapi) {
     fluid_file fd;
     unsigned short endian;
     fd = fapi->fopen(fapi, sfont->filename);
@@ -383,8 +312,7 @@ int fluid_defsfont_load_sampledata(fluid_defsfont_t *sfont,
             FLUID_LOG(FLUID_ERR, "Out of memory");
             return FLUID_FAILED;
         }
-        if (fapi->fread(sfont->sampledata, sfont->samplesize, fd) ==
-            FLUID_FAILED) {
+        if (fapi->fread(sfont->sampledata, sfont->samplesize, fd) == FLUID_FAILED) {
             FLUID_LOG(FLUID_ERR, "Failed to read sample data");
             return FLUID_FAILED;
         }
@@ -412,9 +340,9 @@ int fluid_defsfont_load_sampledata(fluid_defsfont_t *sfont,
 }
 
 /*
- * fluid_defsfont_get_sample
+ * fluid_sfont_get_sample
  */
-fluid_sample_t *fluid_defsfont_get_sample(fluid_defsfont_t *sfont, char *s) {
+fluid_sample_t *fluid_sfont_get_sample(fluid_sfont_t *sfont, char *s) {
     fluid_list_t *list;
     fluid_sample_t *sample;
 
@@ -429,11 +357,8 @@ fluid_sample_t *fluid_defsfont_get_sample(fluid_defsfont_t *sfont, char *s) {
     return NULL;
 }
 
-/*
- * fluid_defsfont_get_preset
- */
-fluid_defpreset_t *fluid_defsfont_get_preset(fluid_defsfont_t *sfont,
-                                             unsigned int bank,
+
+fluid_defpreset_t *fluid_sfont_get_defpreset(fluid_sfont_t *sfont, unsigned int bank,
                                              unsigned int num) {
     fluid_defpreset_t *preset = sfont->preset;
     while (preset != NULL) {
@@ -445,21 +370,20 @@ fluid_defpreset_t *fluid_defsfont_get_preset(fluid_defsfont_t *sfont,
     return NULL;
 }
 
-/*
- * fluid_defsfont_iteration_start
- */
-void fluid_defsfont_iteration_start(fluid_defsfont_t *sfont) {
+void fluid_sfont_iteration_start(fluid_sfont_t *sfont) {
     sfont->iter_cur = sfont->preset;
 }
 
-/*
- * fluid_defsfont_iteration_next
- */
-int fluid_defsfont_iteration_next(fluid_defsfont_t *sfont,
-                                  fluid_preset_t *preset) {
+int fluid_sfont_iteration_next(fluid_sfont_t *sfont, fluid_preset_t *preset) {
     if (sfont->iter_cur == NULL) {
         return 0;
     }
+
+    preset->free = fluid_defpreset_preset_delete;
+    preset->get_name = fluid_defpreset_preset_get_name;
+    preset->get_banknum = fluid_defpreset_preset_get_banknum;
+    preset->get_num = fluid_defpreset_preset_get_num;
+    preset->noteon = fluid_defpreset_preset_noteon;
 
     preset->data = (void *)sfont->iter_cur;
     sfont->iter_cur = fluid_defpreset_next(sfont->iter_cur);
@@ -474,7 +398,7 @@ int fluid_defsfont_iteration_next(fluid_defsfont_t *sfont,
 /*
  * new_fluid_defpreset
  */
-fluid_defpreset_t *new_fluid_defpreset(fluid_defsfont_t *sfont) {
+fluid_defpreset_t *new_fluid_defpreset(fluid_sfont_t *sfont) {
     fluid_defpreset_t *preset = FLUID_NEW(fluid_defpreset_t);
     if (preset == NULL) {
         FLUID_LOG(FLUID_ERR, "Out of memory");
@@ -530,16 +454,15 @@ fluid_defpreset_t *fluid_defpreset_next(fluid_defpreset_t *preset) {
     return preset->next;
 }
 
-int fluid_defpreset_noteon(fluid_defpreset_t *preset, fluid_synth_t *synth,
-                           int chan, int key, int vel) {
+int fluid_defpreset_noteon(fluid_defpreset_t *preset, fluid_synth_t *synth, int chan, int key,
+                           int vel) {
     fluid_preset_zone_t *preset_zone, *global_preset_zone;
     fluid_inst_t *inst;
     fluid_inst_zone_t *inst_zone, *global_inst_zone;
     fluid_sample_t *sample;
     fluid_voice_t *voice;
     fluid_mod_list_t *mod;
-    fluid_mod_list_t
-        *mod_list[FLUID_NUM_MOD]; /* list for 'sorting' preset modulators */
+    fluid_mod_list_t *mod_list[FLUID_NUM_MOD]; /* list for 'sorting' preset modulators */
     int mod_list_count;
     int i;
 
@@ -566,44 +489,40 @@ int fluid_defpreset_noteon(fluid_defpreset_t *preset, fluid_synth_t *synth,
 
                 /* check if the note falls into the key and velocity range of
                  * this instrument */
-                if (fluid_inst_zone_inside_range(inst_zone, key, vel) &&
-                    (sample != NULL)) {
+                if (fluid_inst_zone_inside_range(inst_zone, key, vel) && (sample != NULL)) {
                     /* this is a good zone. allocate a new synthesis process and
                      * initialize it */
-                    voice =
-                        fluid_synth_alloc_voice(synth, sample, chan, key, vel);
+                    voice = fluid_synth_alloc_voice(synth, sample, chan, key, vel);
                     if (voice == NULL) {
                         return FLUID_FAILED;
                     }
 
                     /* Instrument level, generators */
-        if(1){
-          uint8_t inst_excluded[GEN_LAST]={0};
-          fluid_sf_gen_t *gen;
-          fluid_list_t *p;
+                    if (1) {
+                        uint8_t inst_excluded[GEN_LAST] = {0};
+                        fluid_sf_gen_t *gen;
+                        fluid_list_t *p;
 
-          
-          p = inst_zone->sf_gen;
-          while (p != NULL) {
-            gen = (fluid_sf_gen_t *) p->data;
-            uint8_t i = gen->num;
-            fluid_voice_gen_set(voice, i, gen->val);
-            inst_excluded[i]=1;
-            p = fluid_list_next(p);
-          }
+                        p = inst_zone->sf_gen;
+                        while (p != NULL) {
+                            gen = (fluid_sf_gen_t *)p->data;
+                            uint8_t i = gen->num;
+                            fluid_voice_gen_set(voice, i, gen->val);
+                            inst_excluded[i] = 1;
+                            p = fluid_list_next(p);
+                        }
 
-          if (global_inst_zone) {
-            p = global_inst_zone->sf_gen;
-            while (p != NULL) {
-              gen = (fluid_sf_gen_t *) p->data;
-              uint8_t i = gen->num;
-              if(!inst_excluded[i])
-                fluid_voice_gen_set(voice, i, gen->val);
-              
-              p = fluid_list_next(p);
-            }
-          }
-        }
+                        if (global_inst_zone) {
+                            p = global_inst_zone->sf_gen;
+                            while (p != NULL) {
+                                gen = (fluid_sf_gen_t *)p->data;
+                                uint8_t i = gen->num;
+                                if (!inst_excluded[i]) fluid_voice_gen_set(voice, i, gen->val);
+
+                                p = fluid_list_next(p);
+                            }
+                        }
+                    }
                     /* global instrument zone, modulators: Put them all into a
                      * list. */
 
@@ -631,7 +550,8 @@ int fluid_defpreset_noteon(fluid_defpreset_t *preset, fluid_synth_t *synth,
 
                         for (i = 0; i < mod_list_count; i++) {
                             if (mod_list[i] &&
-                                fluid_mod_test_identity((fluid_mod_t *)mod, (fluid_mod_t *)mod_list[i])) {
+                                fluid_mod_test_identity((fluid_mod_t *)mod,
+                                                        (fluid_mod_t *)mod_list[i])) {
                                 mod_list[i] = NULL;
                             }
                         }
@@ -645,76 +565,58 @@ int fluid_defpreset_noteon(fluid_defpreset_t *preset, fluid_synth_t *synth,
                      */
                     for (i = 0; i < mod_list_count; i++) {
                         mod = mod_list[i];
-                        if (mod !=
-                            NULL) { /* disabled modulators CANNOT be skipped. */
+                        if (mod != NULL) { /* disabled modulators CANNOT be skipped. */
 
                             /* Instrument modulators -supersede- existing
                              * (default) modulators.  SF 2.01 page 69, 'bullet'
                              * 6 */
-                            fluid_voice_add_mod(voice, (fluid_mod_t *)mod,
-                                                FLUID_VOICE_OVERWRITE);
+                            fluid_voice_add_mod(voice, (fluid_mod_t *)mod, FLUID_VOICE_OVERWRITE);
                         }
                     }
 
                     /* Preset level, generators */
 
-        if(1){
-          uint8_t preset_excluded[GEN_LAST]={0};
-          fluid_sf_gen_t *gen;
-          fluid_list_t *p;
+                    if (1) {
+                        uint8_t preset_excluded[GEN_LAST] = {0};
+                        fluid_sf_gen_t *gen;
+                        fluid_list_t *p;
 
-          p = preset_zone->sf_gen;
-          while (p != NULL) {
-            gen = (fluid_sf_gen_t *) p->data;
-            uint8_t i = gen->num;
-            if ((i != GEN_STARTADDROFS)
-                && (i != GEN_ENDADDROFS)
-                && (i != GEN_STARTLOOPADDROFS)
-                && (i != GEN_ENDLOOPADDROFS)
-                && (i != GEN_STARTADDRCOARSEOFS)
-                && (i != GEN_ENDADDRCOARSEOFS)
-                && (i != GEN_STARTLOOPADDRCOARSEOFS)
-                && (i != GEN_KEYNUM)
-                && (i != GEN_VELOCITY)
-                && (i != GEN_ENDLOOPADDRCOARSEOFS)
-                && (i != GEN_SAMPLEMODE)
-                && (i != GEN_EXCLUSIVECLASS)
-                && (i != GEN_OVERRIDEROOTKEY)) {
-              fluid_voice_gen_incr(voice, i, gen->val);
-              preset_excluded[i]=1;
-            }
-            p = fluid_list_next(p);
-          }
+                        p = preset_zone->sf_gen;
+                        while (p != NULL) {
+                            gen = (fluid_sf_gen_t *)p->data;
+                            uint8_t i = gen->num;
+                            if ((i != GEN_STARTADDROFS) && (i != GEN_ENDADDROFS) &&
+                                (i != GEN_STARTLOOPADDROFS) && (i != GEN_ENDLOOPADDROFS) &&
+                                (i != GEN_STARTADDRCOARSEOFS) && (i != GEN_ENDADDRCOARSEOFS) &&
+                                (i != GEN_STARTLOOPADDRCOARSEOFS) && (i != GEN_KEYNUM) &&
+                                (i != GEN_VELOCITY) && (i != GEN_ENDLOOPADDRCOARSEOFS) &&
+                                (i != GEN_SAMPLEMODE) && (i != GEN_EXCLUSIVECLASS) &&
+                                (i != GEN_OVERRIDEROOTKEY)) {
+                                fluid_voice_gen_incr(voice, i, gen->val);
+                                preset_excluded[i] = 1;
+                            }
+                            p = fluid_list_next(p);
+                        }
 
-          if (global_preset_zone) {
-            p = global_preset_zone->sf_gen;
-            while (p != NULL) {
-              gen = (fluid_sf_gen_t *) p->data;
-              uint8_t i = gen->num;
-              if ((i != GEN_STARTADDROFS)
-              && (i != GEN_ENDADDROFS)
-              && (i != GEN_STARTLOOPADDROFS)
-              && (i != GEN_ENDLOOPADDROFS)
-              && (i != GEN_STARTADDRCOARSEOFS)
-              && (i != GEN_ENDADDRCOARSEOFS)
-              && (i != GEN_STARTLOOPADDRCOARSEOFS)
-              && (i != GEN_KEYNUM)
-              && (i != GEN_VELOCITY)
-              && (i != GEN_ENDLOOPADDRCOARSEOFS)
-              && (i != GEN_SAMPLEMODE)
-              && (i != GEN_EXCLUSIVECLASS)
-              && (i != GEN_OVERRIDEROOTKEY)) {
-                if(!preset_excluded[i])
-                  fluid_voice_gen_incr(voice, i, gen->val);
-              }
-              p = fluid_list_next(p);
-            } //end while
-          } //end if
-          
-        }
-
-
-
+                        if (global_preset_zone) {
+                            p = global_preset_zone->sf_gen;
+                            while (p != NULL) {
+                                gen = (fluid_sf_gen_t *)p->data;
+                                uint8_t i = gen->num;
+                                if ((i != GEN_STARTADDROFS) && (i != GEN_ENDADDROFS) &&
+                                    (i != GEN_STARTLOOPADDROFS) && (i != GEN_ENDLOOPADDROFS) &&
+                                    (i != GEN_STARTADDRCOARSEOFS) && (i != GEN_ENDADDRCOARSEOFS) &&
+                                    (i != GEN_STARTLOOPADDRCOARSEOFS) && (i != GEN_KEYNUM) &&
+                                    (i != GEN_VELOCITY) && (i != GEN_ENDLOOPADDRCOARSEOFS) &&
+                                    (i != GEN_SAMPLEMODE) && (i != GEN_EXCLUSIVECLASS) &&
+                                    (i != GEN_OVERRIDEROOTKEY)) {
+                                    if (!preset_excluded[i])
+                                        fluid_voice_gen_incr(voice, i, gen->val);
+                                }
+                                p = fluid_list_next(p);
+                            } // end while
+                        } // end if
+                    }
 
                     /* Global preset zone, modulators: put them all into a
                      * list. */
@@ -735,7 +637,8 @@ int fluid_defpreset_noteon(fluid_defpreset_t *preset, fluid_synth_t *synth,
                     while (mod) {
                         for (i = 0; i < mod_list_count; i++) {
                             if (mod_list[i] &&
-                                fluid_mod_test_identity((fluid_mod_t *)mod, (fluid_mod_t *)mod_list[i])) {
+                                fluid_mod_test_identity((fluid_mod_t *)mod,
+                                                        (fluid_mod_t *)mod_list[i])) {
                                 mod_list[i] = NULL;
                             }
                         }
@@ -749,8 +652,7 @@ int fluid_defpreset_noteon(fluid_defpreset_t *preset, fluid_synth_t *synth,
                     for (i = 0; i < mod_list_count; i++) {
                         mod = mod_list[i];
                         if ((mod != NULL) &&
-                            (mod->amount !=
-                             0)) { // disabled modulators can be skipped.
+                            (mod->amount != 0)) { // disabled modulators can be skipped.
                             /* Preset modulators -add- to existing instrument /
                              * default modulators.  SF2.01 page 70 first bullet
                              * on page */
@@ -782,8 +684,7 @@ int fluid_defpreset_noteon(fluid_defpreset_t *preset, fluid_synth_t *synth,
 /*
  * fluid_defpreset_set_global_zone
  */
-int fluid_defpreset_set_global_zone(fluid_defpreset_t *preset,
-                                    fluid_preset_zone_t *zone) {
+int fluid_defpreset_set_global_zone(fluid_defpreset_t *preset, fluid_preset_zone_t *zone) {
     preset->global_zone = zone;
     return FLUID_OK;
 }
@@ -792,7 +693,7 @@ int fluid_defpreset_set_global_zone(fluid_defpreset_t *preset,
  * fluid_defpreset_import_sfont
  */
 int fluid_defpreset_import_sfont(fluid_defpreset_t *preset, SFPreset *sfpreset,
-                                 fluid_defsfont_t *sfont) {
+                                 fluid_sfont_t *sfont) {
     fluid_list_t *p;
     SFZone *sfzone;
     fluid_preset_zone_t *zone;
@@ -800,8 +701,8 @@ int fluid_defpreset_import_sfont(fluid_defpreset_t *preset, SFPreset *sfpreset,
     if (FLUID_STRLEN(sfpreset->name) > 0) {
         FLUID_STRCPY(preset->name, sfpreset->name);
     } else {
-        snprintf(preset->name, sizeof(preset->name), "Bank%d,Preset%d",
-                 sfpreset->bank, sfpreset->prenum);
+        snprintf(preset->name, sizeof(preset->name), "Bank%d,Preset%d", sfpreset->bank,
+                 sfpreset->prenum);
     }
     preset->bank = sfpreset->bank;
     preset->num = sfpreset->prenum;
@@ -830,8 +731,7 @@ int fluid_defpreset_import_sfont(fluid_defpreset_t *preset, SFPreset *sfpreset,
 /*
  * fluid_defpreset_add_zone
  */
-int fluid_defpreset_add_zone(fluid_defpreset_t *preset,
-                             fluid_preset_zone_t *zone) {
+int fluid_defpreset_add_zone(fluid_defpreset_t *preset, fluid_preset_zone_t *zone) {
     if (preset->zone == NULL) {
         zone->next = NULL;
         preset->zone = zone;
@@ -852,16 +752,13 @@ fluid_preset_zone_t *fluid_defpreset_get_zone(fluid_defpreset_t *preset) {
 /*
  * fluid_defpreset_get_global_zone
  */
-fluid_preset_zone_t *
-fluid_defpreset_get_global_zone(fluid_defpreset_t *preset) {
+fluid_preset_zone_t *fluid_defpreset_get_global_zone(fluid_defpreset_t *preset) {
     return preset->global_zone;
 }
-
 
 fluid_preset_zone_t *fluid_preset_zone_next(fluid_preset_zone_t *preset) {
     return preset->next;
 }
-
 
 fluid_preset_zone_t *new_fluid_preset_zone() {
     fluid_preset_zone_t *zone = FLUID_NEW(fluid_preset_zone_t);
@@ -885,7 +782,6 @@ fluid_preset_zone_t *new_fluid_preset_zone() {
  *                           PRESET_ZONE
  */
 
-
 int delete_fluid_preset_zone(fluid_preset_zone_t *zone) {
     fluid_mod_list_t *mod, *tmp;
 
@@ -902,12 +798,11 @@ int delete_fluid_preset_zone(fluid_preset_zone_t *zone) {
     return FLUID_OK;
 }
 
-
 int fluid_preset_zone_import_sfont(fluid_preset_zone_t *zone, SFZone *sfzone,
-                                   fluid_defsfont_t *sfont) {
+                                   fluid_sfont_t *sfont) {
     fluid_list_t *r;
     SFGen *sfgen;
-    fluid_sf_gen_t *gen=NULL;
+    fluid_sf_gen_t *gen = NULL;
     int count;
     for (count = 0, r = sfzone->gen; r != NULL; count++) {
         sfgen = (SFGen *)r->data;
@@ -921,16 +816,18 @@ int fluid_preset_zone_import_sfont(fluid_preset_zone_t *zone, SFZone *sfzone,
             zone->velhi = (int)sfgen->amount.range.hi;
             break;
         default:
-            if(fluid_gen_info[sfgen->id].def != (fluid_real_t) sfgen->amount.sword) {
-                gen=fluid_sf_gen_get(zone->sf_gen,sfgen->id);
-                if(!gen) {
-                    gen=fluid_sf_gen_create(sfgen);
-                    zone->sf_gen=fluid_list_append(zone->sf_gen, gen);
-                }else{
-                    FLUID_LOG(FLUID_WARN, "unexpect preset gen(%d, %f) exsits.", gen->num, gen->val);
+            if (fluid_gen_info[sfgen->id].def != (fluid_real_t)sfgen->amount.sword) {
+                gen = fluid_sf_gen_get(zone->sf_gen, sfgen->id);
+                if (!gen) {
+                    gen = fluid_sf_gen_create(sfgen);
+                    zone->sf_gen = fluid_list_append(zone->sf_gen, gen);
+                } else {
+                    FLUID_LOG(FLUID_WARN, "unexpect preset gen(%d, %f) exsits.", gen->num,
+                              gen->val);
                 }
-            }else{
-                FLUID_LOG(FLUID_DBG, "good news: don't repeat create preset gen(%d, %d).", sfgen->id, sfgen->amount.sword);
+            } else {
+                FLUID_LOG(FLUID_DBG, "good news: don't repeat create preset gen(%d, %d).",
+                          sfgen->id, sfgen->amount.sword);
             }
             break;
         }
@@ -942,9 +839,8 @@ int fluid_preset_zone_import_sfont(fluid_preset_zone_t *zone, SFZone *sfzone,
             FLUID_LOG(FLUID_ERR, "Out of memory");
             return FLUID_FAILED;
         }
-        if (fluid_inst_import_sfont(zone->inst,
-                                    (SFInst *)sfzone->instsamp->data,
-                                    sfont) != FLUID_OK) {
+        if (fluid_inst_import_sfont(zone->inst, (SFInst *)sfzone->instsamp->data, sfont) !=
+            FLUID_OK) {
             return FLUID_FAILED;
         }
     }
@@ -965,9 +861,8 @@ int fluid_preset_zone_import_sfont(fluid_preset_zone_t *zone, SFZone *sfzone,
         mod_dest->amount = mod_src->amount;
 
         /* *** Source *** */
-        mod_dest->src1 =
-            mod_src->src & 127; /* index of source 1, seven-bit value, SF2.01
-                                   section 8.2, page 50 */
+        mod_dest->src1 = mod_src->src & 127; /* index of source 1, seven-bit value, SF2.01
+                                                section 8.2, page 50 */
         mod_dest->flags1 = 0;
 
         /* Bit 7: CC flag SF 2.01 section 8.2.1 page 50*/
@@ -1012,9 +907,8 @@ int fluid_preset_zone_import_sfont(fluid_preset_zone_t *zone, SFZone *sfzone,
         mod_dest->dest = mod_src->dest; /* index of controlled generator */
 
         /* *** Amount source *** */
-        mod_dest->src2 =
-            mod_src->amtsrc & 127; /* index of source 2, seven-bit value, SF2.01
-                                      section 8.2, p.50 */
+        mod_dest->src2 = mod_src->amtsrc & 127; /* index of source 2, seven-bit value, SF2.01
+                                                   section 8.2, p.50 */
         mod_dest->flags2 = 0;
 
         /* Bit 7: CC flag SF 2.01 section 8.2.1 page 50*/
@@ -1097,17 +991,15 @@ fluid_inst_t *fluid_preset_zone_get_inst(fluid_preset_zone_t *zone) {
 /*
  * fluid_preset_zone_inside_range
  */
-int fluid_preset_zone_inside_range(fluid_preset_zone_t *zone, int key,
-                                   int vel) {
-    return ((zone->keylo <= key) && (zone->keyhi >= key) &&
-            (zone->vello <= vel) && (zone->velhi >= vel));
+int fluid_preset_zone_inside_range(fluid_preset_zone_t *zone, int key, int vel) {
+    return ((zone->keylo <= key) && (zone->keyhi >= key) && (zone->vello <= vel) &&
+            (zone->velhi >= vel));
 }
 
 /***************************************************************
  *
  *                           INST
  */
-
 
 fluid_inst_t *new_fluid_inst() {
     fluid_inst_t *inst = FLUID_NEW(fluid_inst_t);
@@ -1149,8 +1041,7 @@ int fluid_inst_set_global_zone(fluid_inst_t *inst, fluid_inst_zone_t *zone) {
     return FLUID_OK;
 }
 
-int fluid_inst_import_sfont(fluid_inst_t *inst, SFInst *sfinst,
-                            fluid_defsfont_t *sfont) {
+int fluid_inst_import_sfont(fluid_inst_t *inst, SFInst *sfinst, fluid_sfont_t *sfont) {
     fluid_list_t *p;
     SFZone *sfzone;
     fluid_inst_zone_t *zone;
@@ -1185,7 +1076,6 @@ int fluid_inst_import_sfont(fluid_inst_t *inst, SFInst *sfinst,
     return FLUID_OK;
 }
 
-
 int fluid_inst_add_zone(fluid_inst_t *inst, fluid_inst_zone_t *zone) {
     if (inst->zone == NULL) {
         zone->next = NULL;
@@ -1196,7 +1086,6 @@ int fluid_inst_add_zone(fluid_inst_t *inst, fluid_inst_zone_t *zone) {
     }
     return FLUID_OK;
 }
-
 
 fluid_inst_zone_t *fluid_inst_get_zone(fluid_inst_t *inst) {
     return inst->zone;
@@ -1214,7 +1103,6 @@ fluid_inst_zone_t *fluid_inst_get_global_zone(fluid_inst_t *inst) {
  *                           INST_ZONE
  */
 
-
 fluid_inst_zone_t *new_fluid_inst_zone() {
     fluid_inst_zone_t *zone = FLUID_NEW(fluid_inst_zone_t);
     if (zone == NULL) {
@@ -1231,7 +1119,6 @@ fluid_inst_zone_t *new_fluid_inst_zone() {
     zone->mod = NULL; /* list of modulators */
     return zone;
 }
-
 
 int delete_fluid_inst_zone(fluid_inst_zone_t *zone) {
     fluid_mod_list_t *mod, *tmp;
@@ -1256,16 +1143,14 @@ int delete_fluid_inst_zone(fluid_inst_zone_t *zone) {
     return FLUID_OK;
 }
 
-
 fluid_inst_zone_t *fluid_inst_zone_next(fluid_inst_zone_t *zone) {
     return zone->next;
 }
 
-int fluid_inst_zone_import_sfont(fluid_inst_zone_t *zone, SFZone *sfzone,
-                                 fluid_defsfont_t *sfont) {
+int fluid_inst_zone_import_sfont(fluid_inst_zone_t *zone, SFZone *sfzone, fluid_sfont_t *sfont) {
     fluid_list_t *r;
     SFGen *sfgen;
-    fluid_sf_gen_t *gen=NULL;
+    fluid_sf_gen_t *gen = NULL;
     int count;
 
     for (count = 0, r = sfzone->gen; r != NULL; count++) {
@@ -1280,16 +1165,17 @@ int fluid_inst_zone_import_sfont(fluid_inst_zone_t *zone, SFZone *sfzone,
             zone->velhi = (int)sfgen->amount.range.hi;
             break;
         default:
-            if(fluid_gen_info[sfgen->id].def != (fluid_real_t) sfgen->amount.sword) {
-                gen=fluid_sf_gen_get(zone->sf_gen,sfgen->id);
-                if(!gen) {
-                    gen=fluid_sf_gen_create(sfgen);
-                    zone->sf_gen=fluid_list_append(zone->sf_gen, gen);
-                }else{
+            if (fluid_gen_info[sfgen->id].def != (fluid_real_t)sfgen->amount.sword) {
+                gen = fluid_sf_gen_get(zone->sf_gen, sfgen->id);
+                if (!gen) {
+                    gen = fluid_sf_gen_create(sfgen);
+                    zone->sf_gen = fluid_list_append(zone->sf_gen, gen);
+                } else {
                     FLUID_LOG(FLUID_WARN, "unexpect gen(%d, %f) exsits.", gen->num, gen->val);
                 }
-            }else{
-                FLUID_LOG(FLUID_DBG, "good news: don't repeat create gen(%d, %d).", sfgen->id, sfgen->amount.sword);
+            } else {
+                FLUID_LOG(FLUID_DBG, "good news: don't repeat create gen(%d, %d).", sfgen->id,
+                          sfgen->amount.sword);
             }
             break;
         }
@@ -1297,8 +1183,7 @@ int fluid_inst_zone_import_sfont(fluid_inst_zone_t *zone, SFZone *sfzone,
     }
 
     if ((sfzone->instsamp != NULL) && (sfzone->instsamp->data != NULL)) {
-        zone->sample = fluid_defsfont_get_sample(
-            sfont, ((SFSample *)sfzone->instsamp->data)->name);
+        zone->sample = fluid_sfont_get_sample(sfont, ((SFSample *)sfzone->instsamp->data)->name);
         if (zone->sample == NULL) {
             FLUID_LOG(FLUID_ERR, "Couldn't find sample name");
             return FLUID_FAILED;
@@ -1323,9 +1208,8 @@ int fluid_inst_zone_import_sfont(fluid_inst_zone_t *zone, SFZone *sfzone,
         mod_dest->amount = mod_src->amount;
 
         /* *** Source *** */
-        mod_dest->src1 =
-            mod_src->src & 127; /* index of source 1, seven-bit value, SF2.01
-                                   section 8.2, page 50 */
+        mod_dest->src1 = mod_src->src & 127; /* index of source 1, seven-bit value, SF2.01
+                                                section 8.2, page 50 */
         mod_dest->flags1 = 0;
 
         /* Bit 7: CC flag SF 2.01 section 8.2.1 page 50*/
@@ -1370,9 +1254,8 @@ int fluid_inst_zone_import_sfont(fluid_inst_zone_t *zone, SFZone *sfzone,
         mod_dest->dest = mod_src->dest; /* index of controlled generator */
 
         /* *** Amount source *** */
-        mod_dest->src2 =
-            mod_src->amtsrc & 127; /* index of source 2, seven-bit value, SF2.01
-                                      section 8.2, page 50 */
+        mod_dest->src2 = mod_src->amtsrc & 127; /* index of source 2, seven-bit value, SF2.01
+                                                   section 8.2, page 50 */
         mod_dest->flags2 = 0;
 
         /* Bit 7: CC flag SF 2.01 section 8.2.1 page 50*/
@@ -1450,8 +1333,8 @@ fluid_sample_t *fluid_inst_zone_get_sample(fluid_inst_zone_t *zone) {
 }
 
 int fluid_inst_zone_inside_range(fluid_inst_zone_t *zone, int key, int vel) {
-    return ((zone->keylo <= key) && (zone->keyhi >= key) &&
-            (zone->vello <= vel) && (zone->velhi >= vel));
+    return ((zone->keylo <= key) && (zone->keyhi >= key) && (zone->vello <= vel) &&
+            (zone->velhi >= vel));
 }
 
 /***************************************************************
@@ -1488,8 +1371,7 @@ int delete_fluid_sample(fluid_sample_t *sample) {
 /*
  * fluid_sample_import_sfont
  */
-int fluid_sample_import_sfont(fluid_sample_t *sample, SFSample *sfsample,
-                              fluid_defsfont_t *sfont) {
+int fluid_sample_import_sfont(fluid_sample_t *sample, SFSample *sfsample, fluid_sfont_t *sfont) {
     FLUID_STRCPY(sample->name, sfsample->name);
     sample->data = sfont->sampledata;
     sample->start = sfsample->start;
@@ -1505,8 +1387,7 @@ int fluid_sample_import_sfont(fluid_sample_t *sample, SFSample *sfsample,
     }
     if (sample->end - sample->start < 8) {
         sample->valid = 0;
-        FLUID_LOG(FLUID_WARN, "Ignoring sample %s: too few sample data points",
-                  sample->name);
+        FLUID_LOG(FLUID_WARN, "Ignoring sample %s: too few sample data points", sample->name);
     } else {
         /*      if (sample->loopstart < sample->start + 8) { */
         /*        FLUID_LOG(FLUID_WARN, "Fixing sample %s: at least 8 data
@@ -1539,99 +1420,98 @@ int fluid_sample_import_sfont(fluid_sample_t *sample, SFSample *sfsample,
 */
 
 #ifdef WORDS_BIGENDIAN
-#define READCHUNK(var, fd, fapi)                                               \
-    G_STMT_START {                                                             \
-        if (fapi->fread(var, 8, fd) == FLUID_FAILED) return (FAIL);            \
-        ((SFChunk *)(var))->size = GUINT32_FROM_BE(((SFChunk *)(var))->size);  \
-    }                                                                          \
+#define READCHUNK(var, fd, fapi)                                                                   \
+    G_STMT_START {                                                                                 \
+        if (fapi->fread(var, 8, fd) == FLUID_FAILED) return (FAIL);                                \
+        ((SFChunk *)(var))->size = GUINT32_FROM_BE(((SFChunk *)(var))->size);                      \
+    }                                                                                              \
     G_STMT_END
 #else
-#define READCHUNK(var, fd, fapi)                                               \
-    G_STMT_START {                                                             \
-        if (fapi->fread(var, 8, fd) == FLUID_FAILED) return (FAIL);            \
-        ((SFChunk *)(var))->size = GUINT32_FROM_LE(((SFChunk *)(var))->size);  \
-    }                                                                          \
+#define READCHUNK(var, fd, fapi)                                                                   \
+    G_STMT_START {                                                                                 \
+        if (fapi->fread(var, 8, fd) == FLUID_FAILED) return (FAIL);                                \
+        ((SFChunk *)(var))->size = GUINT32_FROM_LE(((SFChunk *)(var))->size);                      \
+    }                                                                                              \
     G_STMT_END
 #endif
-#define READID(var, fd, fapi)                                                  \
-    G_STMT_START {                                                             \
-        if (fapi->fread(var, 4, fd) == FLUID_FAILED) return (FAIL);            \
-    }                                                                          \
+#define READID(var, fd, fapi)                                                                      \
+    G_STMT_START {                                                                                 \
+        if (fapi->fread(var, 4, fd) == FLUID_FAILED) return (FAIL);                                \
+    }                                                                                              \
     G_STMT_END
-#define READSTR(var, fd, fapi)                                                 \
-    G_STMT_START {                                                             \
-        if (fapi->fread(var, 20, fd) == FLUID_FAILED) return (FAIL);           \
-        (var)[20] = '\0';                                                      \
-    }                                                                          \
+#define READSTR(var, fd, fapi)                                                                     \
+    G_STMT_START {                                                                                 \
+        if (fapi->fread(var, 20, fd) == FLUID_FAILED) return (FAIL);                               \
+        (var)[20] = '\0';                                                                          \
+    }                                                                                              \
     G_STMT_END
 #ifdef WORDS_BIGENDIAN
-#define READD(var, fd, fapi)                                                   \
-    G_STMT_START {                                                             \
-        unsigned int _temp;                                                    \
-        if (fapi->fread(&_temp, 4, fd) == FLUID_FAILED) return (FAIL);         \
-        var = GINT32_FROM_BE(_temp);                                           \
-    }                                                                          \
+#define READD(var, fd, fapi)                                                                       \
+    G_STMT_START {                                                                                 \
+        unsigned int _temp;                                                                        \
+        if (fapi->fread(&_temp, 4, fd) == FLUID_FAILED) return (FAIL);                             \
+        var = GINT32_FROM_BE(_temp);                                                               \
+    }                                                                                              \
     G_STMT_END
 #else
-#define READD(var, fd, fapi)                                                   \
-    G_STMT_START {                                                             \
-        unsigned int _temp;                                                    \
-        if (fapi->fread(&_temp, 4, fd) == FLUID_FAILED) return (FAIL);         \
-        var = GINT32_FROM_LE(_temp);                                           \
-    }                                                                          \
+#define READD(var, fd, fapi)                                                                       \
+    G_STMT_START {                                                                                 \
+        unsigned int _temp;                                                                        \
+        if (fapi->fread(&_temp, 4, fd) == FLUID_FAILED) return (FAIL);                             \
+        var = GINT32_FROM_LE(_temp);                                                               \
+    }                                                                                              \
     G_STMT_END
 #endif
 #ifdef WORDS_BIGENDIAN
-#define READW(var, fd, fapi)                                                   \
-    G_STMT_START {                                                             \
-        unsigned short _temp;                                                  \
-        if (fapi->fread(&_temp, 2, fd) == FLUID_FAILED) return (FAIL);         \
-        var = GINT16_FROM_BE(_temp);                                           \
-    }                                                                          \
+#define READW(var, fd, fapi)                                                                       \
+    G_STMT_START {                                                                                 \
+        unsigned short _temp;                                                                      \
+        if (fapi->fread(&_temp, 2, fd) == FLUID_FAILED) return (FAIL);                             \
+        var = GINT16_FROM_BE(_temp);                                                               \
+    }                                                                                              \
     G_STMT_END
 #else
-#define READW(var, fd, fapi)                                                   \
-    G_STMT_START {                                                             \
-        unsigned short _temp;                                                  \
-        if (fapi->fread(&_temp, 2, fd) == FLUID_FAILED) return (FAIL);         \
-        var = GINT16_FROM_LE(_temp);                                           \
-    }                                                                          \
+#define READW(var, fd, fapi)                                                                       \
+    G_STMT_START {                                                                                 \
+        unsigned short _temp;                                                                      \
+        if (fapi->fread(&_temp, 2, fd) == FLUID_FAILED) return (FAIL);                             \
+        var = GINT16_FROM_LE(_temp);                                                               \
+    }                                                                                              \
     G_STMT_END
 #endif
-#define READB(var, fd, fapi)                                                   \
-    G_STMT_START {                                                             \
-        if (fapi->fread(&var, 1, fd) == FLUID_FAILED) return (FAIL);           \
-    }                                                                          \
+#define READB(var, fd, fapi)                                                                       \
+    G_STMT_START {                                                                                 \
+        if (fapi->fread(&var, 1, fd) == FLUID_FAILED) return (FAIL);                               \
+    }                                                                                              \
     G_STMT_END
-#define FSKIP(size, fd, fapi)                                                  \
-    G_STMT_START {                                                             \
-        if (fapi->fseek(fd, size, SEEK_CUR) == FLUID_FAILED) return (FAIL);    \
-    }                                                                          \
+#define FSKIP(size, fd, fapi)                                                                      \
+    G_STMT_START {                                                                                 \
+        if (fapi->fseek(fd, size, SEEK_CUR) == FLUID_FAILED) return (FAIL);                        \
+    }                                                                                              \
     G_STMT_END
-#define FSKIPW(fd, fapi)                                                       \
-    G_STMT_START {                                                             \
-        if (fapi->fseek(fd, 2, SEEK_CUR) == FLUID_FAILED) return (FAIL);       \
-    }                                                                          \
+#define FSKIPW(fd, fapi)                                                                           \
+    G_STMT_START {                                                                                 \
+        if (fapi->fseek(fd, 2, SEEK_CUR) == FLUID_FAILED) return (FAIL);                           \
+    }                                                                                              \
     G_STMT_END
 
 /* removes and advances a fluid_list_t pointer */
-#define SLADVREM(list, item)                                                   \
-    G_STMT_START {                                                             \
-        fluid_list_t *_temp = item;                                            \
-        item = fluid_list_next(item);                                          \
-        list = fluid_list_remove_link(list, _temp);                            \
-        delete1_fluid_list(_temp);                                             \
-    }                                                                          \
+#define SLADVREM(list, item)                                                                       \
+    G_STMT_START {                                                                                 \
+        fluid_list_t *_temp = item;                                                                \
+        item = fluid_list_next(item);                                                              \
+        list = fluid_list_remove_link(list, _temp);                                                \
+        delete1_fluid_list(_temp);                                                                 \
+    }                                                                                              \
     G_STMT_END
 
 static int chunkid(unsigned int id);
-static int load_body(unsigned int size, SFData *sf, void *fd,
-                     fluid_fileapi_t *fapi);
+static int load_body(unsigned int size, SFData *sf, void *fd, fluid_fileapi_t *fapi);
 static int read_listchunk(SFChunk *chunk, void *fd, fluid_fileapi_t *fapi);
 static int process_info(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi);
 static int process_sdta(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi);
-static int pdtahelper(unsigned int expid, unsigned int reclen, SFChunk *chunk,
-                      int *size, void *fd, fluid_fileapi_t *fapi);
+static int pdtahelper(unsigned int expid, unsigned int reclen, SFChunk *chunk, int *size, void *fd,
+                      fluid_fileapi_t *fapi);
 static int process_pdta(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi);
 static int load_phdr(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi);
 static int load_pbag(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi);
@@ -1641,15 +1521,13 @@ static int load_ihdr(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi);
 static int load_ibag(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi);
 static int load_imod(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi);
 static int load_igen(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi);
-static int load_shdr(unsigned int size, SFData *sf, void *fd,
-                     fluid_fileapi_t *fapi);
+static int load_shdr(unsigned int size, SFData *sf, void *fd, fluid_fileapi_t *fapi);
 static int fixup_pgen(SFData *sf);
 static int fixup_igen(SFData *sf);
 static int fixup_sample(SFData *sf);
 
-const static char idlist[] = {
-    "RIFFLISTsfbkINFOsdtapdtaifilisngINAMiromiverICRDIENGIPRD"
-    "ICOPICMTISFTsnamsmplphdrpbagpmodpgeninstibagimodigenshdr"};
+const static char idlist[] = {"RIFFLISTsfbkINFOsdtapdtaifilisngINAMiromiverICRDIENGIPRD"
+                              "ICOPICMTISFTsnamsmplphdrpbagpmodpgeninstibagimodigenshdr"};
 
 static unsigned int sdtachunk_size;
 
@@ -1688,20 +1566,17 @@ SFData *sfload_file(const char *fname, fluid_fileapi_t *fapi) {
     }
 
     /* get size of file */
-    if (!err && fapi->fseek(fd, 0L, SEEK_END) ==
-                    FLUID_FAILED) { /* seek to end of file */
+    if (!err && fapi->fseek(fd, 0L, SEEK_END) == FLUID_FAILED) { /* seek to end of file */
         err = TRUE;
         FLUID_LOG(FLUID_ERR, _("Seek to end of file failed"));
     }
-    if (!err &&
-        (fsize = fapi->ftell(fd)) == FLUID_FAILED) { /* position = size */
+    if (!err && (fsize = fapi->ftell(fd)) == FLUID_FAILED) { /* position = size */
         err = TRUE;
         FLUID_LOG(FLUID_ERR, _("Get end of file position failed"));
     }
     if (!err) fapi->fseek(fd, 0, SEEK_SET);
 
-    if (!err && !load_body(fsize, sf, fd, fapi))
-        err = TRUE; /* load the sfont */
+    if (!err && !load_body(fsize, sf, fd, fapi)) err = TRUE; /* load the sfont */
 
     if (err) {
         if (sf) sfont_close(sf, fapi);
@@ -1711,8 +1586,7 @@ SFData *sfload_file(const char *fname, fluid_fileapi_t *fapi) {
     return (sf);
 }
 
-static int load_body(unsigned int size, SFData *sf, void *fd,
-                     fluid_fileapi_t *fapi) {
+static int load_body(unsigned int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
     SFChunk chunk;
 
     READCHUNK(&chunk, fd, fapi);        /* load RIFF chunk */
@@ -1741,15 +1615,13 @@ static int load_body(unsigned int size, SFData *sf, void *fd,
     /* Process sample chunk */
     if (!read_listchunk(&chunk, fd, fapi)) return (FAIL);
     if (chunkid(chunk.id) != SDTA_ID)
-        return (
-            gerr(ErrCorr, _("Invalid ID found when expecting SAMPLE chunk")));
+        return (gerr(ErrCorr, _("Invalid ID found when expecting SAMPLE chunk")));
     if (!process_sdta(chunk.size, sf, fd, fapi)) return (FAIL);
 
     /* process HYDRA chunk */
     if (!read_listchunk(&chunk, fd, fapi)) return (FAIL);
     if (chunkid(chunk.id) != PDTA_ID)
-        return (
-            gerr(ErrCorr, _("Invalid ID found when expecting HYDRA chunk")));
+        return (gerr(ErrCorr, _("Invalid ID found when expecting HYDRA chunk")));
     if (!process_pdta(chunk.size, sf, fd, fapi)) return (FAIL);
 
     if (!fixup_pgen(sf)) return (FAIL);
@@ -1757,8 +1629,7 @@ static int load_body(unsigned int size, SFData *sf, void *fd,
     if (!fixup_sample(sf)) return (FAIL);
 
     /* sort preset list by bank, preset # */
-    sf->preset = fluid_list_sort(
-        sf->preset, (fluid_compare_func_t)sfont_preset_compare_func);
+    sf->preset = fluid_list_sort(sf->preset, (fluid_compare_func_t)sfont_preset_compare_func);
 
     return (OK);
 }
@@ -1786,9 +1657,7 @@ static int process_info(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
 
         if (id == IFIL_ID) { /* sound font version chunk? */
             if (chunk.size != 4)
-                return (
-                    gerr(ErrCorr,
-                         _("Sound font version info chunk has invalid size")));
+                return (gerr(ErrCorr, _("Sound font version info chunk has invalid size")));
 
             READW(ver, fd, fapi);
             sf->version.major = ver;
@@ -1812,8 +1681,7 @@ static int process_info(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
                 return (FAIL);
             }
         } else if (id != UNKN_ID) {
-            if ((id != ICMT_ID && chunk.size > 256) || (chunk.size > 65536) ||
-                (chunk.size % 2))
+            if ((id != ICMT_ID && chunk.size > 256) || (chunk.size > 65536) || (chunk.size % 2))
                 return (gerr(ErrCorr,
                              _("INFO sub chunk %.4s has invalid chunk size"
                                " of %d bytes"),
@@ -1829,8 +1697,7 @@ static int process_info(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
             sf->info = fluid_list_append(sf->info, item);
 
             *(unsigned char *)item = id;
-            if (fapi->fread(&item[1], chunk.size, fd) == FLUID_FAILED)
-                return (FAIL);
+            if (fapi->fread(&item[1], chunk.size, fd) == FLUID_FAILED) return (FAIL);
 
             /* force terminate info item (don't forget uint8 info ID) */
             *(item + chunk.size) = '\0';
@@ -1854,11 +1721,9 @@ static int process_sdta(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
     size -= 8;
 
     if (chunkid(chunk.id) != SMPL_ID)
-        return (
-            gerr(ErrCorr, _("Expected SMPL chunk found invalid id instead")));
+        return (gerr(ErrCorr, _("Expected SMPL chunk found invalid id instead")));
 
-    if ((size - chunk.size) != 0)
-        return (gerr(ErrCorr, _("SDTA chunk size mismatch")));
+    if ((size - chunk.size) != 0) return (gerr(ErrCorr, _("SDTA chunk size mismatch")));
 
     /* sample data follows */
     sf->samplepos = fapi->ftell(fd);
@@ -1872,8 +1737,8 @@ static int process_sdta(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
     return (OK);
 }
 
-static int pdtahelper(unsigned int expid, unsigned int reclen, SFChunk *chunk,
-                      int *size, void *fd, fluid_fileapi_t *fapi) {
+static int pdtahelper(unsigned int expid, unsigned int reclen, SFChunk *chunk, int *size, void *fd,
+                      fluid_fileapi_t *fapi) {
     unsigned int id;
     const char *expstr;
 
@@ -1889,21 +1754,17 @@ static int pdtahelper(unsigned int expid, unsigned int reclen, SFChunk *chunk,
                      expstr));
 
     if (chunk->size % reclen) /* valid chunk size? */
-        return (gerr(ErrCorr,
-                     _("\"%.4s\" chunk size is not a multiple of %d bytes"),
-                     expstr, reclen));
+        return (
+            gerr(ErrCorr, _("\"%.4s\" chunk size is not a multiple of %d bytes"), expstr, reclen));
     if ((*size -= chunk->size) < 0)
-        return (gerr(ErrCorr,
-                     _("\"%.4s\" chunk size exceeds remaining PDTA chunk size"),
-                     expstr));
+        return (gerr(ErrCorr, _("\"%.4s\" chunk size exceeds remaining PDTA chunk size"), expstr));
     return (OK);
 }
 
 static int process_pdta(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
     SFChunk chunk;
 
-    if (!pdtahelper(PHDR_ID, SFPHDRSIZE, &chunk, &size, fd, fapi))
-        return (FAIL);
+    if (!pdtahelper(PHDR_ID, SFPHDRSIZE, &chunk, &size, fd, fapi)) return (FAIL);
     if (!load_phdr(chunk.size, sf, fd, fapi)) return (FAIL);
 
     if (!pdtahelper(PBAG_ID, SFBAGSIZE, &chunk, &size, fd, fapi)) return (FAIL);
@@ -1915,8 +1776,7 @@ static int process_pdta(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
     if (!pdtahelper(PGEN_ID, SFGENSIZE, &chunk, &size, fd, fapi)) return (FAIL);
     if (!load_pgen(chunk.size, sf, fd, fapi)) return (FAIL);
 
-    if (!pdtahelper(IHDR_ID, SFIHDRSIZE, &chunk, &size, fd, fapi))
-        return (FAIL);
+    if (!pdtahelper(IHDR_ID, SFIHDRSIZE, &chunk, &size, fd, fapi)) return (FAIL);
     if (!load_ihdr(chunk.size, sf, fd, fapi)) return (FAIL);
 
     if (!pdtahelper(IBAG_ID, SFBAGSIZE, &chunk, &size, fd, fapi)) return (FAIL);
@@ -1928,8 +1788,7 @@ static int process_pdta(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
     if (!pdtahelper(IGEN_ID, SFGENSIZE, &chunk, &size, fd, fapi)) return (FAIL);
     if (!load_igen(chunk.size, sf, fd, fapi)) return (FAIL);
 
-    if (!pdtahelper(SHDR_ID, SFSHDRSIZE, &chunk, &size, fd, fapi))
-        return (FAIL);
+    if (!pdtahelper(SHDR_ID, SFSHDRSIZE, &chunk, &size, fd, fapi)) return (FAIL);
     if (!load_shdr(chunk.size, sf, fd, fapi)) return (FAIL);
 
     return (OK);
@@ -1954,7 +1813,7 @@ static int load_phdr(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
     for (; i > 0; i--) { /* load all preset headers */
         p = FLUID_NEW(SFPreset);
         sf->preset = fluid_list_append(sf->preset, p);
-        p->zone = NULL; /* In case of failure, sfont_close can cleanup */
+        p->zone = NULL;             /* In case of failure, sfont_close can cleanup */
         READSTR(p->name, fd, fapi); /* possible read failure ^ */
         READW(p->prenum, fd, fapi);
         READW(p->bank, fd, fapi);
@@ -1964,16 +1823,13 @@ static int load_phdr(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
         READD(p->morph, fd, fapi);
 
         if (pr) { /* not first preset? */
-            if (zndx < pzndx)
-                return (
-                    gerr(ErrCorr, _("Preset header indices not monotonic")));
+            if (zndx < pzndx) return (gerr(ErrCorr, _("Preset header indices not monotonic")));
             i2 = zndx - pzndx;
             while (i2--) {
                 pr->zone = fluid_list_prepend(pr->zone, NULL);
             }
         } else if (zndx > 0) /* 1st preset, warn if ofs >0 */
-            FLUID_LOG(FLUID_WARN,
-                      _("%d preset zones not referenced, discarding"), zndx);
+            FLUID_LOG(FLUID_WARN, _("%d preset zones not referenced, discarding"), zndx);
         pr = p; /* update preset ptr */
         pzndx = zndx;
     }
@@ -1982,8 +1838,7 @@ static int load_phdr(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
     READW(zndx, fd, fapi); /* Read terminal generator index */
     FSKIP(12, fd, fapi);
 
-    if (zndx < pzndx)
-        return (gerr(ErrCorr, _("Preset header indices not monotonic")));
+    if (zndx < pzndx) return (gerr(ErrCorr, _("Preset header indices not monotonic")));
     i2 = zndx - pzndx;
     while (i2--) {
         pr->zone = fluid_list_prepend(pr->zone, NULL);
@@ -2011,21 +1866,17 @@ static int load_pbag(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
                 return (gerr(ErrCorr, _("Preset bag chunk size mismatch")));
             z = FLUID_NEW(SFZone);
             p2->data = z;
-            z->gen = NULL; /* Init gen and mod before possible failure, */
-            z->mod = NULL; /* to ensure proper cleanup (sfont_close) */
+            z->gen = NULL;           /* Init gen and mod before possible failure, */
+            z->mod = NULL;           /* to ensure proper cleanup (sfont_close) */
             READW(genndx, fd, fapi); /* possible read failure ^ */
             READW(modndx, fd, fapi);
             z->instsamp = NULL;
 
             if (pz) { /* if not first zone */
                 if (genndx < pgenndx)
-                    return (
-                        gerr(ErrCorr,
-                             _("Preset bag generator indices not monotonic")));
+                    return (gerr(ErrCorr, _("Preset bag generator indices not monotonic")));
                 if (modndx < pmodndx)
-                    return (
-                        gerr(ErrCorr,
-                             _("Preset bag modulator indices not monotonic")));
+                    return (gerr(ErrCorr, _("Preset bag modulator indices not monotonic")));
                 i = genndx - pgenndx;
                 while (i--) pz->gen = fluid_list_prepend(pz->gen, NULL);
                 i = modndx - pmodndx;
@@ -2046,19 +1897,13 @@ static int load_pbag(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
     READW(modndx, fd, fapi);
 
     if (!pz) {
-        if (genndx > 0)
-            FLUID_LOG(FLUID_WARN,
-                      _("No preset generators and terminal index not 0"));
-        if (modndx > 0)
-            FLUID_LOG(FLUID_WARN,
-                      _("No preset modulators and terminal index not 0"));
+        if (genndx > 0) FLUID_LOG(FLUID_WARN, _("No preset generators and terminal index not 0"));
+        if (modndx > 0) FLUID_LOG(FLUID_WARN, _("No preset modulators and terminal index not 0"));
         return (OK);
     }
 
-    if (genndx < pgenndx)
-        return (gerr(ErrCorr, _("Preset bag generator indices not monotonic")));
-    if (modndx < pmodndx)
-        return (gerr(ErrCorr, _("Preset bag modulator indices not monotonic")));
+    if (genndx < pgenndx) return (gerr(ErrCorr, _("Preset bag generator indices not monotonic")));
+    if (modndx < pmodndx) return (gerr(ErrCorr, _("Preset bag modulator indices not monotonic")));
     i = genndx - pgenndx;
     while (i--) pz->gen = fluid_list_prepend(pz->gen, NULL);
     i = modndx - pmodndx;
@@ -2079,8 +1924,7 @@ static int load_pmod(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
             p3 = ((SFZone *)(p2->data))->mod;
             while (p3) { /* load zone's modulators */
                 if ((size -= SFMODSIZE) < 0)
-                    return (gerr(ErrCorr,
-                                 _("Preset modulator chunk size mismatch")));
+                    return (gerr(ErrCorr, _("Preset modulator chunk size mismatch")));
                 m = FLUID_NEW(SFMod);
                 p3->data = m;
                 READW(m->src, fd, fapi);
@@ -2102,8 +1946,7 @@ static int load_pmod(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
     if (size == 0) return (OK);
 
     size -= SFMODSIZE;
-    if (size != 0)
-        return (gerr(ErrCorr, _("Preset modulator chunk size mismatch")));
+    if (size != 0) return (gerr(ErrCorr, _("Preset modulator chunk size mismatch")));
     FSKIP(SFMODSIZE, fd, fapi); /* terminal mod */
 
     return (OK);
@@ -2144,8 +1987,7 @@ static int load_pgen(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
                 skip = FALSE;
                 drop = FALSE;
                 if ((size -= SFGENSIZE) < 0)
-                    return (gerr(ErrCorr,
-                                 _("Preset generator chunk size mismatch")));
+                    return (gerr(ErrCorr, _("Preset generator chunk size mismatch")));
 
                 READW(genid, fd, fapi);
 
@@ -2166,8 +2008,7 @@ static int load_pgen(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
                 } else if (genid == Gen_Instrument) { /* inst is last gen */
                     level = 3;
                     READW(genval.uword, fd, fapi);
-                    ((SFZone *)(p2->data))->instsamp =
-                        GINT_TO_POINTER(genval.uword + 1);
+                    ((SFZone *)(p2->data))->instsamp = GINT_TO_POINTER(genval.uword + 1);
                     break; /* break out of generator loop */
                 } else {
                     level = 2;
@@ -2210,19 +2051,15 @@ static int load_pgen(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
                     /* if global zone is not 1st zone, relocate */
                     if (*hz != p2) {
                         void *save = p2->data;
-                        FLUID_LOG(
-                            FLUID_WARN,
-                            _("Preset \"%s\": Global zone is not first zone"),
-                            ((SFPreset *)(p->data))->name);
+                        FLUID_LOG(FLUID_WARN, _("Preset \"%s\": Global zone is not first zone"),
+                                  ((SFPreset *)(p->data))->name);
                         SLADVREM(*hz, p2);
                         *hz = fluid_list_prepend(*hz, save);
                         continue;
                     }
                 } else { /* previous global zone exists, discard */
-                    FLUID_LOG(
-                        FLUID_WARN,
-                        _("Preset \"%s\": Discarding invalid global zone"),
-                        ((SFPreset *)(p->data))->name);
+                    FLUID_LOG(FLUID_WARN, _("Preset \"%s\": Discarding invalid global zone"),
+                              ((SFPreset *)(p->data))->name);
                     sfont_zone_delete(sf, hz, (SFZone *)(p2->data));
                 }
             }
@@ -2230,8 +2067,7 @@ static int load_pgen(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
             while (p3) { /* Kill any zones following an instrument */
                 discarded = TRUE;
                 if ((size -= SFGENSIZE) < 0)
-                    return (gerr(ErrCorr,
-                                 _("Preset generator chunk size mismatch")));
+                    return (gerr(ErrCorr, _("Preset generator chunk size mismatch")));
                 FSKIP(SFGENSIZE, fd, fapi);
                 SLADVREM(z->gen, p3);
             }
@@ -2239,10 +2075,8 @@ static int load_pgen(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
             p2 = fluid_list_next(p2); /* next zone */
         }
         if (discarded)
-            FLUID_LOG(
-                FLUID_WARN,
-                _("Preset \"%s\": Some invalid generators were discarded"),
-                ((SFPreset *)(p->data))->name);
+            FLUID_LOG(FLUID_WARN, _("Preset \"%s\": Some invalid generators were discarded"),
+                      ((SFPreset *)(p->data))->name);
         p = fluid_list_next(p);
     }
 
@@ -2250,8 +2084,7 @@ static int load_pgen(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
     if (size == 0) return (OK);
 
     size -= SFGENSIZE;
-    if (size != 0)
-        return (gerr(ErrCorr, _("Preset generator chunk size mismatch")));
+    if (size != 0) return (gerr(ErrCorr, _("Preset generator chunk size mismatch")));
     FSKIP(SFGENSIZE, fd, fapi); /* terminal gen */
 
     return (OK);
@@ -2276,20 +2109,16 @@ static int load_ihdr(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
     for (i = 0; i < size; i++) { /* load all instrument headers */
         p = FLUID_NEW(SFInst);
         sf->inst = fluid_list_append(sf->inst, p);
-        p->zone = NULL; /* For proper cleanup if fail (sfont_close) */
+        p->zone = NULL;             /* For proper cleanup if fail (sfont_close) */
         READSTR(p->name, fd, fapi); /* Possible read failure ^ */
         READW(zndx, fd, fapi);
 
         if (pr) { /* not first instrument? */
-            if (zndx < pzndx)
-                return (gerr(ErrCorr,
-                             _("Instrument header indices not monotonic")));
+            if (zndx < pzndx) return (gerr(ErrCorr, _("Instrument header indices not monotonic")));
             i2 = zndx - pzndx;
             while (i2--) pr->zone = fluid_list_prepend(pr->zone, NULL);
         } else if (zndx > 0) /* 1st inst, warn if ofs >0 */
-            FLUID_LOG(FLUID_WARN,
-                      _("%d instrument zones not referenced, discarding"),
-                      zndx);
+            FLUID_LOG(FLUID_WARN, _("%d instrument zones not referenced, discarding"), zndx);
         pzndx = zndx;
         pr = p; /* update instrument ptr */
     }
@@ -2297,8 +2126,7 @@ static int load_ihdr(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
     FSKIP(20, fd, fapi);
     READW(zndx, fd, fapi);
 
-    if (zndx < pzndx)
-        return (gerr(ErrCorr, _("Instrument header indices not monotonic")));
+    if (zndx < pzndx) return (gerr(ErrCorr, _("Instrument header indices not monotonic")));
     i2 = zndx - pzndx;
     while (i2--) pr->zone = fluid_list_prepend(pr->zone, NULL);
 
@@ -2331,13 +2159,9 @@ static int load_ibag(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
 
             if (pz) { /* if not first zone */
                 if (genndx < pgenndx)
-                    return (
-                        gerr(ErrCorr,
-                             _("Instrument generator indices not monotonic")));
+                    return (gerr(ErrCorr, _("Instrument generator indices not monotonic")));
                 if (modndx < pmodndx)
-                    return (
-                        gerr(ErrCorr,
-                             _("Instrument modulator indices not monotonic")));
+                    return (gerr(ErrCorr, _("Instrument modulator indices not monotonic")));
                 i = genndx - pgenndx;
                 while (i--) pz->gen = fluid_list_prepend(pz->gen, NULL);
                 i = modndx - pmodndx;
@@ -2359,18 +2183,14 @@ static int load_ibag(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
 
     if (!pz) { /* in case that all are no zoners */
         if (genndx > 0)
-            FLUID_LOG(FLUID_WARN,
-                      _("No instrument generators and terminal index not 0"));
+            FLUID_LOG(FLUID_WARN, _("No instrument generators and terminal index not 0"));
         if (modndx > 0)
-            FLUID_LOG(FLUID_WARN,
-                      _("No instrument modulators and terminal index not 0"));
+            FLUID_LOG(FLUID_WARN, _("No instrument modulators and terminal index not 0"));
         return (OK);
     }
 
-    if (genndx < pgenndx)
-        return (gerr(ErrCorr, _("Instrument generator indices not monotonic")));
-    if (modndx < pmodndx)
-        return (gerr(ErrCorr, _("Instrument modulator indices not monotonic")));
+    if (genndx < pgenndx) return (gerr(ErrCorr, _("Instrument generator indices not monotonic")));
+    if (modndx < pmodndx) return (gerr(ErrCorr, _("Instrument modulator indices not monotonic")));
     i = genndx - pgenndx;
     while (i--) pz->gen = fluid_list_prepend(pz->gen, NULL);
     i = modndx - pmodndx;
@@ -2391,9 +2211,7 @@ static int load_imod(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
             p3 = ((SFZone *)(p2->data))->mod;
             while (p3) { /* load zone's modulators */
                 if ((size -= SFMODSIZE) < 0)
-                    return (
-                        gerr(ErrCorr,
-                             _("Instrument modulator chunk size mismatch")));
+                    return (gerr(ErrCorr, _("Instrument modulator chunk size mismatch")));
                 m = FLUID_NEW(SFMod);
                 p3->data = m;
                 READW(m->src, fd, fapi);
@@ -2415,8 +2233,7 @@ static int load_imod(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
     if (size == 0) return (OK);
 
     size -= SFMODSIZE;
-    if (size != 0)
-        return (gerr(ErrCorr, _("Instrument modulator chunk size mismatch")));
+    if (size != 0) return (gerr(ErrCorr, _("Instrument modulator chunk size mismatch")));
     FSKIP(SFMODSIZE, fd, fapi); /* terminal mod */
 
     return (OK);
@@ -2445,8 +2262,7 @@ static int load_igen(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
                 dup = NULL;
                 skip = FALSE;
                 drop = FALSE;
-                if ((size -= SFGENSIZE) < 0)
-                    return (gerr(ErrCorr, _("IGEN chunk size mismatch")));
+                if ((size -= SFGENSIZE) < 0) return (gerr(ErrCorr, _("IGEN chunk size mismatch")));
 
                 READW(genid, fd, fapi);
 
@@ -2467,8 +2283,7 @@ static int load_igen(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
                 } else if (genid == Gen_SampleId) { /* sample is last gen */
                     level = 3;
                     READW(genval.uword, fd, fapi);
-                    ((SFZone *)(p2->data))->instsamp =
-                        GINT_TO_POINTER(genval.uword + 1);
+                    ((SFZone *)(p2->data))->instsamp = GINT_TO_POINTER(genval.uword + 1);
                     break; /* break out of generator loop */
                 } else {
                     level = 2;
@@ -2520,10 +2335,8 @@ static int load_igen(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
                         continue;
                     }
                 } else { /* previous global zone exists, discard */
-                    FLUID_LOG(
-                        FLUID_WARN,
-                        _("Instrument \"%s\": Discarding invalid global zone"),
-                        ((SFInst *)(p->data))->name);
+                    FLUID_LOG(FLUID_WARN, _("Instrument \"%s\": Discarding invalid global zone"),
+                              ((SFInst *)(p->data))->name);
                     sfont_zone_delete(sf, hz, (SFZone *)(p2->data));
                 }
             }
@@ -2531,9 +2344,7 @@ static int load_igen(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
             while (p3) { /* Kill any zones following a sample */
                 discarded = TRUE;
                 if ((size -= SFGENSIZE) < 0)
-                    return (
-                        gerr(ErrCorr,
-                             _("Instrument generator chunk size mismatch")));
+                    return (gerr(ErrCorr, _("Instrument generator chunk size mismatch")));
                 FSKIP(SFGENSIZE, fd, fapi);
                 SLADVREM(z->gen, p3);
             }
@@ -2541,10 +2352,8 @@ static int load_igen(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
             p2 = fluid_list_next(p2); /* next zone */
         }
         if (discarded)
-            FLUID_LOG(
-                FLUID_WARN,
-                _("Instrument \"%s\": Some invalid generators were discarded"),
-                ((SFInst *)(p->data))->name);
+            FLUID_LOG(FLUID_WARN, _("Instrument \"%s\": Some invalid generators were discarded"),
+                      ((SFInst *)(p->data))->name);
         p = fluid_list_next(p);
     }
 
@@ -2559,8 +2368,7 @@ static int load_igen(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
 }
 
 /* sample header loader */
-static int load_shdr(unsigned int size, SFData *sf, void *fd,
-                     fluid_fileapi_t *fapi) {
+static int load_shdr(unsigned int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
     unsigned int i;
     SFSample *p;
 
@@ -2609,11 +2417,8 @@ static int fixup_pgen(SFData *sf) {
             if ((i = GPOINTER_TO_INT(z->instsamp))) { /* load instrument # */
                 p3 = fluid_list_nth(sf->inst, i - 1);
                 if (!p3)
-                    return (gerr(
-                        ErrCorr,
-                        _("Preset %03d %03d: Invalid instrument reference"),
-                        ((SFPreset *)(p->data))->bank,
-                        ((SFPreset *)(p->data))->prenum));
+                    return (gerr(ErrCorr, _("Preset %03d %03d: Invalid instrument reference"),
+                                 ((SFPreset *)(p->data))->bank, ((SFPreset *)(p->data))->prenum));
                 z->instsamp = p3;
             } else
                 z->instsamp = NULL;
@@ -2639,10 +2444,8 @@ static int fixup_igen(SFData *sf) {
             if ((i = GPOINTER_TO_INT(z->instsamp))) { /* load sample # */
                 p3 = fluid_list_nth(sf->sample, i - 1);
                 if (!p3)
-                    return (
-                        gerr(ErrCorr,
-                             _("Instrument \"%s\": Invalid sample reference"),
-                             ((SFInst *)(p->data))->name));
+                    return (gerr(ErrCorr, _("Instrument \"%s\": Invalid sample reference"),
+                                 ((SFInst *)(p->data))->name));
                 z->instsamp = p3;
             }
             p2 = fluid_list_next(p2);
@@ -2679,8 +2482,7 @@ static int fixup_sample(SFData *sf) {
         /* compressed samples get fixed up after decompression */
         else if (sam->sampletype & FLUID_SAMPLETYPE_OGG_VORBIS) {
         } else if (sam->loopend > sam->end || sam->loopstart >= sam->loopend ||
-                   sam->loopstart <=
-                       sam->start) { /* loop is fowled?? (cluck cluck :) */
+                   sam->loopstart <= sam->start) { /* loop is fowled?? (cluck cluck :) */
             /* can pad loop by 8 samples and ensure at least 4 for loop (2*8+4)
              */
             if ((sam->end - sam->start) >= 20) {
@@ -2693,8 +2495,7 @@ static int fixup_sample(SFData *sf) {
         }
 
         /* convert sample end, loopstart, loopend to offsets from sam->start */
-        sam->end -=
-            sam->start + 1; /* marks last sample, contrary to SF spec. */
+        sam->end -= sam->start + 1; /* marks last sample, contrary to SF spec. */
         sam->loopstart -= sam->start;
         sam->loopend -= sam->start;
 
@@ -2717,9 +2518,8 @@ static int fixup_sample(SFData *sf) {
 #define GEN_CHUNK_OPTIMUM_AREA 256
 
 /* list of bad generators */
-const unsigned short badgen[] = {
-    Gen_Unused1,   Gen_Unused2,   Gen_Unused3,   Gen_Unused4,
-    Gen_Reserved1, Gen_Reserved2, Gen_Reserved3, 0};
+const unsigned short badgen[] = {Gen_Unused1,   Gen_Unused2,   Gen_Unused3,   Gen_Unused4,
+                                 Gen_Reserved1, Gen_Reserved2, Gen_Reserved3, 0};
 
 /* list of bad preset generators */
 const unsigned short badpgen[] = {Gen_StartAddrOfs,
@@ -2832,8 +2632,7 @@ void sfont_zone_delete(SFData *sf, fluid_list_t **zlist, SFZone *zone) {
 }
 
 /* Find generator in gen list */
-fluid_list_t *
-gen_inlist(int gen, fluid_list_t *genlist) { /* is generator in gen list? */
+fluid_list_t *gen_inlist(int gen, fluid_list_t *genlist) { /* is generator in gen list? */
     fluid_list_t *p;
 
     p = genlist;
