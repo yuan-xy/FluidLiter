@@ -123,19 +123,12 @@ int main(int argc, char *argv[]) {
     assert(GEN_LAST==60);
     int err = 0;
 
+    fluid_set_default_fileapi(&my_fileapi);
+    
     fluid_synth_t *synth = NEW_FLUID_SYNTH();
     set_log_level(FLUID_DBG);
     assert(get_log_level() == FLUID_DBG);
     assert(synth->with_reverb == 1);
-
-    fluid_set_default_fileapi(&my_fileapi);
-    fluid_sfloader_t *my_sfloader = new_fluid_defsfloader();
-//   loader->fileapi = fluid_default_fileapi;
-//   loader->free = delete_fluid_defsfloader;
-//   loader->load = fluid_defsfloader_load;
-
-    synth->loader = my_sfloader;
-
 
     char abused_filename[64];
     read_example_sf2();

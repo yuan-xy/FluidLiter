@@ -435,10 +435,9 @@ typedef struct _fluid_inst_zone_t fluid_inst_zone_t;
   Public interface
 
  */
+fluid_fileapi_t *fluid_get_default_fileapi(void);
 
-fluid_sfloader_t *new_fluid_defsfloader(void);
-int delete_fluid_defsfloader(fluid_sfloader_t *loader);
-fluid_sfont_t *fluid_defsfloader_load(fluid_sfloader_t *loader,
+fluid_sfont_t *fluid_soundfont_load(fluid_fileapi_t *fileapi,
                                       const char *filename);
 
 int fluid_defsfont_sfont_delete(fluid_sfont_t *sfont);

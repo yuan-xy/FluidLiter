@@ -10,15 +10,6 @@
     {                                                                          \
         if ((_fileapi) && (_fileapi)->free) (*(_fileapi)->free)(_fileapi);     \
     }
-#define fluid_sfloader_delete(_loader)                                         \
-    {                                                                          \
-        if (_loader) {                                                         \
-            fluid_fileapi_delete((_loader)->fileapi);                          \
-            if ((_loader)->free) (*(_loader)->free)(_loader);                  \
-        }                                                                      \
-    }
-#define fluid_sfloader_load(_loader, _filename)                                \
-    (*(_loader)->load)(_loader, _filename)
 
 #define delete_fluid_sfont(_sf)                                                \
     (((_sf) && (_sf)->free) ? (*(_sf)->free)(_sf) : 0)

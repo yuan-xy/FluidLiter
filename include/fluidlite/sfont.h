@@ -11,14 +11,8 @@ extern "C" {
  *
  *    It is possible to add new SoundFont loaders to the
  *    synthesizer. The API uses a couple of "interfaces" (structures
- *    with callback functions): fluid_sfloader_t, fluid_sfont_t, and
+ *    with callback functions): fluid_sfont_t, and
  *    fluid_preset_t.
- *
- *    To add a new SoundFont loader to the synthesizer, call
- *    fluid_synth_add_sfloader() and pass a pointer to an
- *    fluid_sfloader_t structure. The important callback function in
- *    this structure is "load", which should try to load a file and
- *    returns a fluid_sfont_t structure, or NULL if it fails.
  *
  *    The fluid_sfont_t structure contains a callback to obtain the
  *    name of the soundfont. It contains two functions to iterate
@@ -38,25 +32,6 @@ extern "C" {
  *    start playing the synthesis voice.
  * */
 
-enum { FLUID_PRESET_SELECTED, FLUID_PRESET_UNSELECTED, FLUID_SAMPLE_DONE };
-
-
-struct _fluid_sfloader_t {
-    /** Private data */
-    void *data;
-
-    /** The free must free the memory allocated for the loader in
-     * addition to any private data. It should return 0 if no error
-     * occured, non-zero otherwise.*/
-    int (*free)(fluid_sfloader_t *loader);
-
-    /** Load a file. Returns NULL if an error occured. */
-    fluid_sfont_t *(*load)(fluid_sfloader_t *loader, const char *filename);
-
-    /** Callback structure specifying file operations used during soundfont
-     * loading to allow custom loading, such as from memory */
-    fluid_fileapi_t *fileapi;
-};
 
 /**
  * File callback structure to enable custom soundfont loading (e.g. from
@@ -112,13 +87,6 @@ void fluid_init_default_fileapi(fluid_fileapi_t *fileapi);
 
 void fluid_set_default_fileapi(fluid_fileapi_t *fileapi);
 
-fluid_sfloader_t *new_fluid_defsfloader();
-
-int delete_fluid_defsfloader(fluid_sfloader_t *loader);
-
-/*
- * fluid_sfont_t
- */
 
 struct _fluid_sfont_t {
     void *data;

@@ -5,8 +5,6 @@
 #include "fluid_tuning.h"
 #include "fluid_sfont.h"
 
-fluid_sfloader_t *new_fluid_defsfloader(void);
-
 /***************************************************************
  *
  *                         GLOBAL
@@ -217,7 +215,6 @@ static void fluid_synth_init() {
 fluid_synth_t *new_fluid_synth(SynthParams sp) {
     int i;
     fluid_synth_t *synth;
-    fluid_sfloader_t *loader;
 
     /* initialize all the conversion tables and other stuff */
     if (fluid_synth_initialized == 0) {
@@ -248,12 +245,7 @@ fluid_synth_t *new_fluid_synth(SynthParams sp) {
     synth->ticks = 0;
     synth->tuning = NULL;
 
-    loader = new_fluid_defsfloader();
-    if (loader == NULL) {
-        FLUID_LOG(FLUID_WARN, "Failed to create the default SoundFont loader");
-        goto error_recovery;
-    }
-    synth->loader = loader;
+    synth->fileapi = fluid_get_default_fileapi();
 
     /* allocate all channel objects */
     synth->channel = FLUID_ARRAY(fluid_channel_t *, synth->midi_channels);
@@ -403,7 +395,7 @@ int delete_fluid_synth(fluid_synth_t *synth) {
 
     delete_fluid_list(synth->bank_offsets);
 
-    fluid_sfloader_delete(synth->loader);
+    fluid_fileapi_delete(synth->fileapi);
 
     if (synth->channel != NULL) {
         for (i = 0; i < synth->midi_channels; i++) {
@@ -1962,7 +1954,7 @@ int fluid_synth_sfload(fluid_synth_t *synth, const char *filename,
         return FLUID_FAILED;
     }
 
-    sfont = fluid_sfloader_load(synth->loader, filename);
+    sfont = fluid_soundfont_load(synth->fileapi, filename);
     if (sfont == NULL) return -1;
 
     sfont->id = ++synth->sfont_id;

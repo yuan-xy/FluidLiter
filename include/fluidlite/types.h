@@ -12,7 +12,6 @@ extern "C" {
 */
 typedef struct _fluid_synth_t fluid_synth_t;
 typedef struct _fluid_voice_t fluid_voice_t;
-typedef struct _fluid_sfloader_t fluid_sfloader_t;
 typedef struct _fluid_sfont_t fluid_sfont_t;
 typedef struct _fluid_preset_t fluid_preset_t;
 typedef struct _fluid_sample_t fluid_sample_t;

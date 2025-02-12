@@ -54,31 +54,12 @@ void fluid_set_default_fileapi(fluid_fileapi_t *fileapi) {
     fluid_default_fileapi = fileapi;
 }
 
-fluid_sfloader_t *new_fluid_defsfloader() {
-    fluid_sfloader_t *loader;
-
-    loader = FLUID_NEW(fluid_sfloader_t);
-    if (loader == NULL) {
-        FLUID_LOG(FLUID_ERR, "Out of memory");
-        return NULL;
-    }
-
-    loader->data = NULL;
-    loader->fileapi = fluid_default_fileapi;
-    loader->free = delete_fluid_defsfloader;
-    loader->load = fluid_defsfloader_load;
-
-    return loader;
+fluid_fileapi_t *fluid_get_default_fileapi(void) {
+    return fluid_default_fileapi;
 }
 
-int delete_fluid_defsfloader(fluid_sfloader_t *loader) {
-    if (loader) {
-        FLUID_FREE(loader);
-    }
-    return FLUID_OK;
-}
 
-fluid_sfont_t *fluid_defsfloader_load(fluid_sfloader_t *loader,
+fluid_sfont_t *fluid_soundfont_load(fluid_fileapi_t *fileapi,
                                       const char *filename) {
     fluid_defsfont_t *defsfont;
     fluid_sfont_t *sfont;
@@ -89,8 +70,7 @@ fluid_sfont_t *fluid_defsfloader_load(fluid_sfloader_t *loader,
         return NULL;
     }
 
-    sfont =
-        loader->data ? (fluid_sfont_t *)loader->data : FLUID_NEW(fluid_sfont_t);
+    sfont = FLUID_NEW(fluid_sfont_t);
     if (sfont == NULL) {
         FLUID_LOG(FLUID_ERR, "Out of memory");
         return NULL;
@@ -103,7 +83,7 @@ fluid_sfont_t *fluid_defsfloader_load(fluid_sfloader_t *loader,
     sfont->iteration_start = fluid_defsfont_sfont_iteration_start;
     sfont->iteration_next = fluid_defsfont_sfont_iteration_next;
 
-    if (fluid_defsfont_load(defsfont, filename, loader->fileapi) ==
+    if (fluid_defsfont_load(defsfont, filename, fileapi) ==
         FLUID_FAILED) {
         delete_fluid_defsfont(defsfont);
         return NULL;
