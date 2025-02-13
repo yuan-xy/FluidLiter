@@ -7,8 +7,6 @@
 extern "C" {
 #endif
 
-#include "fluid_config.h"
-
 #if defined(WITH_FLOAT)
 typedef float fluid_real_t;
 #else
