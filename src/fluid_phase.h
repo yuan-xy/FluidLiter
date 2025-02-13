@@ -3,7 +3,6 @@
 #define _FLUID_PHASE_H
 
 #include <stdint.h>
-#include "fluid_config.h"
 
 /*
  *  phase

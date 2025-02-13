@@ -51,7 +51,7 @@ void gen_song(const char *name, fluid_synth_t *synth, const char *fontname){
     char cmd[256] = "";
     strcat(cmd, "ffmpeg -hide_banner -y -f s16le -ar 44100 -ac 2 -i ");
     strcat(cmd, name);
-    strcat(cmd, ".pcm  -filter:a 'volume=16' ");
+    strcat(cmd, ".pcm ");
     strcat(cmd, name);
     strcat(cmd, ".wav");
     system(cmd);

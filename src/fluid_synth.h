@@ -6,7 +6,6 @@
  *                         INCLUDES
  */
 
-#include "fluid_config.h"
 #include "fluidsynth_priv.h"
 #include "fluid_list.h"
 #include "fluid_rev.h"
