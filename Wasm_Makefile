@@ -1,0 +1,87 @@
+TARGET = fluidsynth.js
+BUILD = Release
+
+ifeq ($(BUILD), Debug)
+BUILD_DIR = Debug
+else
+BUILD_DIR = Release
+endif
+
+CFLAGS = 
+C_DEFS = -DWITH_FLOAT
+
+C_SOURCES =  \
+$(wildcard src/*.c)
+
+CC = emcc
+AR = ar
+CP = objcopy
+SZ = size
+
+AS_DEFS = 
+
+# AS includes
+AS_INCLUDES = 
+
+# C includes
+C_INCLUDES =  \
+-Iinclude \
+-Isrc
+
+
+ifeq ($(BUILD), Debug)
+C_DEFS += -DDEBUG=1
+CFLAGS += -g3 -gdwarf-2   # -g3 生成包含宏定义的调试信息
+OPT = -Og
+else
+OPT = -O2
+endif
+
+# compile gcc flags
+ASFLAGS = $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
+
+CFLAGS += $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
+
+
+
+# Generate dependency information
+CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
+
+
+LIBS = -lc -lm
+LIBDIR = 
+LDFLAGS = -v $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
+
+# default action: build all
+all: $(BUILD_DIR)/$(TARGET)
+
+
+#######################################
+# build the application
+#######################################
+# list of objects
+OBJECTS = $(addprefix $(BUILD_DIR)/,$(notdir $(C_SOURCES:.c=.o)))
+vpath %.c $(sort $(dir $(C_SOURCES)))
+
+$(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR) 
+	$(CC) -c $(CFLAGS) $< -o $@
+
+$(BUILD_DIR)/$(TARGET): $(OBJECTS) Makefile
+	$(CC) $(CFLAGS) -s EXPORTED_FUNCTIONS='["_get_log_level"]'  -o $(BUILD_DIR)/$(TARGET) $(OBJECTS)  # 使用 emcc 链接
+
+
+$(BUILD_DIR):
+	mkdir $@		
+
+#######################################
+# clean up
+#######################################
+clean:
+	-rm -fR $(BUILD_DIR)
+  
+#######################################
+# dependencies
+#######################################
+-include $(wildcard $(BUILD_DIR)/*.d)
+
+# *** EOF ***
