@@ -3,7 +3,6 @@
 #include "fluid_synth.h"
 #include "fluid_chan.h"
 #include "fluid_tuning.h"
-#include "fluid_sfont.h"
 
 /***************************************************************
  *
@@ -1083,9 +1082,7 @@ int fluid_synth_get_pitch_wheel_sens(fluid_synth_t *synth, int chan,
     return FLUID_OK;
 }
 
-/*
- * fluid_synth_get_preset
- */
+
 fluid_preset_t *fluid_synth_get_preset(fluid_synth_t *synth,
                                        unsigned int sfontnum,
                                        unsigned int banknum,
@@ -1106,9 +1103,7 @@ fluid_preset_t *fluid_synth_get_preset(fluid_synth_t *synth,
     return NULL;
 }
 
-/*
- * fluid_synth_get_preset2
- */
+
 fluid_preset_t *fluid_synth_get_preset2(fluid_synth_t *synth, char *sfont_name,
                                         unsigned int banknum,
                                         unsigned int prognum) {
@@ -2064,9 +2059,6 @@ fluid_sfont_t *fluid_synth_get_sfont_by_name(fluid_synth_t *synth, char *name) {
     return NULL;
 }
 
-/*
- * fluid_synth_get_channel_preset
- */
 fluid_preset_t *fluid_synth_get_channel_preset(fluid_synth_t *synth, int chan) {
     if ((chan >= 0) && (chan < synth->midi_channels)) {
         return fluid_channel_get_preset(synth->channel[chan]);

@@ -3,7 +3,7 @@
 
 #include "fluidsynth_priv.h"
 #include "fluid_list.h"
-#include "fluid_defsfont.h"
+#include "fluid_sfont.h"
 
 typedef struct _fluid_gen_info_t {
     char num;        /* Generator number */

@@ -1,4 +1,3 @@
-#include "fluid_defsfont.h"
 #include "fluid_sfont.h"
 #include "fluid_gen.h"
 
@@ -81,62 +80,9 @@ fluid_sfont_t *fluid_soundfont_load(fluid_fileapi_t *fileapi, const char *filena
  *                           PUBLIC INTERFACE
  */
 
-fluid_preset_t *fluid_sfont_get_preset(fluid_sfont_t *sfont, unsigned int bank,
-                                                unsigned int prenum) {
-    fluid_preset_t *preset;
-    fluid_defpreset_t *defpreset;
-
-    defpreset = fluid_sfont_get_defpreset(sfont, bank, prenum);
-
-    if (defpreset == NULL) {
-        return NULL;
-    }
-
-    preset = FLUID_NEW(fluid_preset_t);
-    if (preset == NULL) {
-        FLUID_LOG(FLUID_ERR, "Out of memory");
-        return NULL;
-    }
-
-    preset->sfont = sfont;
-    preset->data = defpreset;
-    preset->free = fluid_defpreset_preset_delete;
-    preset->get_name = fluid_defpreset_preset_get_name;
-    preset->get_banknum = fluid_defpreset_preset_get_banknum;
-    preset->get_num = fluid_defpreset_preset_get_num;
-    preset->noteon = fluid_defpreset_preset_noteon;
-    return preset;
-}
-
-int fluid_defpreset_preset_delete(fluid_preset_t *preset) {
-    FLUID_FREE(preset);
-
-    /* TODO: free modulators */
-
-    return 0;
-}
-
-char *fluid_defpreset_preset_get_name(fluid_preset_t *preset) {
-    return fluid_defpreset_get_name((fluid_defpreset_t *)preset->data);
-}
-
-int fluid_defpreset_preset_get_banknum(fluid_preset_t *preset) {
-    return fluid_defpreset_get_banknum((fluid_defpreset_t *)preset->data);
-}
-
-int fluid_defpreset_preset_get_num(fluid_preset_t *preset) {
-    return fluid_defpreset_get_num((fluid_defpreset_t *)preset->data);
-}
-
-int fluid_defpreset_preset_noteon(fluid_preset_t *preset, fluid_synth_t *synth, int chan, int key,
-                                  int vel) {
-    return fluid_defpreset_noteon((fluid_defpreset_t *)preset->data, synth, chan, key, vel);
-}
-
-
 int delete_fluid_sfont(fluid_sfont_t *sfont) {
     fluid_list_t *list;
-    fluid_defpreset_t *preset;
+    fluid_preset_t *preset;
 
     if (sfont->filename != NULL) {
         FLUID_FREE(sfont->filename);
@@ -157,7 +103,7 @@ int delete_fluid_sfont(fluid_sfont_t *sfont) {
     preset = sfont->preset;
     while (preset != NULL) {
         sfont->preset = preset->next;
-        delete_fluid_defpreset(preset);
+        delete_fluid_preset(preset);
         preset = sfont->preset;
     }
 
@@ -180,7 +126,7 @@ int fluid_sfont_load(fluid_sfont_t *sfont, const char *filename, fluid_fileapi_t
     SFPreset *sfpreset;
     SFSample *sfsample;
     fluid_sample_t *sample;
-    fluid_defpreset_t *preset;
+    fluid_preset_t *preset;
 
     sfont->filename = FLUID_STRDUP(filename);
 
@@ -218,10 +164,10 @@ int fluid_sfont_load(fluid_sfont_t *sfont, const char *filename, fluid_fileapi_t
     p = sfdata->preset;
     while (p != NULL) {
         sfpreset = (SFPreset *)p->data;
-        preset = new_fluid_defpreset(sfont);
+        preset = new_fluid_preset(sfont);
         if (preset == NULL) goto err_exit;
 
-        if (fluid_defpreset_import_sfont(preset, sfpreset, sfont) != FLUID_OK) goto err_exit;
+        if (fluid_preset_import_sfont(preset, sfpreset, sfont) != FLUID_OK) goto err_exit;
 
         fluid_sfont_add_preset(sfont, preset);
         if (preset_callback) preset_callback(preset->bank, preset->num, preset->name);
@@ -249,8 +195,8 @@ int fluid_sfont_add_sample(fluid_sfont_t *sfont, fluid_sample_t *sample) {
  *
  * Add a preset to the SoundFont
  */
-int fluid_sfont_add_preset(fluid_sfont_t *sfont, fluid_defpreset_t *preset) {
-    fluid_defpreset_t *cur, *prev;
+int fluid_sfont_add_preset(fluid_sfont_t *sfont, fluid_preset_t *preset) {
+    fluid_preset_t *cur, *prev;
     if (sfont->preset == NULL) {
         preset->next = NULL;
         sfont->preset = preset;
@@ -354,9 +300,9 @@ fluid_sample_t *fluid_sfont_get_sample(fluid_sfont_t *sfont, char *s) {
 }
 
 
-fluid_defpreset_t *fluid_sfont_get_defpreset(fluid_sfont_t *sfont, unsigned int bank,
+fluid_preset_t *fluid_sfont_get_preset(fluid_sfont_t *sfont, unsigned int bank,
                                              unsigned int num) {
-    fluid_defpreset_t *preset = sfont->preset;
+    fluid_preset_t *preset = sfont->preset;
     while (preset != NULL) {
         if ((preset->bank == bank) && ((preset->num == num))) {
             return preset;
@@ -370,20 +316,11 @@ void fluid_sfont_iteration_start(fluid_sfont_t *sfont) {
     sfont->iter_cur = sfont->preset;
 }
 
-int fluid_sfont_iteration_next(fluid_sfont_t *sfont, fluid_preset_t *preset) {
-    if (sfont->iter_cur == NULL) {
-        return 0;
-    }
-
-    preset->free = fluid_defpreset_preset_delete;
-    preset->get_name = fluid_defpreset_preset_get_name;
-    preset->get_banknum = fluid_defpreset_preset_get_banknum;
-    preset->get_num = fluid_defpreset_preset_get_num;
-    preset->noteon = fluid_defpreset_preset_noteon;
-
-    preset->data = (void *)sfont->iter_cur;
-    sfont->iter_cur = fluid_defpreset_next(sfont->iter_cur);
-    return 1;
+fluid_preset_t * fluid_sfont_iteration_next(fluid_sfont_t *sfont) {
+    fluid_preset_t *preset = sfont->iter_cur;
+    if(preset == NULL) return NULL;
+    sfont->iter_cur = fluid_preset_next(sfont->iter_cur);
+    return preset;
 }
 
 /***************************************************************
@@ -392,10 +329,10 @@ int fluid_sfont_iteration_next(fluid_sfont_t *sfont, fluid_preset_t *preset) {
  */
 
 /*
- * new_fluid_defpreset
+ * new_fluid_preset
  */
-fluid_defpreset_t *new_fluid_defpreset(fluid_sfont_t *sfont) {
-    fluid_defpreset_t *preset = FLUID_NEW(fluid_defpreset_t);
+fluid_preset_t *new_fluid_preset(fluid_sfont_t *sfont) {
+    fluid_preset_t *preset = FLUID_NEW(fluid_preset_t);
     if (preset == NULL) {
         FLUID_LOG(FLUID_ERR, "Out of memory");
         return NULL;
@@ -410,10 +347,7 @@ fluid_defpreset_t *new_fluid_defpreset(fluid_sfont_t *sfont) {
     return preset;
 }
 
-/*
- * delete_fluid_defpreset
- */
-int delete_fluid_defpreset(fluid_defpreset_t *preset) {
+int delete_fluid_preset(fluid_preset_t *preset) {
     int err = FLUID_OK;
     fluid_preset_zone_t *zone;
     if (preset->global_zone != NULL) {
@@ -434,23 +368,23 @@ int delete_fluid_defpreset(fluid_defpreset_t *preset) {
     return err;
 }
 
-int fluid_defpreset_get_banknum(fluid_defpreset_t *preset) {
+int fluid_preset_get_banknum(fluid_preset_t *preset) {
     return preset->bank;
 }
 
-int fluid_defpreset_get_num(fluid_defpreset_t *preset) {
+int fluid_preset_get_num(fluid_preset_t *preset) {
     return preset->num;
 }
 
-char *fluid_defpreset_get_name(fluid_defpreset_t *preset) {
+char *fluid_preset_get_name(fluid_preset_t *preset) {
     return preset->name;
 }
 
-fluid_defpreset_t *fluid_defpreset_next(fluid_defpreset_t *preset) {
+fluid_preset_t *fluid_preset_next(fluid_preset_t *preset) {
     return preset->next;
 }
 
-int fluid_defpreset_noteon(fluid_defpreset_t *preset, fluid_synth_t *synth, int chan, int key,
+int fluid_preset_noteon(fluid_preset_t *preset, fluid_synth_t *synth, int chan, int key,
                            int vel) {
     fluid_preset_zone_t *preset_zone, *global_preset_zone;
     fluid_inst_t *inst;
@@ -462,10 +396,10 @@ int fluid_defpreset_noteon(fluid_defpreset_t *preset, fluid_synth_t *synth, int 
     int mod_list_count;
     int i;
 
-    global_preset_zone = fluid_defpreset_get_global_zone(preset);
+    global_preset_zone = fluid_preset_get_global_zone(preset);
 
     /* run thru all the zones of this preset */
-    preset_zone = fluid_defpreset_get_zone(preset);
+    preset_zone = fluid_preset_get_zone(preset);
     while (preset_zone != NULL) {
         /* check if the note falls into the key and velocity range of this
          * preset */
@@ -678,17 +612,17 @@ int fluid_defpreset_noteon(fluid_defpreset_t *preset, fluid_synth_t *synth, int 
 }
 
 /*
- * fluid_defpreset_set_global_zone
+ * fluid_preset_set_global_zone
  */
-int fluid_defpreset_set_global_zone(fluid_defpreset_t *preset, fluid_preset_zone_t *zone) {
+int fluid_preset_set_global_zone(fluid_preset_t *preset, fluid_preset_zone_t *zone) {
     preset->global_zone = zone;
     return FLUID_OK;
 }
 
 /*
- * fluid_defpreset_import_sfont
+ * fluid_preset_import_sfont
  */
-int fluid_defpreset_import_sfont(fluid_defpreset_t *preset, SFPreset *sfpreset,
+int fluid_preset_import_sfont(fluid_preset_t *preset, SFPreset *sfpreset,
                                  fluid_sfont_t *sfont) {
     fluid_list_t *p;
     SFZone *sfzone;
@@ -714,8 +648,8 @@ int fluid_defpreset_import_sfont(fluid_defpreset_t *preset, SFPreset *sfpreset,
             return FLUID_FAILED;
         }
         if ((count == 0) && (fluid_preset_zone_get_inst(zone) == NULL)) {
-            fluid_defpreset_set_global_zone(preset, zone);
-        } else if (fluid_defpreset_add_zone(preset, zone) != FLUID_OK) {
+            fluid_preset_set_global_zone(preset, zone);
+        } else if (fluid_preset_add_zone(preset, zone) != FLUID_OK) {
             return FLUID_FAILED;
         }
         p = fluid_list_next(p);
@@ -725,9 +659,9 @@ int fluid_defpreset_import_sfont(fluid_defpreset_t *preset, SFPreset *sfpreset,
 }
 
 /*
- * fluid_defpreset_add_zone
+ * fluid_preset_add_zone
  */
-int fluid_defpreset_add_zone(fluid_defpreset_t *preset, fluid_preset_zone_t *zone) {
+int fluid_preset_add_zone(fluid_preset_t *preset, fluid_preset_zone_t *zone) {
     if (preset->zone == NULL) {
         zone->next = NULL;
         preset->zone = zone;
@@ -739,16 +673,16 @@ int fluid_defpreset_add_zone(fluid_defpreset_t *preset, fluid_preset_zone_t *zon
 }
 
 /*
- * fluid_defpreset_get_zone
+ * fluid_preset_get_zone
  */
-fluid_preset_zone_t *fluid_defpreset_get_zone(fluid_defpreset_t *preset) {
+fluid_preset_zone_t *fluid_preset_get_zone(fluid_preset_t *preset) {
     return preset->zone;
 }
 
 /*
- * fluid_defpreset_get_global_zone
+ * fluid_preset_get_global_zone
  */
-fluid_preset_zone_t *fluid_defpreset_get_global_zone(fluid_defpreset_t *preset) {
+fluid_preset_zone_t *fluid_preset_get_global_zone(fluid_preset_t *preset) {
     return preset->global_zone;
 }
 

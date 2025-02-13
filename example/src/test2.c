@@ -100,19 +100,10 @@ static fluid_fileapi_t my_fileapi =
 int main(int argc, char *argv[]) {
     assert(GEN_LAST==60);
     int err = 0;
-
+    fluid_set_default_fileapi(&my_fileapi);
     fluid_synth_t* synth = NEW_FLUID_SYNTH();
     set_log_level(FLUID_DBG);
     assert(synth->with_reverb == 1);
-
-    fluid_set_default_fileapi(&my_fileapi);
-    fluid_sfloader_t *my_sfloader = new_fluid_defsfloader();
-//   loader->fileapi = fluid_default_fileapi;
-//   loader->free = delete_fluid_defsfloader;
-//   loader->load = fluid_defsfloader_load;
-
-    fluid_synth_add_sfloader(synth, my_sfloader);
-
 
     char abused_filename[64];
     const void *pointer_to_sf2_in_mem = &SF_BIN;
@@ -171,5 +162,6 @@ int main(int argc, char *argv[]) {
 cleanup:
     /* deleting the synth also deletes my_sfloader */
     delete_fluid_synth(synth);
+    assert(false);
     return err;
 }

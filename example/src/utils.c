@@ -4,7 +4,6 @@
 
 #include "fluid_synth.h"
 #include "fluid_chan.h"
-#include "fluid_defsfont.h"
 #include "fluid_sfont.h"
 #include "fluid_mod.h"
 
@@ -114,14 +113,13 @@ void print_fluid_inst_zone(fluid_inst_zone_t *iz){
 }
 
 void print_preset_info(fluid_preset_t *preset){
-    int bank = fluid_preset_get_banknum(preset);
-    int prog = fluid_preset_get_num(preset);
-    const char* name = fluid_preset_get_name(preset);
+    int bank = preset->bank;
+    int prog = preset->num;
+    const char* name = preset->name;
 	printf("bank: %d prog: %d name: %s\n", bank, prog, name);
 
-    fluid_defpreset_t * defpreset = (fluid_defpreset_t *)preset->data;
-    print_fluid_preset_zone_global(defpreset->global_zone);    
-    fluid_preset_zone_t *preset_zone = defpreset->zone;
+    print_fluid_preset_zone_global(preset->global_zone);    
+    fluid_preset_zone_t *preset_zone = preset->zone;
     print_fluid_preset_zone(preset_zone);
 
     fluid_inst_t *inst = preset_zone->inst;

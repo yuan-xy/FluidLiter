@@ -5,11 +5,6 @@
 extern "C" {
 #endif
 
-/*
- *  The interface to the synthesizer's voices
- *  Examples on using them can be found in fluid_defsfont.c
- */
-
 /** Update all the synthesis parameters, which depend on generator gen.
     This is only necessary after changing a generator of an already operating
    voice. Most applications will not need this function.*/

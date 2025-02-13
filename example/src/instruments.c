@@ -28,10 +28,9 @@ int main(int argc, char** argv)
     if (sfont != NULL) {
 		char *fontname = fluid_sfont_get_name(sfont);
 		printf("%s\n", fontname);
-        fluid_preset_t struct_preset;
-		fluid_preset_t *preset = &struct_preset;
+		fluid_preset_t *preset;
         fluid_sfont_iteration_start(sfont);
-        while (fluid_sfont_iteration_next(sfont, preset) != 0) {
+        while ((preset=fluid_sfont_iteration_next(sfont)) != NULL) {
 			print_preset_info(preset);
 		}
 	}

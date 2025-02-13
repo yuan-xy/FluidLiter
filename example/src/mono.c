@@ -42,8 +42,7 @@ int main(int argc, char *argv[]) {
     fluid_preset_t *preset = synth->channel[0]->preset;
     print_preset_info(preset);
     
-    fluid_defpreset_t * defpreset = (fluid_defpreset_t *)preset->data;
-    fluid_preset_zone_t *preset_zone = defpreset->zone;
+    fluid_preset_zone_t *preset_zone = preset->zone;
     fluid_inst_t *inst = preset_zone->inst;
     fluid_inst_zone_t *zone = inst->zone;
     bool stereo_sample = zone->next !=NULL && (zone->sample->sampletype + zone->next->sample->sampletype == 2+4);

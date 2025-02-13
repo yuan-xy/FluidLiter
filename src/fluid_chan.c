@@ -1,7 +1,6 @@
 #include "fluid_chan.h"
 #include "fluid_mod.h"
 #include "fluid_synth.h"
-#include "fluid_sfont.h"
 
 #define SETCC(_c, _n, _v) _c->cc[_n] = _v
 
@@ -32,7 +31,6 @@ void fluid_channel_init(fluid_channel_t *chan) {
     chan->banknum = 0;
     chan->sfontnum = 0;
 
-    if (chan->preset) delete_fluid_preset(chan->preset);
     chan->preset =
         fluid_synth_find_preset(chan->synth, chan->banknum, chan->prognum);
 
@@ -129,13 +127,11 @@ void fluid_channel_reset(fluid_channel_t *chan) {
 
 
 int delete_fluid_channel(fluid_channel_t *chan) {
-    if (chan->preset) delete_fluid_preset(chan->preset);
     FLUID_FREE(chan);
     return FLUID_OK;
 }
 
 int fluid_channel_set_preset(fluid_channel_t *chan, fluid_preset_t *preset) {
-    if (chan->preset) delete_fluid_preset(chan->preset);
     chan->preset = preset;
     return FLUID_OK;
 }

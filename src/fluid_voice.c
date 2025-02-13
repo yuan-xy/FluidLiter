@@ -4,7 +4,6 @@
 #include "fluid_chan.h"
 #include "fluid_conv.h"
 #include "fluid_synth.h"
-#include "fluid_sfont.h"
 
 /* used for filter turn off optimization - if filter cutoff is above the
    specified value and filter q is below the other value, turn filter off */
