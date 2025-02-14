@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>Wasm Example</title>
-    <script src="Release/fluidsynth.js"></script>
+    <script src="Debug/fluidsynth.js"></script>
 </head>
 <body>
     <script>
@@ -10,6 +10,7 @@
             // 调用 Wasm 中的函数
             const result = Module._get_log_level();
             console.log('Result:', result);
+            Module._fluid_log(3, "test"); // 输出很奇怪：FL: )*
         };
     </script>
 </body>

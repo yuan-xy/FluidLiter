@@ -68,16 +68,17 @@ void fluid_default_log_function(enum fluid_log_level level, char *message) {
  * @param level Log level (#fluid_log_level).
  * @param fmt Printf style format string for log message
  * @param ... Arguments for printf 'fmt' message string
- * @return Always returns -1
+ * @return return str len or -1
  */
 int fluid_log(enum fluid_log_level level, char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
-    vsnprintf(fluid_errbuf, sizeof(fluid_errbuf), fmt, args);
+    int ret = vsnprintf(fluid_errbuf, sizeof(fluid_errbuf), fmt, args);
     va_end(args);
 
     if (level <= LOG_LEVEL) {
         fluid_default_log_function(level, fluid_errbuf);
+        return ret;
     }
     return FLUID_FAILED;
 }
