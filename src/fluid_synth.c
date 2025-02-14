@@ -1379,9 +1379,6 @@ int fluid_synth_update_polyphony(fluid_synth_t *synth, char *name, int value) {
     return 0;
 }
 
-/*
- * fluid_synth_set_polyphony
- */
 int fluid_synth_set_polyphony(fluid_synth_t *synth, int polyphony) {
     int i;
 
@@ -1409,9 +1406,6 @@ int fluid_synth_get_polyphony(fluid_synth_t *synth) {
     return synth->polyphony;
 }
 
-/*
- * fluid_synth_get_internal_buffer_size
- */
 int fluid_synth_get_internal_bufsize(fluid_synth_t *synth) {
     return FLUID_BUFSIZE;
 }
@@ -1441,9 +1435,6 @@ int fluid_synth_set_reverb_preset(fluid_synth_t *synth, int i) {
 }
 
 
-/*
- *  fluid_synth_write_float
- */
 int fluid_synth_write_float(fluid_synth_t *synth, int len, void *lout, int loff,
                             int lincr, void *rout, int roff, int rincr) {
     int i, j, k, l;
@@ -1777,9 +1768,6 @@ fluid_voice_t *fluid_synth_free_voice_by_kill(fluid_synth_t *synth) {
     return voice;
 }
 
-/*
- * fluid_synth_alloc_voice
- */
 fluid_voice_t *fluid_synth_alloc_voice(fluid_synth_t *synth,
                                        fluid_sample_t *sample, int chan,
                                        int key, int vel) {

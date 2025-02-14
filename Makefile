@@ -132,13 +132,11 @@ else
 	@echo $(ARCH)
 endif
 
+-include $(wildcard $(BUILD_DIR)/*.d)   #dependencies
 
-#######################################
-# dependencies
-#######################################
--include $(wildcard $(BUILD_DIR)/*.d)
 
-# *** EOF ***
+# *** EOF of fluidliter, below is for test cases***
+
 
 TEST_DIR = example/src
 
@@ -153,8 +151,21 @@ TEST_INCLUDES =  \
 
 TEST_EXECS = $(patsubst $(TEST_DIR)/%.c, %, $(TEST_SOURCES))
 
-%: $(TEST_DIR)/%.c  #将每个 .c 文件编译为同名的可执行文件
+
+%: $(TEST_DIR)/%.c  $(BUILD_DIR)/lib$(TARGET).a #将每个 .c 文件编译为同名的可执行文件
 	$(CC) $<  $(CFLAGS) -L${BUILD} -l${TARGET} -lm -o $@
+
+
+# 动态生成每个可执行文件的运行规则。比如test_song, 生成规则run_test_song，通过make run_test_song可执行该测试。
+define RUN_RULE
+run_$(1): $(1)
+	@echo "Running $(1)..."
+	@./$(1)
+endef
+
+# 为每个可执行文件生成运行规则
+$(foreach exec,$(TEST_EXECS),$(eval $(call RUN_RULE,$(exec))))
+
 
 echo_test:
 	@echo $(TEST_EXECS)
