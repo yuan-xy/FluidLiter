@@ -47,12 +47,12 @@ ifeq ($(ARCH), arm)
 	MCU = $(CPU) -mthumb $(FPU) $(FLOAT-ABI)
 	LIBS = -lc -lm -lnosys 
 	LIBDIR = 
-	LDFLAGS = -v -specs=nosys.specs $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
+	LDFLAGS = -specs=nosys.specs $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
 else
 	MCU = 
 	LIBS = -lc -lm
 	LIBDIR = 
-	LDFLAGS = -v $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
+	LDFLAGS = $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
 endif
 
 
@@ -115,7 +115,7 @@ js: $(BUILD_DIR)/fluidsynth.js
 
 
 $(BUILD_DIR)/fluidsynth.js: $(OBJECTS)
-	$(CC) $(CFLAGS) -s EXPORTED_FUNCTIONS='["_get_log_level", "_fluid_log"]' -s EXPORTED_RUNTIME_METHODS='["ccall", "cwrap"]' -o $(BUILD_DIR)/fluidsynth.js $(OBJECTS)
+	$(CC) $(CFLAGS) -s EXPORTED_FUNCTIONS='["_get_log_level", "_set_log_level", "_fluid_log"]' -s EXPORTED_RUNTIME_METHODS='["ccall", "cwrap"]' -o $(BUILD_DIR)/fluidsynth.js $(OBJECTS)
 	$(SZ) $@
 
 # emnm Release/fluidsynth.wasm

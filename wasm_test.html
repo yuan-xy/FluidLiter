@@ -6,11 +6,16 @@
 </head>
 <body>
     <script>
+        var fluid_log;
         Module.onRuntimeInitialized = function() {
-            // 调用 Wasm 中的函数
             const result = Module._get_log_level();
             console.log('Result:', result);
-            Module._fluid_log(3, "test"); // 输出很奇怪：FL: )*
+            Module._fluid_log(3, "test"); // 输出很奇怪：FL: )*， 现有的效果是FL:，但是没有输出test
+
+            fluid_log = Module.cwrap('fluid_log', 'number', ['number', 'string']);
+            Module.ccall('fluid_log', 'number', ['number', 'string'], [3, 'Hello']);
+            fluid_log(3, "World");
+            //通过ccall和cwrap调用是正常的
         };
     </script>
 </body>
