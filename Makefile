@@ -39,20 +39,24 @@ else
 	# Default to native arch
 endif
 
+ifeq ($(OS), Windows_NT)
+	LIBS =
+else
+	LIBS = -lc -lm
+endif
 
 ifeq ($(ARCH), arm)
 	CPU = -mcpu=cortex-m4
 	FPU = -mfpu=fpv4-sp-d16
 	FLOAT-ABI = -mfloat-abi=hard
 	MCU = $(CPU) -mthumb $(FPU) $(FLOAT-ABI)
-	LIBS = -lc -lm -lnosys 
+	LIBS += -lnosys 
 	LIBDIR = 
 	LDFLAGS = -specs=nosys.specs $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
 else
 	MCU = 
-	LIBS = -lc -lm
 	LIBDIR = 
-	LDFLAGS = $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
+	LDFLAGS = $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map -Wl,--gc-sections
 endif
 
 
@@ -95,12 +99,12 @@ all: $(BUILD_DIR)/lib$(TARGET).a
 OBJECTS = $(addprefix $(BUILD_DIR)/,$(notdir $(C_SOURCES:.c=.o)))
 vpath %.c $(sort $(dir $(C_SOURCES)))
 
-ifeq ($(ARCH), wasm)
-$(BUILD_DIR)/%.o: %.c | $(BUILD_DIR) 
-	$(CC) -c $(CFLAGS) $(C_DEPEND) $< -o $@
-else
+ifeq ($(ARCH), arm)
 $(BUILD_DIR)/%.o: %.c | $(BUILD_DIR) 
 	$(CC) -c $(CFLAGS) $(C_DEPEND) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst)) $< -o $@
+else
+$(BUILD_DIR)/%.o: %.c | $(BUILD_DIR) 
+	$(CC) -c $(CFLAGS) $(C_DEPEND) $< -o $@
 endif
 
 # -Wa 是 GCC 的选项，用于将后续参数传递给汇编器。
@@ -135,8 +139,10 @@ clean:
 	-rm -fR $(BUILD_DIR)
 
 
+
 echo: #要测试makefile里的语句，必须放到目标中执行。而且还不能放在all前面
 	@echo $(C_DEFS)
+	@echo "Operating System: $(OS)"
 ifeq ($(ARCH), i386)
 	@echo "i386 on x86_64 (gcc-multilib)"
 else ifeq ($(ARCH),)
@@ -165,8 +171,8 @@ TEST_INCLUDES =  \
 TEST_EXECS = $(patsubst $(TEST_DIR)/%.c, %, $(TEST_SOURCES))
 
 
-%: $(TEST_DIR)/%.c  $(BUILD_DIR)/lib$(TARGET).a #将每个 .c 文件编译为同名的可执行文件
-	$(CC) $<  $(CFLAGS) -Wno-unused-result -L${BUILD} -l${TARGET} ${LDFLAGS} -o ${BUILD}/$@
+${BUILD_DIR}/%: $(TEST_DIR)/%.c  $(BUILD_DIR)/lib$(TARGET).a #将每个 .c 文件编译为同名的可执行文件
+	$(CC) $<  $(CFLAGS) -Wno-unused-result -L${BUILD_DIR} -l${TARGET} ${LDFLAGS} -o $@
 
 # 规则名如test2, 而生成的文件是${BUILD}/test2, 导致每次运行make test2都会重新编译。
 
@@ -175,18 +181,23 @@ define RUN_RULE
 $(1)_run: $(1)
 	@echo "Running $(1)..."
 ifeq ($(tool), massif)
-	@valgrind --tool=massif --massif-out-file=${BUILD}/massif_$(1) ${BUILD}/$(1)
-	massif-visualizer ${BUILD}/massif_$(1)
+	@valgrind --tool=massif --massif-out-file=${BUILD_DIR}/massif_$(1) ${BUILD_DIR}/$(1)
+	massif-visualizer ${BUILD_DIR}/massif_$(1)
 else ifeq ($(tool), callgrind)
-	@valgrind --dsymutil=yes --tool=callgrind --dump-instr=yes --collect-jumps=yes --callgrind-out-file=${BUILD}/callgrind_$(1) ${BUILD}/$(1)
-	kcachegrind ${BUILD}/callgrind_$(1)
+	@valgrind --dsymutil=yes --tool=callgrind --dump-instr=yes --collect-jumps=yes --callgrind-out-file=${BUILD_DIR}/callgrind_$(1) ${BUILD_DIR}/$(1)
+	kcachegrind ${BUILD_DIR}/callgrind_$(1)
 else
 	@${BUILD}/$(1)
 endif
 endef
 
+define RUN_RULE2
+$(1): ${BUILD_DIR}/$(1)
+endef
+
 # 为每个可执行文件生成运行规则
 $(foreach exec,$(TEST_EXECS),$(eval $(call RUN_RULE,$(exec))))
+$(foreach exec,$(TEST_EXECS),$(eval $(call RUN_RULE2,$(exec))))
 
 
 echo_test:
@@ -196,7 +207,7 @@ run_test: $(TEST_EXECS)
 	@echo "Running all tests..."
 	@for exec in $(TEST_EXECS); do \
 		echo "Running $$exec..."; \
-		${BUILD}/$$exec; \
+		${BUILD_DIR}/$$exec; \
 		if [ $$? -ne 0 ]; then \
 			echo "Test $$exec failed!"; \
 			exit 1; \

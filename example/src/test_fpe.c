@@ -37,7 +37,7 @@ void handle_fpe1(int sig) {
 
 int main(int argc, char *argv[])
 {
-#ifdef __ARM_EABI__
+#ifndef __linux__
     return 0;
 #else
 

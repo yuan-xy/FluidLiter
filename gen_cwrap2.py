@@ -2,6 +2,12 @@ import os
 import clang.cindex
 from clang.cindex import CursorKind
 
+    # 安装依赖
+    # apt install clang
+    # clang --version
+    # pip uninstall clang
+    # pip install clang==14.0.0  # 替换为你的 libclang 版本
+
 # 配置 libclang 的路径（根据你的环境修改）
 clang.cindex.Config.set_library_file("/usr/lib/llvm-14/lib/libclang.so.1")  # Linux 示例
 # clang.cindex.Config.set_library_file("C:/LLVM/bin/libclang.dll")  # Windows 示例

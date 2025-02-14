@@ -27,7 +27,7 @@ void task(){
 int main(int argc, char *argv[])
 {
     // echo | arm-none-eabi-gcc -dM -E -
-    #ifndef __ARM_EABI__
+    #ifdef __linux__
     {
         uint64_t start, end;
         start = rdtsc();

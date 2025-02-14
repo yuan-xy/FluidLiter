@@ -29,6 +29,16 @@ uint32_t sample_single_us(void){
 //	return (uint32_t)sample_single_us()/NUM_FRAMES;
 }
 
+void play_seconds(int value, int seconds, fluid_synth_t *synth, int16_t *buffer, FILE* file){
+    fluid_synth_noteon(synth, 0, value, 127);
+    int j=0;
+    for(; j <= seconds*MIRCO_SECOND/sample_duration_us(); j++){
+        fluid_synth_write_s16_mono(synth, NUM_FRAMES, buffer);
+        fwrite(buffer, SAMPLE_SIZE, NUM_SAMPLES, file);
+    }
+    printf("value:%d, j:%d\n", value, j);
+    fluid_synth_noteoff(synth, 0, value);
+}
 
 int main(int argc, char *argv[]) {
     printf("sample_duration_us:%d, sample_single_us:%d\n", sample_duration_us(), sample_single_us());
@@ -46,16 +56,7 @@ int main(int argc, char *argv[]) {
     int16_t *buffer = calloc(SAMPLE_SIZE, NUM_SAMPLES);
     FILE* file = argc > 2 ? fopen(argv[2], "wb") : fopen("test3.pcm", "wb");
 
-    void play_seconds(int value, int seconds){
-    	fluid_synth_noteon(synth, 0, value, 127);
-		int j=0;
-		for(; j <= seconds*MIRCO_SECOND/sample_duration_us(); j++){
-			fluid_synth_write_s16_mono(synth, NUM_FRAMES, buffer);
-			fwrite(buffer, SAMPLE_SIZE, NUM_SAMPLES, file);
-		}
-		printf("value:%d, j:%d\n", value, j);
-		fluid_synth_noteoff(synth, 0, value);
-    }
+
 
     for(int i=-2; i<3; i++){//C1=65.4Hz , B5=1975.5Hz ,  C6=2093Hz
         int notes[] = {NOTE_C, NOTE_D, NOTE_E, NOTE_F, NOTE_G, NOTE_A, NOTE_B};
@@ -64,7 +65,7 @@ int main(int argc, char *argv[]) {
             int v = notes[j];
             v = v + i * 12;
             printf("note value:%d\n", v);
-            play_seconds(v, 2);
+            play_seconds(v, 2, synth, buffer, file);
         }
     }
 

@@ -14,10 +14,8 @@
 #define __USE_GNU
 #include <fenv.h>
 
-#ifndef __ARM_EABI__
+#ifdef __linux__
 #include <execinfo.h>  // 用于 backtrace
-#endif
-
 #include <signal.h>    // 用于信号处理
 // #include <unistd.h>    // 用于 getpid
 
@@ -38,6 +36,7 @@ void print_stack_trace() {
 
     free(strings);  // 释放内存
 }
+#endif
 
 static int count=0;
 
@@ -82,7 +81,7 @@ void test_float(){
 
 int main(int argc, char *argv[])
 {
-#ifdef __ARM_EABI__
+#if defined(__ARM_EABI__) || defined(_WIN32)
     return 0;
 #else
     test_float();
