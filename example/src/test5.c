@@ -37,7 +37,11 @@ int main(int argc, char *argv[])
 
     fluid_synth_t *synth = NEW_FLUID_SYNTH();
 	
-    int sfont = fluid_synth_sfload(synth, argv[1], 1);
+	char *filename = "example/sf_/GMGSx_1.sf2";
+	if (argc >= 2) {
+		filename = argv[1];
+	}
+    int sfont = fluid_synth_sfload(synth, filename, 1);
     fluid_synth_program_select(synth, 0, sfont, 0, 0);
 
     int16_t *buffer = calloc(SAMPLE_SIZE, NUM_SAMPLES);
@@ -48,7 +52,7 @@ int main(int argc, char *argv[])
 
 
     fluid_synth_t *synth2 = NEW_FLUID_SYNTH();
-    int sfont2 = fluid_synth_sfload(synth2, argv[1], 1);
+    int sfont2 = fluid_synth_sfload(synth2, filename, 1);
     fluid_synth_program_select(synth2, 0, sfont2, 0, 0);
     uint16_t *buffer2 = calloc(SAMPLE_SIZE, NUM_SAMPLES);
 

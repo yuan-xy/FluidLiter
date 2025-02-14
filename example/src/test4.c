@@ -30,14 +30,14 @@ uint32_t sample_single_us(void)
 
 int main(int argc, char *argv[])
 {
-    if (argc < 2) {
-      printf("Usage: %s <soundfont>\n", argv[0]);
-      return 1;
-    }
+	char *filename = "example/sf_/GMGSx_1.sf2";
+	if (argc >= 2) {
+		filename = argv[1];
+	}
 
     fluid_synth_t *synth = NEW_FLUID_SYNTH();
     
-    int sfont = fluid_synth_sfload(synth, argv[1], 1);
+    int sfont = fluid_synth_sfload(synth, filename, 1);
     fluid_synth_program_select(synth, 0, sfont, 0, 0);
 
     int16_t *buffer = calloc(SAMPLE_SIZE, NUM_SAMPLES);

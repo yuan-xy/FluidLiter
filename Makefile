@@ -61,7 +61,7 @@ CFLAGS += $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sectio
 
 
 # Generate dependency information
-CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
+C_DEPEND = -MMD -MP -MF"$(@:%.o=%.d)"
 # -MMD: 这是GCC编译器的一个选项，用于生成依赖文件（.d 文件）。
 # -MP: 这也是GCC编译器的一个选项，用于为每个依赖的头文件生成一个空的伪目标规则。
 # -MF: 这是GCC编译器的一个选项，用于指定生成的依赖文件的名称。
@@ -85,10 +85,10 @@ vpath %.c $(sort $(dir $(C_SOURCES)))
 
 ifeq ($(ARCH), wasm)
 $(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR) 
-	$(CC) -c $(CFLAGS) $< -o $@
+	$(CC) -c $(CFLAGS) $(C_DEPEND) $< -o $@
 else
 $(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR) 
-	$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst)) $< -o $@
+	$(CC) -c $(CFLAGS) $(C_DEPEND) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst)) $< -o $@
 endif
 
 # -Wa 是 GCC 的选项，用于将后续参数传递给汇编器。
@@ -139,3 +139,36 @@ endif
 -include $(wildcard $(BUILD_DIR)/*.d)
 
 # *** EOF ***
+
+TEST_DIR = example/src
+
+TEST_SOURCES =  \
+$(wildcard $(TEST_DIR)/test*.c)
+
+# C includes
+TEST_INCLUDES =  \
+-Iinclude \
+-Isrc \
+-Iexample
+
+TEST_EXECS = $(patsubst $(TEST_DIR)/%.c, %, $(TEST_SOURCES))
+
+%: $(TEST_DIR)/%.c  #将每个 .c 文件编译为同名的可执行文件
+	$(CC) $<  $(CFLAGS) -L${BUILD} -l${TARGET} -lm -o $@
+
+echo_test:
+	@echo $(TEST_EXECS)
+
+run_test: $(TEST_EXECS)
+	@echo "Running all tests..."
+	@for exec in $(TEST_EXECS); do \
+		echo "Running $$exec..."; \
+		./$$exec; \
+		if [ $$? -ne 0 ]; then \
+			echo "Test $$exec failed!"; \
+			exit 1; \
+		fi; \
+	done
+	@echo "All tests passed!"
+
+

@@ -32,18 +32,19 @@ uint32_t sample_single_us(void){
 
 int main(int argc, char *argv[]) {
     printf("sample_duration_us:%d, sample_single_us:%d\n", sample_duration_us(), sample_single_us());
-    if (argc < 2) {
-      printf("Usage: %s <soundfont> [<output>]\n", argv[0]);
-      return 1;
-    }
+
+    char *filename = "example/sf_/GMGSx_1.sf2";
+	if (argc >= 2) {
+		filename = argv[1];
+	}
 
     fluid_synth_t *synth = NEW_FLUID_SYNTH();
     assert(get_log_level() == FLUID_INFO);
-    int sfont = fluid_synth_sfload(synth, argv[1], 1);
+    int sfont = fluid_synth_sfload(synth, filename, 1);
     fluid_synth_program_select(synth, 0, sfont, 0, 0);
 
     int16_t *buffer = calloc(SAMPLE_SIZE, NUM_SAMPLES);
-    FILE* file = argc > 2 ? fopen(argv[2], "wb") : stdout;
+    FILE* file = argc > 2 ? fopen(argv[2], "wb") : fopen("test3.pcm", "wb");
 
     void play_seconds(int value, int seconds){
     	fluid_synth_noteon(synth, 0, value, 127);

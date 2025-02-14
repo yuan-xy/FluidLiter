@@ -19,10 +19,10 @@
 #define POLYPHONY 8
 
 int main(int argc, char *argv[]) {
-    if (argc < 2) {
-      printf("Usage: %s <soundfont> [<output>]\n", argv[0]);
-      return 1;
-    }
+	char *filename = "example/sf_/Boomwhacker.sf2";
+	if (argc >= 2) {
+		filename = argv[1];
+	}
 
     fluid_synth_t* synth = NEW_FLUID_SYNTH(.polyphony=POLYPHONY);
     set_log_level(FLUID_DBG);
@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
 
     fluid_synth_set_reverb_preset(synth, 4);
 
-    int sfont = fluid_synth_sfload(synth, argv[1], 1);
+    int sfont = fluid_synth_sfload(synth, filename, 1);
     fluid_synth_program_select(synth, 0, sfont, 0, 0);
 
     fluid_preset_t *preset = synth->channel[0]->preset;
@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
     bool stereo_sample = zone->next !=NULL && (zone->sample->sampletype + zone->next->sample->sampletype == 2+4);
 
     int16_t *buffer = calloc(SAMPLE_SIZE, NUM_SAMPLES);
-    FILE* file = argc > 2 ? fopen(argv[2], "wb") : stdout;
+    FILE* file = argc > 2 ? fopen(argv[2], "wb") : fopen("mono.pcm", "wb");
 
     fluid_synth_noteon(synth, 0, 60, 50);
     assert(synth->ticks == 0);

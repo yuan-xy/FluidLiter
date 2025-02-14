@@ -154,7 +154,7 @@ int main(int argc, char *argv[]) {
 
     int16_t *buffer = calloc(SAMPLE_SIZE, NUM_SAMPLES);
 
-    FILE* file = argc > 1 ? fopen(argv[1], "wb") : stdout;
+    FILE* file = argc > 1 ? fopen(argv[1], "wb") : fopen("mem.pcm", "wb");
 
     fluid_synth_noteon(synth, 0, 60, 127);
 

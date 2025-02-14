@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include <assert.h>
 #include <stdbool.h>
-#include "GMGSx_1.c"
+#include "GMGSx_1.h"
 #include "fluidlite.h"
 #include "fluid_synth.h"
 
@@ -156,12 +156,11 @@ int main(int argc, char *argv[]) {
     fclose(file);
     sleep(1);
     free(buffer);
-    system("ffmpeg -f s16le -ar 44100 -ac 2 -i test2.pcm test2.wav");
+    system("ffmpeg -y -f s16le -ar 44100 -ac 2 -i test2.pcm test2.wav");
 
 
 cleanup:
     /* deleting the synth also deletes my_sfloader */
     delete_fluid_synth(synth);
-    assert(false);
     return err;
 }
