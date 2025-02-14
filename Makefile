@@ -153,14 +153,14 @@ TEST_EXECS = $(patsubst $(TEST_DIR)/%.c, %, $(TEST_SOURCES))
 
 
 %: $(TEST_DIR)/%.c  $(BUILD_DIR)/lib$(TARGET).a #将每个 .c 文件编译为同名的可执行文件
-	$(CC) $<  $(CFLAGS) -L${BUILD} -l${TARGET} -lm -o $@
+	$(CC) $<  $(CFLAGS) -L${BUILD} -l${TARGET} -lm -o ${BUILD}/$@
 
 
 # 动态生成每个可执行文件的运行规则。比如test_song, 生成规则run_test_song，通过make run_test_song可执行该测试。
 define RUN_RULE
 run_$(1): $(1)
 	@echo "Running $(1)..."
-	@./$(1)
+	@${BUILD}/$(1)
 endef
 
 # 为每个可执行文件生成运行规则
@@ -174,7 +174,7 @@ run_test: $(TEST_EXECS)
 	@echo "Running all tests..."
 	@for exec in $(TEST_EXECS); do \
 		echo "Running $$exec..."; \
-		./$$exec; \
+		${BUILD}/$$exec; \
 		if [ $$? -ne 0 ]; then \
 			echo "Test $$exec failed!"; \
 			exit 1; \
