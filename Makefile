@@ -5,12 +5,12 @@ BUILD = Debug
 C_DEFS = -DWITH_FLOAT
 
 ifeq ($(BUILD), Debug)
-	BUILD_DIR = Debug
+	BUILD_DIR ?= Debug
 	CFLAGS = -g3 -gdwarf-2   # -g3 生成包含宏定义的调试信息
 	OPT = -Og
 	C_DEFS += -DDEBUG=1
 else
-	BUILD_DIR = Release
+	BUILD_DIR ?= Release
 	CFLAGS = 
 	OPT = -O2
 endif
