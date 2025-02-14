@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
     fluid_synth_program_select(synth, 0, sfid, 0, 0);
 
     double ratio[] = {1, 16. / 15, 9. / 8, 6. / 5, 5. / 4, 4. / 3, 45. / 32, 3. / 2, 8. / 5, 5. / 3, 9. / 5, 15. / 8};
-    assert(sizeof(ratio) / sizeof(ratio[0] == 12));
+    assert((sizeof(ratio) / sizeof(ratio[0])) == 12);
 
     double pitch[12];
     for (int i = 0; i < 12; i++) {

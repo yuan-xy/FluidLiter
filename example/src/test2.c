@@ -23,8 +23,6 @@ struct FileDescriptor fd;
 
 void *my_open(fluid_fileapi_t* fileapi, const char * filename)
 {
-    void *p;
-
     if(filename[0] != '&')
     {
         return NULL;

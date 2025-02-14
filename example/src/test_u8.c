@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     int16_t *buffer = calloc(sizeof(int16_t) , NUM_SAMPLES);
 
     fluid_synth_noteon(synth, 0, NOTE_C, 127);
-	fluid_synth_write_u12_mono(synth, NUM_FRAMES, buffer);
+	fluid_synth_write_u12_mono(synth, NUM_FRAMES, (uint16_t *)buffer);
     fluid_synth_noteoff(synth, 0, NOTE_C);
 
 

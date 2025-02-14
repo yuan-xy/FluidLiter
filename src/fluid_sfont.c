@@ -619,9 +619,6 @@ int fluid_preset_set_global_zone(fluid_preset_t *preset, fluid_preset_zone_t *zo
     return FLUID_OK;
 }
 
-/*
- * fluid_preset_import_sfont
- */
 int fluid_preset_import_sfont(fluid_preset_t *preset, SFPreset *sfpreset,
                                  fluid_sfont_t *sfont) {
     fluid_list_t *p;

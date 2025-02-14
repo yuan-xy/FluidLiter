@@ -154,7 +154,7 @@ TEST_EXECS = $(patsubst $(TEST_DIR)/%.c, %, $(TEST_SOURCES))
 
 
 %: $(TEST_DIR)/%.c  $(BUILD_DIR)/lib$(TARGET).a #将每个 .c 文件编译为同名的可执行文件
-	$(CC) $<  $(CFLAGS) -L${BUILD} -l${TARGET} -lm -o ${BUILD}/$@
+	$(CC) $<  $(CFLAGS) -Wno-unused-result -L${BUILD} -l${TARGET} -lm -o ${BUILD}/$@
 
 
 # 动态生成每个可执行文件的运行规则。比如test_song, 生成规则run_test_song，通过make run_test_song可执行该测试。

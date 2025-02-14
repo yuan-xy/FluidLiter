@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
 		assert(v1 == buffer[i/2]);
 
 		uint16_t v2 = p2[i+1]*256 + p2[i];
-		assert(v2 ==  (p2[i+1] << 8) | (p2[i] & 0xFF));
+		assert((v2 ==  (p2[i+1] << 8)) | (p2[i] & 0xFF));
 		assert(v2 == buffer2[i/2]);
 
 		int16_t v12 = v1>>4;
