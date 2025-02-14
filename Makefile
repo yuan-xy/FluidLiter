@@ -40,6 +40,22 @@ else
 endif
 
 
+ifeq ($(ARCH), arm)
+	CPU = -mcpu=cortex-m4
+	FPU = -mfpu=fpv4-sp-d16
+	FLOAT-ABI = -mfloat-abi=hard
+	MCU = $(CPU) -mthumb $(FPU) $(FLOAT-ABI)
+	LIBS = -lc -lm -lnosys 
+	LIBDIR = 
+	LDFLAGS = -v -specs=nosys.specs $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
+else
+	MCU = 
+	LIBS = -lc -lm
+	LIBDIR = 
+	LDFLAGS = -v $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
+endif
+
+
 C_SOURCES =  \
 $(wildcard src/*.c)
 
@@ -54,9 +70,9 @@ C_INCLUDES =  \
 -Isrc
 
 # compile gcc flags
-ASFLAGS = $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
+ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
 
-CFLAGS += $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
+CFLAGS += $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
 
 
 
@@ -70,10 +86,6 @@ C_DEPEND = -MMD -MP -MF"$(@:%.o=%.d)"
 # 	$(@:%.o=%.d) 表示将目标文件的扩展名从 .o 替换为 .d。例如，如果目标文件是 main.o，那么 $(@:%.o=%.d) 会生成 main.d。
 # 	因此，-MF"$(@:%.o=%.d)" 会将依赖文件的名称设置为与目标文件同名，但扩展名为 .d。例如，main.o 对应的依赖文件是 main.d。
 
-
-LIBS = -lc -lm
-LIBDIR = 
-LDFLAGS = -v $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
 
 # default action: build all
 all: $(BUILD_DIR)/lib$(TARGET).a
@@ -154,12 +166,13 @@ TEST_EXECS = $(patsubst $(TEST_DIR)/%.c, %, $(TEST_SOURCES))
 
 
 %: $(TEST_DIR)/%.c  $(BUILD_DIR)/lib$(TARGET).a #将每个 .c 文件编译为同名的可执行文件
-	$(CC) $<  $(CFLAGS) -Wno-unused-result -L${BUILD} -l${TARGET} -lm -o ${BUILD}/$@
+	$(CC) $<  $(CFLAGS) -Wno-unused-result -L${BUILD} -l${TARGET} ${LDFLAGS} -o ${BUILD}/$@
 
+# 规则名如test2, 而生成的文件是${BUILD}/test2, 导致每次运行make test2都会重新编译。
 
-# 动态生成每个可执行文件的运行规则。比如test_song, 生成规则run_test_song，通过make run_test_song可执行该测试。
+# 动态生成每个可执行文件的运行规则。比如test_song, 生成规则test_song_run，通过make test_song_run可执行该测试。
 define RUN_RULE
-run_$(1): $(1)
+$(1)_run: $(1)
 	@echo "Running $(1)..."
 ifeq ($(tool), massif)
 	@valgrind --tool=massif --massif-out-file=${BUILD}/massif_$(1) ${BUILD}/$(1)

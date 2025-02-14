@@ -14,7 +14,10 @@
 #define __USE_GNU
 #include <fenv.h>
 
+#ifndef __ARM_EABI__
 #include <execinfo.h>  // 用于 backtrace
+#endif
+
 #include <signal.h>    // 用于信号处理
 // #include <unistd.h>    // 用于 getpid
 
@@ -79,6 +82,9 @@ void test_float(){
 
 int main(int argc, char *argv[])
 {
+#ifdef __ARM_EABI__
+    return 0;
+#else
     test_float();
     fluid_synth_t *synth = NEW_FLUID_SYNTH(.polyphony=1);
     set_log_level(FLUID_WARN);
@@ -99,5 +105,6 @@ int main(int argc, char *argv[])
     free(buffer);
     delete_fluid_synth(synth);
     return 0;
+#endif
 }
 

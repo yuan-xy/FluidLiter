@@ -37,6 +37,10 @@ void handle_fpe1(int sig) {
 
 int main(int argc, char *argv[])
 {
+#ifdef __ARM_EABI__
+    return 0;
+#else
+
     signal(SIGFPE, handle_fpe1);
 
     feclearexcept(FE_ALL_EXCEPT);
@@ -61,5 +65,7 @@ int main(int argc, char *argv[])
     free(buffer);
     delete_fluid_synth(synth);
     return 0;
+#endif
+
 }
 

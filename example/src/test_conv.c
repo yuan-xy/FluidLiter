@@ -26,13 +26,15 @@ void task(){
 
 int main(int argc, char *argv[])
 {
+    // echo | arm-none-eabi-gcc -dM -E -
+    #ifndef __ARM_EABI__
     {
         uint64_t start, end;
         start = rdtsc();
         task();
         end = rdtsc();
         printf("Cycles used: %llu\n", end - start);
-    };
+    };    
     {
         struct timespec start, end;
         long time_used;
@@ -43,6 +45,8 @@ int main(int argc, char *argv[])
         time_used = (end.tv_sec - start.tv_sec)*1000000000 + (end.tv_nsec - start.tv_nsec);
         printf("CPU time used: %ld nano seconds\n", time_used);
     };
+    #endif
+
     {
         clock_t start, end;
         long cpu_time_used;
