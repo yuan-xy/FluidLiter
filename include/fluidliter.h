@@ -14,14 +14,14 @@ typedef double fluid_real_t;
 #endif
 
 
-#include "fluidlite/types.h"
-#include "fluidlite/synth.h"
-#include "fluidlite/sfont.h"
-#include "fluidlite/log.h"
-#include "fluidlite/mod.h"
-#include "fluidlite/gen.h"
-#include "fluidlite/voice.h"
-#include "fluidlite/music.h"
+#include "fluidliter/types.h"
+#include "fluidliter/synth.h"
+#include "fluidliter/sfont.h"
+#include "fluidliter/log.h"
+#include "fluidliter/mod.h"
+#include "fluidliter/gen.h"
+#include "fluidliter/voice.h"
+#include "fluidliter/music.h"
 
 #ifdef __cplusplus
 }

@@ -335,7 +335,7 @@ int fluid_channel_get_num(fluid_channel_t *chan) {
 
 /* Purpose:
  * Sets the index of the interpolation method used on this channel,
- * as in fluid_interp in fluidlite.h
+ * as in fluid_interp in fluidliter.h
  */
 void fluid_channel_set_interp_method(fluid_channel_t *chan, uint8_t new_method) {
     chan->interp_method = new_method;

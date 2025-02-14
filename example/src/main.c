@@ -4,7 +4,7 @@
 #include <time.h>
 #include <assert.h>
 
-#include "fluidlite.h"
+#include "fluidliter.h"
 #include "misc.h"
 
 #define SAMPLE_RATE 44100

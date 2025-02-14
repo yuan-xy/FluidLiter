@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include <assert.h>
 #include <stdbool.h>
-#include "fluidlite.h"
+#include "fluidliter.h"
 #include "fluid_synth.h"
 #include "misc.h"
 #include <float.h> // 用于定义 FLT_MIN

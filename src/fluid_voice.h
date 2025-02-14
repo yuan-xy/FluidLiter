@@ -159,7 +159,7 @@ struct _fluid_voice_t {
     fluid_real_t chorus_send;
     fluid_real_t amp_chorus;
 
-    /* interpolation method, as in fluid_interp in fluidlite.h */
+    /* interpolation method, as in fluid_interp in fluidliter.h */
     uint8_t interp_method;
 };
 

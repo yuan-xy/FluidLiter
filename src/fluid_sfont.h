@@ -1,7 +1,7 @@
 #ifndef _FLUID_DEFSFONT_H
 #define _FLUID_DEFSFONT_H
 
-#include "fluidlite.h"
+#include "fluidliter.h"
 #include "fluidsynth_priv.h"
 #include "fluid_list.h"
 

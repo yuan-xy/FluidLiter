@@ -11,7 +11,7 @@
 #include <limits.h>
 
 #include <stdint.h>
-#include "fluidlite.h"
+#include "fluidliter.h"
 
 #define FLUID_INLINE              inline
 

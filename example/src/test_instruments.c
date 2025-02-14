@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <fluidlite.h>
+#include <fluidliter.h>
 #include "fluid_sfont.h"
 #include "utils.c"
 

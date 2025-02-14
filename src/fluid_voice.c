@@ -915,7 +915,7 @@ int calculate_hold_decay_buffers(fluid_voice_t *voice, int gen_base,
  * Purpose:
  *
  * The value of a generator (gen) has changed.  (The different
- * generators are listed in fluidlite.h, or in SF2.01 page 48-49)
+ * generators are listed in fluidliter.h, or in SF2.01 page 48-49)
  * Now the dependent 'voice' parameters are calculated.
  *
  * fluid_voice_update_param can be called during the setup of the
@@ -954,7 +954,7 @@ void fluid_voice_update_param(fluid_voice_t *voice, int gen) {
         break;
 
         /* The pitch is calculated from three different generators.
-         * Read comment in fluidlite.h about GEN_PITCH.
+         * Read comment in fluidliter.h about GEN_PITCH.
          */
     case GEN_PITCH:
     case GEN_COARSETUNE:

@@ -6,7 +6,7 @@
 #include <assert.h>
 #include <stdbool.h>
 
-#include "fluidlite.h"
+#include "fluidliter.h"
 #include "fluid_synth.h"
 
 

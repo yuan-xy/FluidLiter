@@ -1,4 +1,4 @@
-TARGET = fluidlite
+TARGET = fluidliter
 ARCH = i386
 BUILD = Debug
 
