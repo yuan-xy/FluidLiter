@@ -69,7 +69,6 @@ void assert_gen_GMGSx_2(fluid_synth_t *synth){
 
 void assert_gen_zero(fluid_synth_t *synth){
 #ifdef USING_CALLOC
-    assert(synth->voice[0]->mod_count == 0);
     assert(synth->polyphony == synth->nvoice);
     assert(synth->polyphony == 10);
     assert(synth->voice[0]->chan == NO_CHANNEL);

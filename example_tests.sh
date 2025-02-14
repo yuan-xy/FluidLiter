@@ -28,72 +28,10 @@ valgrind --tool=massif ./fluidlite-test ./example/sf_/GMGSx_1.sf2 output.pcm
 # SPL 和 dBFS 之间没有直接的数学关系，因为 SPL 取决于播放设备的增益和环境的声学特性。
 
 
-
-rm mono-test || true
-gcc example/src/test_mono.c -m32 -DWITH_FLOAT -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidlite -lm -o mono-test
-./mono-test ./example/sf_/Boomwhacker.sf2 mono.pcm
-# ffmpeg -f s16le -ar 44100 -ac 1 -i mono.pcm mono.wav
-# ffprobe -v quiet -print_format json -show_format -show_streams mono.wav
-
-# gcc example/src/test2.c -m32 -DWITH_FLOAT -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidlite -lm -o test2
-# valgrind --tool=massif --massif-out-file=massif_test2 ./test2
-
-
-
-
-rm test3 || true
-gcc example/src/test3.c -m32 -DWITH_FLOAT -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidlite -lm -o test3
-./test3 example/sf_/GMGSx_1.sf2 test3.pcm
-# ffmpeg -f s16le -ar 44100 -ac 1 -i test3.pcm test3.wav
-
-gcc example/src/test4.c -m32 -DWITH_FLOAT -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidlite -lm -o test4
-./test4 example/sf_/GMGSx_1.sf2 test4.pcm
-# ffmpeg -f s16le -ar 44100 -ac 1 -i test4.pcm test4.wav
-
-gcc example/src/test5.c -m32 -DWITH_FLOAT -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidlite -lm -o test5
-./test5 example/sf_/GMGSx_1.sf2
-
-gcc example/src/test_u8.c -m32 -DWITH_FLOAT -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidlite -lm -o test_u8
-./test_u8 example/sf_/GMGSx_1.sf2
-
-gcc example/src/test_song.c -m32 -DWITH_FLOAT -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidlite -lm -o test_song
-./test_song
-./test_song u12
-
-
 # valgrind --dsymutil=yes --tool=callgrind --dump-instr=yes --collect-jumps=yes ./test_song u12
 # export QT_SCALE_FACTOR=2
 # kcachegrind callgrind.out.xx
 
-gcc example/src/test_conv.c -m32 -DWITH_FLOAT -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidlite -lm -o test_conv
-./test_conv
-
-gcc example/src/test_vel.c -m32 -DWITH_FLOAT -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidlite -lm -o test_vel
-./test_vel
-
-
-gcc example/src/test_fpe.c -m32 -DWITH_FLOAT -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidlite -lm -o test_fpe
-./test_fpe
-
-gcc example/src/test_fpe2.c -m32 -DWITH_FLOAT -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidlite -lm -rdynamic -o test_fpe2
-./test_fpe2
-
-gcc example/src/test_vel2.c -m32 -DWITH_FLOAT -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidlite -lm -o test_vel2
-./test_vel2
-
-#gcc example/src/test_441.c -m32 -DWITH_FLOAT -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidlite -lm -o test_441
-#./test_441
-
-gcc example/src/test_tuning.c -m32 -DWITH_FLOAT -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidlite -lm -o test_tuning
-./test_tuning
-
-# rm -rf $BUILD
-# cmake -S . -B $BUILD -DCMAKE_BUILD_TYPE=$BUILD -DUSING_CALLOC=1
-# cmake --build $BUILD/
-gcc example/src/test_reverb_chorus.c -m32 -DWITH_FLOAT -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidlite -lm -o test_reverb_chorus
-valgrind --tool=massif  ./test_reverb_chorus
-# valgrind --dsymutil=yes --tool=callgrind --dump-instr=yes --collect-jumps=yes ./test_reverb_chorus
-# massif-visualizer massif.out.xxx
-
-gcc example/src/test_effects.c -m32 -DWITH_FLOAT -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidlite -lm -o test_effects
-./test_effects
+make clean
+make C_DEFS="-DWITH_FLOAT  -DUSING_CALLOC=1 -DDEBUG=1"
+make run_test_reverb_chorus  C_DEFS="-DWITH_FLOAT  -DUSING_CALLOC=1 -DDEBUG=1"

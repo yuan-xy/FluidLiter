@@ -1,13 +1,13 @@
 if [ $# -eq 0 ]; then
-    rm -rf Debug/
-    ./example_tests.sh
+    make clean
+    make run_test
 else
     if [ "$1" =  "all" ]; then
         rm -rf Debug/
-        ./example_tests.sh
+        make run_test
 
         rm -rf Release
-        ./example_tests.sh Release
+        make run_test BUILD=Release
 
         make ARCH=arm BUILD_DIR=build_arm
         make js BUILD_DIR=build_js
@@ -15,7 +15,7 @@ else
 
     if [ "$1" = "Release" ]; then
         rm -rf Release
-        ./example_tests.sh Release
+        make run_test BUILD=Release
     fi
 fi
 

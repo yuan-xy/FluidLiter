@@ -13,7 +13,6 @@ const char* get_mod_src_name(unsigned char src);
 
 static char flags1_names[256];
 static char flags2_names[256];
-static char midi_cc[16];
 
 const char* get_mod_src_name_f(unsigned char src, unsigned char flags){
   if (flags & FLUID_MOD_CC){

@@ -84,10 +84,10 @@ OBJECTS = $(addprefix $(BUILD_DIR)/,$(notdir $(C_SOURCES:.c=.o)))
 vpath %.c $(sort $(dir $(C_SOURCES)))
 
 ifeq ($(ARCH), wasm)
-$(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR) 
+$(BUILD_DIR)/%.o: %.c | $(BUILD_DIR) 
 	$(CC) -c $(CFLAGS) $(C_DEPEND) $< -o $@
 else
-$(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR) 
+$(BUILD_DIR)/%.o: %.c | $(BUILD_DIR) 
 	$(CC) -c $(CFLAGS) $(C_DEPEND) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst)) $< -o $@
 endif
 
@@ -102,7 +102,7 @@ endif
 js: $(BUILD_DIR)/fluidsynth.js
 
 
-$(BUILD_DIR)/fluidsynth.js: $(OBJECTS) Makefile
+$(BUILD_DIR)/fluidsynth.js: $(OBJECTS)
 	$(CC) $(CFLAGS) -s EXPORTED_FUNCTIONS='["_get_log_level", "_fluid_log"]' -s EXPORTED_RUNTIME_METHODS='["ccall", "cwrap"]' -o $(BUILD_DIR)/fluidsynth.js $(OBJECTS)
 	$(SZ) $@
 
@@ -111,7 +111,7 @@ $(BUILD_DIR)/fluidsynth.js: $(OBJECTS) Makefile
 # wasm-objdump Release/fluidsynth.wasm -s
 # wasm-interp Release/fluidsynth.wasm --run-all-exports
 
-$(BUILD_DIR)/lib$(TARGET).a: $(OBJECTS) Makefile
+$(BUILD_DIR)/lib$(TARGET).a: $(OBJECTS)
 	$(AR) rcs $@ $(OBJECTS)
 	$(SZ) -t $@
 	
@@ -124,6 +124,7 @@ clean:
 
 
 echo: #要测试makefile里的语句，必须放到目标中执行。而且还不能放在all前面
+	@echo $(C_DEFS)
 ifeq ($(ARCH), i386)
 	@echo "i386 on x86_64 (gcc-multilib)"
 else ifeq ($(ARCH),)
@@ -160,7 +161,15 @@ TEST_EXECS = $(patsubst $(TEST_DIR)/%.c, %, $(TEST_SOURCES))
 define RUN_RULE
 run_$(1): $(1)
 	@echo "Running $(1)..."
+ifeq ($(tool), massif)
+	@valgrind --tool=massif --massif-out-file=${BUILD}/massif_$(1) ${BUILD}/$(1)
+	massif-visualizer ${BUILD}/massif_$(1)
+else ifeq ($(tool), callgrind)
+	@valgrind --dsymutil=yes --tool=callgrind --dump-instr=yes --collect-jumps=yes --callgrind-out-file=${BUILD}/callgrind_$(1) ${BUILD}/$(1)
+	kcachegrind ${BUILD}/callgrind_$(1)
+else
 	@${BUILD}/$(1)
+endif
 endef
 
 # 为每个可执行文件生成运行规则
