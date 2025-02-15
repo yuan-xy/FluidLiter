@@ -187,7 +187,7 @@ else ifeq ($(tool), callgrind)
 	@valgrind --dsymutil=yes --tool=callgrind --dump-instr=yes --collect-jumps=yes --callgrind-out-file=${BUILD_DIR}/callgrind_$(1) ${BUILD_DIR}/$(1)
 	kcachegrind ${BUILD_DIR}/callgrind_$(1)
 else
-	@${BUILD}/$(1)
+	@${BUILD_DIR}/$(1)
 endif
 endef
 

@@ -2,8 +2,8 @@ build/
 out/
 *.pcm
 *.wav
-Debug
-Release
+Debug*
+Release*
 a.out
 *-test
 test?
