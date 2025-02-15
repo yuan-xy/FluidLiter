@@ -117,9 +117,11 @@ endif
 
 js: $(BUILD_DIR)/fluidsynth.js
 
+$(BUILD_DIR)/fluid_wasm.o: example/src/fluid_wasm.c
+	$(CC) -c $(CFLAGS) $(C_DEPEND) $< -o $@
 
-$(BUILD_DIR)/fluidsynth.js: $(OBJECTS)
-	$(CC) $(CFLAGS) -s EXPORTED_FUNCTIONS='["_get_log_level", "_set_log_level", "_fluid_log"]' -s EXPORTED_RUNTIME_METHODS='["ccall", "cwrap"]' -o $(BUILD_DIR)/fluidsynth.js $(OBJECTS)
+$(BUILD_DIR)/fluidsynth.js: $(OBJECTS) $(BUILD_DIR)/fluid_wasm.o
+	$(CC) $(CFLAGS) -s EXPORTED_FUNCTIONS='["_get_log_level", "_set_log_level", "_fluid_log", "_fluid_init","_fluid_program_select","_fluid_noteon","_fluid_noteoff","_fluid_write_float","_get_buffer_ptr","_get_buffer_size"]' -s EXPORTED_RUNTIME_METHODS='["ccall", "cwrap"]' -o $(BUILD_DIR)/fluidsynth.js $(OBJECTS)  $(BUILD_DIR)/fluid_wasm.o
 	$(SZ) $@
 
 # emnm Release/fluidsynth.wasm

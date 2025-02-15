@@ -87,6 +87,9 @@ def save_to_file(output_path, content):
         f.write(content)
 
 if __name__ == "__main__":
+    functions = parse_functions_from_header("example/src/fluid_wasm.c")
+    # print(generate_cwrap_code(functions))
+
     project_dir = "include/fluidlite"  # 替换为你的 C 项目路径
     output_path = "Debug/wrappers2.js"  # 生成的 JavaScript 文件路径
 

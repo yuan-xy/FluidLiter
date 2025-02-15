@@ -5,8 +5,11 @@
     <script src="Debug/fluidsynth.js"></script>
 </head>
 <body>
+    <button id="playButton">播放音频</button>
+
     <script>
-        var fluid_log;
+        var fluid_log, audioContext, audioBuffer;
+
         Module.onRuntimeInitialized = function() {
             const result = Module._get_log_level();
             console.log('Result:', result);
@@ -16,7 +19,47 @@
             Module.ccall('fluid_log', 'number', ['number', 'string'], [3, 'Hello']);
             fluid_log(3, "World");
             //通过ccall和cwrap调用是正常的
+
+            fluid_init = Module.cwrap('fluid_init', 'number', ['number', 'number']);
+            fluid_program_select = Module.cwrap('fluid_program_select', 'number', ['number', 'number']);
+            fluid_noteon = Module.cwrap('fluid_noteon', 'number', ['number', 'number']);
+            fluid_noteoff = Module.cwrap('fluid_noteoff', 'number', ['number']);
+            fluid_write_float = Module.cwrap('fluid_write_float', 'number', []);
+
+            const sampleCount = Module._get_buffer_size() / 4;
+
+            // 创建Uint8Array视图访问数据
+            const pcmFloat32 = new Float32Array(Module.HEAPF32.buffer, Module._get_buffer_ptr(), sampleCount);
+
+            fluid_init(0, 0);
+            fluid_program_select(0, 0);
+            fluid_noteon(70, 100);
+            fluid_write_float();
+
+            // 创建 AudioContext（需用户交互后调用，如点击事件）
+            audioContext = new AudioContext();
+
+            // 创建 AudioBuffer（假设采样率为 44100 Hz）
+            audioBuffer = audioContext.createBuffer(
+            1, // 声道
+            sampleCount, // 样本数
+            44100 // 采样率（需与 PCM 数据实际采样率一致！）
+            );
+
+            // 将数据填充到 AudioBuffer
+            const channelData = audioBuffer.getChannelData(0);
+            channelData.set(pcmFloat32);
         };
+
+                    // 播放音频（需在用户交互事件中触发，如按钮点击）
+        document.getElementById("playButton").addEventListener("click", () => {
+            const source = audioContext.createBufferSource();
+            source.buffer = audioBuffer;
+            source.connect(audioContext.destination);
+            source.start(0);
+        });
+
+
     </script>
 </body>
 </html>
