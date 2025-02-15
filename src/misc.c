@@ -1,5 +1,6 @@
 #include <stdio.h>
-#include "misc.h"
+#include <stdbool.h>
+#include <stdint.h>
 #include <math.h>
 #include <float.h> // 用于定义 FLT_MIN
 
@@ -9,24 +10,6 @@ bool float_eq(double a, double b) {
     return fabs(a - b) < EPSILON;
 }
 
-void set_bit(uint8_t* value, uint8_t index){
-	uint8_t bitmask = 1 << index;
-	*value |= bitmask;
-}
-
-void unset_bit(uint8_t* value, uint8_t index){
-	uint8_t bitmask = ~(1 << index);
-	*value &= bitmask;
-}
-
-void change_bit(uint8_t* value, uint8_t index, uint8_t bit){
-	if(bit) set_bit(value, index);
-	else unset_bit(value, index);
-}
-
-bool get_bit(uint8_t num, uint8_t index) {
-    return (num >> index) & 1;
-}
 
 // 计算音量（dB）
 float calculateVolumeDB(int16_t *pcmData, int length) {
@@ -89,6 +72,7 @@ float calculate_peak_dB_1024(int16_t *pcmData, int length) {
 
     // 计算平均音量
     float meanVolumeDB = sumVolumeDB / (length / segmentSize);
+    (void) meanVolumeDB;
 
     // 打印结果
     // printf("mean_volume: %.1f dB\n", meanVolumeDB);

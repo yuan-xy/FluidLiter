@@ -1029,6 +1029,14 @@ int fluid_gen_set_default_values(fluid_gen_t *gen);
 #define NN7 71
 #define NOTE_B 71
 
+// misc.c
+// 计算音量（dB）
+float calculateVolumeDB(int16_t *pcmData, int length);
+
+float calculate_peak_dB(int16_t *pcmData, int length);
+
+float calculate_peak_dB_1024(int16_t *pcmData, int length);
+
 
 #ifdef __cplusplus
 }
