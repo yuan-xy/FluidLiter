@@ -28,10 +28,6 @@ else \
  fluid_return_if_fail(cond) (val)
 
 
-
-typedef enum { FLUID_OK = 0, FLUID_FAILED = -1 } fluid_status;
-
-
 #if defined(__LP64__) || defined(_WIN64)
 typedef uint64_t uintptr;
 #else

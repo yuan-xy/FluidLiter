@@ -15,7 +15,7 @@ typedef float fluid_real_t;
 typedef double fluid_real_t;
 #endif
 
-
+typedef enum { FLUID_OK = 0, FLUID_FAILED = -1 } fluid_status;
 
 /*
 
