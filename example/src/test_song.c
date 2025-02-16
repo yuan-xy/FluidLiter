@@ -87,6 +87,10 @@ int main(int argc, char *argv[])
     delete_fluid_synth(synth);
 
     if(is_8bit){
+#ifdef __linux__
+        int ret = system("diff song8.pcm example/song8.pcm");
+        assert(ret == 0);
+#endif
         system("ffmpeg -hide_banner -y -f u8 -ar 44100 -ac 1 -i song8.pcm -acodec pcm_u8 song8.wav");
     }else{
         //system("ffmpeg -hide_banner -y -f s16le -ar 44100 -ac 1 -i song12.pcm song12.wav");
