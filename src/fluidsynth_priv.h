@@ -13,10 +13,6 @@
 #include <stdint.h>
 #include "fluidliter.h"
 
-#define FLUID_INLINE              inline
-
-#define FLUID_N_ELEMENTS(struct)  (sizeof (struct) / sizeof (struct[0]))
-#define FLUID_MEMBER_SIZE(struct, member)  ( sizeof (((struct *)0)->member) )
 
 #define fluid_return_if_fail(cond) \
 if(cond) \

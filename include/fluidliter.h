@@ -17,6 +17,12 @@ typedef double fluid_real_t;
 
 typedef enum { FLUID_OK = 0, FLUID_FAILED = -1 } fluid_status;
 
+#define FLUID_INLINE              inline
+
+#define FLUID_N_ELEMENTS(struct)  (sizeof (struct) / sizeof (struct[0]))
+#define FLUID_MEMBER_SIZE(struct, member)  ( sizeof (((struct *)0)->member) )
+
+
 /*
 
   Forward declarations
