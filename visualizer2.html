@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Visualizer Example</title>
+</head>
+
+<body>
+    <canvas id="visualizer" width="600" height="200"></canvas>
+    <button id="test_filter">test_filter</button>
+    <button id="stop">stop</button>
+
+    <script>
+        const audioContext = new AudioContext();
+        // 创建 OscillatorNode（生成音频信号）
+        const oscillator = audioContext.createOscillator();
+
+        document.getElementById("test_filter").addEventListener("click", () => {
+            test_filter();
+        });
+        document.getElementById("stop").addEventListener("click", () => {
+            oscillator.stop();
+        });
+
+        function test_filter() {
+            oscillator.type = 'sawtooth'; // 锯齿波
+            // oscillator.type = 'triangle';
+            oscillator.type = 'square';
+            // oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(440, audioContext.currentTime); // 440Hz
+
+            // 创建 BiquadFilterNode（低通滤波）
+            const biquadFilter = audioContext.createBiquadFilter();
+            biquadFilter.type = 'lowpass'; // 低通滤波器
+            biquadFilter.frequency.setValueAtTime(800, audioContext.currentTime); // 截止频率 1000Hz
+            biquadFilter.Q.setValueAtTime(1, audioContext.currentTime); // Q 值
+
+            // 创建 IIRFilterNode（高通滤波）
+            const feedforward = [0.0201, -0.0402, 0.0201]; // 高通滤波器系数
+            const feedback = [1.0000, -1.5610, 0.6414];   // 高通滤波器系数
+            const iirFilter = audioContext.createIIRFilter(feedforward, feedback);
+
+            // 前馈系数 [0.0201, -0.0402, 0.0201]即在z=1(f=0Hz）处有一个双重零点。这会导致低频信号被强烈衰减，符合高通特性。
+            // 极点的模长为：sqrt(a2) ≈ 0.8, 极点位于单位圆内，滤波器是稳定的
+            // 增益为 0.707 时的角频率Wc= 0.228
+            // 该滤波器的截止频率约为Wc*Fs/2pi = 1.74 kHz（假设采样率 context.sampleRate = 48Khz)
+            
+            // 对于二阶高通滤波器，Q 值可通过极点位置计算Q≈2.0。
+
+
+            // 连接节点
+            oscillator.connect(biquadFilter);
+            biquadFilter.connect(iirFilter);
+            iirFilter.connect(audioContext.destination);
+
+            // oscillator.connect(audioContext.destination);
+
+
+            // 播放
+            oscillator.start();
+
+            // 创建 AnalyserNode
+            const analyser = audioContext.createAnalyser();
+            oscillator.connect(analyser);
+            analyser.connect(audioContext.destination);
+
+            // 可视化
+            const canvas = document.getElementById('visualizer');
+            const ctx = canvas.getContext('2d');
+            const frequencyData = new Uint8Array(analyser.frequencyBinCount);
+
+            function draw() {
+                requestAnimationFrame(draw);
+                analyser.getByteFrequencyData(frequencyData);
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                const barWidth = (canvas.width / frequencyData.length) * 2.5;
+                let x = 0;
+
+                frequencyData.forEach((value) => {
+                    const barHeight = value;
+                    ctx.fillStyle = `rgb(${barHeight + 100}, 50, 50)`;
+                    ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+                    x += barWidth + 1;
+                });
+            }
+
+            draw();
+
+        }
+
+    </script>
+</body>
+
+</html>

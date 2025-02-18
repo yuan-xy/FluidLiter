@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Visualizer Example</title>
+</head>
+
+<body>
+  <canvas id="visualizer" width="600" height="200"></canvas>
+  <audio src="./song8.wav" controls></audio>
+
+  <script>
+    const audioContext = new AudioContext();
+    const audioElement = document.querySelector('audio');
+    const source = audioContext.createMediaElementSource(audioElement);
+
+    // 创建 AnalyserNode
+    const analyser = audioContext.createAnalyser();
+    source.connect(analyser);
+    analyser.connect(audioContext.destination);
+
+    // 可视化
+    const canvas = document.getElementById('visualizer');
+    const ctx = canvas.getContext('2d');
+    const frequencyData = new Uint8Array(analyser.frequencyBinCount);
+
+    function draw() {
+      requestAnimationFrame(draw);
+      analyser.getByteFrequencyData(frequencyData);
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const barWidth = (canvas.width / frequencyData.length) * 2.5;
+      let x = 0;
+
+      frequencyData.forEach((value) => {
+        const barHeight = value;
+        ctx.fillStyle = `rgb(${barHeight + 100}, 50, 50)`;
+        ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+        x += barWidth + 1;
+      });
+    }
+
+    audioElement.play();
+    draw();
+  </script>
+
+</body>
+
+</html>
