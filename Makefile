@@ -19,6 +19,9 @@ ifneq ($(EMPTY_REVERB), )
 	CFLAGS += -DEMPTY_REVERB
 endif
 
+ifneq ($(EMPTY_CHORUS), )
+	CFLAGS += -DEMPTY_CHORUS
+endif
 
 CC = gcc
 AS = gcc -x assembler-with-cpp

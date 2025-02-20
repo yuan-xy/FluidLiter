@@ -3,6 +3,7 @@
 
 #include "fluidsynth_priv.h"
 
+#define DUMB_CHORUS ((void *)-1)
 
 typedef struct _fluid_chorus_t fluid_chorus_t;
 

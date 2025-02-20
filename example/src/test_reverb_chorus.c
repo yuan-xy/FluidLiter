@@ -135,11 +135,13 @@ int main(){
     assert(synth->fx_left_buf == NULL);
     assert(synth->fx_left_buf2 != NULL);
     assert(synth->chorus != NULL);
-    assert(synth->chorus->number_blocks == FLUID_CHORUS_DEFAULT_N);
-    assert(synth->chorus->level == FLUID_CHORUS_DEFAULT_LEVEL);
-    assert(synth->chorus->speed_Hz == FLUID_CHORUS_DEFAULT_SPEED);
-    assert(synth->chorus->depth_ms == FLUID_CHORUS_DEFAULT_DEPTH);
-    assert(synth->chorus->type == FLUID_CHORUS_DEFAULT_TYPE);
+    if(synth->chorus != DUMB_CHORUS){
+        assert(synth->chorus->number_blocks == FLUID_CHORUS_DEFAULT_N);
+        assert(synth->chorus->level == FLUID_CHORUS_DEFAULT_LEVEL);
+        assert(synth->chorus->speed_Hz == FLUID_CHORUS_DEFAULT_SPEED);
+        assert(synth->chorus->depth_ms == FLUID_CHORUS_DEFAULT_DEPTH);
+        assert(synth->chorus->type == FLUID_CHORUS_DEFAULT_TYPE);
+    }
     fluid_chorus_set(synth->chorus, FLUID_CHORUS_SET_NR, 50, 0, 0, 0, 0);
     gen_song("song_no_reverb_chorus", synth, "example/sf_/GMGSx_2.sf2");
     assert_gen_GMGSx_2(synth);
