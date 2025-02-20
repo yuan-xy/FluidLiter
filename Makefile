@@ -15,6 +15,11 @@ else
 	OPT = -O2
 endif
 
+ifneq ($(EMPTY_REVERB), )
+	CFLAGS += -DEMPTY_REVERB
+endif
+
+
 CC = gcc
 AS = gcc -x assembler-with-cpp
 CP = objcopy
@@ -217,4 +222,5 @@ run_test: $(TEST_EXECS)
 	done
 	@echo "All tests passed!"
 
+test: run_test
 

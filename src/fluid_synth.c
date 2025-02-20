@@ -36,6 +36,9 @@ fluid_mod_t default_reverb_mod;     /* SF2.01 section 8.4.8  */
 fluid_mod_t default_chorus_mod;     /* SF2.01 section 8.4.9  */
 fluid_mod_t default_pitch_bend_mod; /* SF2.01 section 8.4.10 */
 
+#ifdef EMPTY_REVERB
+int fluid_synth_set_reverb_preset(fluid_synth_t *synth, int i) {return 0;}
+#else
 /* reverb presets */
 const static fluid_revmodel_presets_t revmodel_preset[] = {
     /* name */ /* roomsize */ /* damp */ /* width */ /* level */
@@ -45,6 +48,14 @@ const static fluid_revmodel_presets_t revmodel_preset[] = {
     {"Test 4", 0.8f, 0.7f, 0.5f, 0.6f},
     {"Test 5", 0.8f, 1.0f, 0.5f, 0.5f},
 };
+int fluid_synth_set_reverb_preset(fluid_synth_t *synth, int i) {
+    if (i < 0 || i >= sizeof(revmodel_preset) / sizeof(revmodel_preset[0]))
+        return FLUID_FAILED;
+    fluid_revmodel_set(synth->reverb, FLUID_REVMODEL_SET_ALL, revmodel_preset[i].roomsize,
+                        revmodel_preset[i].damp, revmodel_preset[i].width, revmodel_preset[i].level);
+    return FLUID_OK;
+}
+#endif
 
 /*
  * void fluid_synth_init
@@ -892,8 +903,8 @@ int fluid_synth_system_reset(fluid_synth_t *synth) {
         fluid_channel_reset(synth->channel[i]);
     }
 
-    fluid_chorus_reset(synth->chorus);
-    fluid_revmodel_reset(synth->reverb);
+    if (synth->chorus != NULL) fluid_chorus_reset(synth->chorus);
+    if (synth->reverb != NULL) fluid_revmodel_reset(synth->reverb);
 
     return FLUID_OK;
 }
@@ -1423,14 +1434,6 @@ int fluid_synth_program_reset(fluid_synth_t *synth) {
         fluid_synth_program_change(
             synth, i, fluid_channel_get_prognum(synth->channel[i]));
     }
-    return FLUID_OK;
-}
-
-int fluid_synth_set_reverb_preset(fluid_synth_t *synth, int i) {
-    if (i < 0 || i >= sizeof(revmodel_preset) / sizeof(revmodel_preset[0]))
-        return FLUID_FAILED;
-    fluid_revmodel_set(synth->reverb, FLUID_REVMODEL_SET_ALL, revmodel_preset[i].roomsize,
-                        revmodel_preset[i].damp, revmodel_preset[i].width, revmodel_preset[i].level);
     return FLUID_OK;
 }
 

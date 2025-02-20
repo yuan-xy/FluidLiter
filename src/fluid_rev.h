@@ -3,6 +3,8 @@
 
 #include "fluidsynth_priv.h"
 
+#define DUMB_REVERB ((void *)-1)
+
 typedef struct _fluid_revmodel_t fluid_revmodel_t;
 
 /* enum describing each reverb parameter */

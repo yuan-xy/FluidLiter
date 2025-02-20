@@ -148,6 +148,26 @@
  */
 #include "fluid_rev.h"
 
+#ifdef EMPTY_REVERB
+fluid_revmodel_t *
+new_fluid_revmodel(fluid_real_t sample_rate_max, fluid_real_t sample_rate){return DUMB_REVERB;}
+
+void delete_fluid_revmodel(fluid_revmodel_t *rev){}
+
+void fluid_revmodel_processmix(fluid_revmodel_t *rev, const fluid_real_t *in,
+                               fluid_real_t *left_out, fluid_real_t *right_out){}
+
+void fluid_revmodel_processreplace(fluid_revmodel_t *rev, const fluid_real_t *in,
+                                   fluid_real_t *left_out, fluid_real_t *right_out){}
+
+void fluid_revmodel_reset(fluid_revmodel_t *rev){}
+
+void fluid_revmodel_set(fluid_revmodel_t *rev, int set, fluid_real_t roomsize,
+                        fluid_real_t damping, fluid_real_t width, fluid_real_t level){}
+
+int fluid_revmodel_samplerate_change(fluid_revmodel_t *rev, fluid_real_t sample_rate){}
+
+#else
 
 /*----------------------------------------------------------------------------
  Initial internal reverb settings (at reverb creation time)
@@ -1366,3 +1386,4 @@ void fluid_revmodel_processmix(fluid_revmodel_t *rev, const fluid_real_t *in,
         right_out[k] += out_right + out_left * rev->wet2;
     }
 }
+#endif //EMPTY_REVERB
