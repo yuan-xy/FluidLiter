@@ -70,9 +70,7 @@
 #include "fluid_chorus.h"
 
 #ifdef EMPTY_CHORUS
-
-
-fluid_chorus_t *new_fluid_chorus(fluid_real_t sample_rate){return DUMB_CHORUS;}
+fluid_chorus_t *new_fluid_chorus(fluid_real_t sample_rate){return EMPTY_CHORUS_STUB;}
 void delete_fluid_chorus(fluid_chorus_t *chorus){}
 void fluid_chorus_reset(fluid_chorus_t *chorus){}
 

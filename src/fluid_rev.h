@@ -3,7 +3,7 @@
 
 #include "fluidsynth_priv.h"
 
-#define DUMB_REVERB ((void *)-1)
+#define EMPTY_REVERB_STUB ((void *)-1)
 
 typedef struct _fluid_revmodel_t fluid_revmodel_t;
 

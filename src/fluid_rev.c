@@ -150,7 +150,7 @@
 
 #ifdef EMPTY_REVERB
 fluid_revmodel_t *
-new_fluid_revmodel(fluid_real_t sample_rate_max, fluid_real_t sample_rate){return DUMB_REVERB;}
+new_fluid_revmodel(fluid_real_t sample_rate_max, fluid_real_t sample_rate){return EMPTY_REVERB_STUB;}
 
 void delete_fluid_revmodel(fluid_revmodel_t *rev){}
 

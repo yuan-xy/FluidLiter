@@ -662,7 +662,8 @@ static int fluid_synth_sysex_midi_tuning(fluid_synth_t *synth, const char *data,
     int bank = 0, prog, channels;
     double tunedata[128];
     int keys[128];
-    char name[17];
+#define TUN_NAME_LEN 16
+    char name[TUN_NAME_LEN+1];
     int note, frac, frac2;
     uint8_t chksum;
     int i, count, index;
@@ -697,7 +698,7 @@ static int fluid_synth_sysex_midi_tuning(fluid_synth_t *synth, const char *data,
         if (avail_response < *response_len) return FLUID_FAILED;
 
         /* Get tuning data, return if tuning not found */
-        if (fluid_synth_tuning_dump(synth, bank, prog, name, 17, tunedata) ==
+        if (fluid_synth_tuning_dump(synth, bank, prog, name, TUN_NAME_LEN+1, tunedata) ==
             FLUID_FAILED) {
             *response_len = 0;
             return FLUID_OK;
@@ -713,8 +714,9 @@ static int fluid_synth_sysex_midi_tuning(fluid_synth_t *synth, const char *data,
         if (msgid == MIDI_SYSEX_TUNING_BULK_DUMP_REQ_BANK) *resptr++ = bank;
 
         *resptr++ = prog;
-        strncpy(resptr, name, 16); // FLUID_STRNCPY
-        resptr += 16;
+        /* copy 16 ASCII characters (potentially not null terminated) to the sysex buffer */
+        strncpy(resptr, name, TUN_NAME_LEN);
+        resptr += TUN_NAME_LEN;
 
         for (i = 0; i < 128; i++) {
             note = tunedata[i] / 100.0;

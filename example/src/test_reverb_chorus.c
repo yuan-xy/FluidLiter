@@ -110,7 +110,7 @@ int main(){
     synth = NEW_FLUID_SYNTH(.with_reverb=true);
     assert_gen_zero(synth);
     assert(synth->reverb != NULL);
-    if(synth->chorus != DUMB_REVERB){
+    if(synth->chorus != EMPTY_REVERB_STUB){
         assert(float_eq(synth->reverb->damp, FLUID_REVERB_DEFAULT_DAMP));
         assert(float_eq(synth->reverb->level, FLUID_REVERB_DEFAULT_LEVEL));
         assert(float_eq(synth->reverb->roomsize, FLUID_REVERB_DEFAULT_ROOMSIZE));
@@ -135,7 +135,7 @@ int main(){
     assert(synth->fx_left_buf == NULL);
     assert(synth->fx_left_buf2 != NULL);
     assert(synth->chorus != NULL);
-    if(synth->chorus != DUMB_CHORUS){
+    if(synth->chorus != EMPTY_CHORUS_STUB){
         assert(synth->chorus->number_blocks == FLUID_CHORUS_DEFAULT_N);
         assert(synth->chorus->level == FLUID_CHORUS_DEFAULT_LEVEL);
         assert(synth->chorus->speed_Hz == FLUID_CHORUS_DEFAULT_SPEED);
