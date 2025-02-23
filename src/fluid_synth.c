@@ -663,7 +663,7 @@ static int fluid_synth_sysex_midi_tuning(fluid_synth_t *synth, const char *data,
     double tunedata[128];
     int keys[128];
 #define TUN_NAME_LEN 16
-    char name[TUN_NAME_LEN+1];
+    char name[TUN_NAME_LEN+1]={0};
     int note, frac, frac2;
     uint8_t chksum;
     int i, count, index;
@@ -715,7 +715,7 @@ static int fluid_synth_sysex_midi_tuning(fluid_synth_t *synth, const char *data,
 
         *resptr++ = prog;
         /* copy 16 ASCII characters (potentially not null terminated) to the sysex buffer */
-        strncpy(resptr, name, TUN_NAME_LEN);
+        memcpy(resptr, name, TUN_NAME_LEN);
         resptr += TUN_NAME_LEN;
 
         for (i = 0; i < 128; i++) {
@@ -1166,7 +1166,6 @@ int fluid_synth_program_change(fluid_synth_t *synth, int chan, int prognum) {
     fluid_preset_t *preset = NULL;
     fluid_channel_t *channel;
     unsigned int banknum;
-    unsigned int sfont_id;
 
     if ((prognum < 0) || (prognum >= FLUID_NUM_PROGRAMS) || (chan < 0) ||
         (chan >= synth->midi_channels)) {
@@ -1213,15 +1212,18 @@ int fluid_synth_program_change(fluid_synth_t *synth, int chan, int prognum) {
             subst_prog = 0;
         }
 
-        if (preset)
+        if (preset){
             FLUID_LOG(FLUID_WARN,
-                      "Instrument not found on channel %d [bank=%d prog=%d], "
-                      "substituted [bank=%d prog=%d]",
-                      chan, banknum, prognum, subst_bank, subst_prog);
+                "Instrument not found on channel %d [bank=%d prog=%d], "
+                "substituted [bank=%d prog=%d]",
+                chan, banknum, prognum, subst_bank, subst_prog);
+        }else{
+            FLUID_LOG(FLUID_ERR, "Should not happend. Program change failed.");
+            return FLUID_ERR;
+        }
     }
 
-    sfont_id = preset ? fluid_sfont_get_id(preset->sfont) : 0;
-    fluid_channel_set_sfontnum(channel, sfont_id);
+    fluid_channel_set_sfontnum(channel, fluid_sfont_get_id(preset->sfont));
     fluid_channel_set_preset(channel, preset);
 
     return FLUID_OK;
