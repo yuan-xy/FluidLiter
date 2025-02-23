@@ -1776,12 +1776,11 @@ fluid_voice_t *fluid_synth_free_voice_by_kill(fluid_synth_t *synth) {
 fluid_voice_t *fluid_synth_alloc_voice(fluid_synth_t *synth,
                                        fluid_sample_t *sample, int chan,
                                        int key, int vel) {
-    int i, k;
     fluid_voice_t *voice = NULL;
     fluid_channel_t *channel = NULL;
 
     /* check if there's an available synthesis process */
-    for (i = 0; i < synth->polyphony; i++) {
+    for (int i = 0; i < synth->polyphony; i++) {
         if (_AVAILABLE(synth->voice[i])) {
             voice = synth->voice[i];
             break;
@@ -1801,8 +1800,8 @@ fluid_voice_t *fluid_synth_alloc_voice(fluid_synth_t *synth,
     }
 
     #if DEBUG
-        k = 0;
-        for (i = 0; i < synth->polyphony; i++) {
+        int k = 0;
+        for (int i = 0; i < synth->polyphony; i++) {
             if (!_AVAILABLE(synth->voice[i])) {
                 k++;
             }
