@@ -793,7 +793,7 @@ void fluid_chorus_processmix(fluid_chorus_t *chorus, const fluid_real_t *in,
     /* foreach sample, process output sample then input sample */
     for(sample_index = 0; sample_index < FLUID_BUFSIZE; sample_index++)
     {
-        fluid_real_t out; /* block output */
+        fluid_real_t out=0.0f; /* block output */
 
         d_out[0] = d_out[1] = 0.0f; /* clear stereo unit input */
 
@@ -869,7 +869,7 @@ void fluid_chorus_processreplace(fluid_chorus_t *chorus, const fluid_real_t *in,
     /* foreach sample, process output sample then input sample */
     for(sample_index = 0; sample_index < FLUID_BUFSIZE; sample_index++)
     {
-        fluid_real_t out; /* block output */
+        fluid_real_t out=0.0f; /* block output */
 
         d_out[0] = d_out[1] = 0.0f; /* clear stereo unit input */
 
