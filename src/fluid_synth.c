@@ -1167,7 +1167,6 @@ int fluid_synth_program_change(fluid_synth_t *synth, int chan, int prognum) {
     fluid_channel_t *channel;
     unsigned int banknum;
     unsigned int sfont_id;
-    int subst_bank, subst_prog;
 
     if ((prognum < 0) || (prognum >= FLUID_NUM_PROGRAMS) || (chan < 0) ||
         (chan >= synth->midi_channels)) {
@@ -1192,6 +1191,7 @@ int fluid_synth_program_change(fluid_synth_t *synth, int chan, int prognum) {
 
     /* Fallback to another preset if not found */
     if (!preset) {
+        int subst_bank, subst_prog;
         subst_bank = banknum;
         subst_prog = prognum;
 
