@@ -1218,6 +1218,7 @@ int fluid_synth_program_change(fluid_synth_t *synth, int chan, int prognum) {
                 "substituted [bank=%d prog=%d]",
                 chan, banknum, prognum, subst_bank, subst_prog);
         }else{
+            (void)subst_bank; (void)subst_prog; //FIX WARNING
             FLUID_LOG(FLUID_ERR, "Should not happend. Program change failed.");
             return FLUID_ERR;
         }

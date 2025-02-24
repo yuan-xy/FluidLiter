@@ -406,6 +406,8 @@ enum fluid_interp {
      * time, good quality Default. */
     FLUID_INTERP_DEFAULT = 4,
     FLUID_INTERP_4THORDER = 4,
+    FLUID_INTERP_7THORDER = 7,
+    FLUID_INTERP_HIGHEST=7
 };
 
 /*

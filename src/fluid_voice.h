@@ -235,5 +235,6 @@ fluid_real_t fluid_voice_gen_value(fluid_voice_t *voice, int num);
 int fluid_dsp_float_interpolate_none(fluid_voice_t *voice);
 int fluid_dsp_float_interpolate_linear(fluid_voice_t *voice);
 int fluid_dsp_float_interpolate_4th_order(fluid_voice_t *voice);
+int fluid_dsp_float_interpolate_7th_order (fluid_voice_t *voice);
 
 #endif /* _FLUID_VOICE_H */

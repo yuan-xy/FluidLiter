@@ -520,6 +520,9 @@ int fluid_voice_write(fluid_voice_t *voice, fluid_real_t *dsp_left_buf,
     default:
         count = fluid_dsp_float_interpolate_4th_order(voice);
         break;
+    case FLUID_INTERP_7THORDER:
+        count = fluid_dsp_float_interpolate_7th_order (voice);
+        break;
     }
 
     if (count > 0)
