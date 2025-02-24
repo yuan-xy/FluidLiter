@@ -160,7 +160,7 @@ int fluid_synth_set_gen2(fluid_synth_t *synth, int chan, int param, float value,
         
 
 void fluid_synth_init(); // need by testing GEN_TABLE_RUNTIME
-
+bool is_gentable_runtime();
 
 
 #endif /* _FLUID_SYNTH_H */

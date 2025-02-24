@@ -7,6 +7,10 @@ echo $BUILD
 
 # sudo apt install gcc-multilib g++-multilib
 
+# dpkg --add-architecture i386
+# apt-get update
+# apt-get install libc6-dbg:i386
+
 #make clean BUILD=$BUILD
 make -j BUILD=$BUILD
 

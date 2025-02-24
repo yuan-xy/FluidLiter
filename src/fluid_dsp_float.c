@@ -30,10 +30,10 @@
 /* Interpolation (find a value between two samples of the original waveform) */
 
 /* Linear interpolation table (2 coefficients centered on 1st) */
-static fluid_real_t interp_coeff_linear[FLUID_INTERP_MAX][2];
+__attribute__((weak))  fluid_real_t interp_coeff_linear[FLUID_INTERP_MAX][2];
 
 /* 4th order (cubic) interpolation table (4 coefficients centered on 2nd) */
-static fluid_real_t interp_coeff[FLUID_INTERP_MAX][4];
+__attribute__((weak))  fluid_real_t interp_coeff[FLUID_INTERP_MAX][4];
 
 
 /* Initializes interpolation tables */

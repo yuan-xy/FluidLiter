@@ -60,6 +60,9 @@ int fluid_synth_set_reverb_preset(fluid_synth_t *synth, int i) {
 #ifdef GEN_TABLE_RUNTIME
     extern void fluid_conversion_config();
     extern void fluid_dsp_float_config();
+    bool is_gentable_runtime(){return true;}
+#else
+    bool is_gentable_runtime(){return false;}
 #endif
 
 void fluid_synth_init() {

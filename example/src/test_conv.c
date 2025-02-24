@@ -27,7 +27,7 @@ void task(){
 
 int main(int argc, char *argv[])
 {
-    fluid_synth_init();
+    if(is_gentable_runtime()) fluid_synth_init();
 
     // echo | arm-none-eabi-gcc -dM -E -
     #ifdef __linux__

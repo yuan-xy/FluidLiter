@@ -110,7 +110,7 @@ int main(){
     synth = NEW_FLUID_SYNTH(.with_reverb=true);
     assert_gen_zero(synth);
     assert(synth->reverb != NULL);
-    if(synth->chorus != EMPTY_REVERB_STUB){
+    if(synth->reverb != EMPTY_REVERB_STUB){
         assert(float_eq(synth->reverb->damp, FLUID_REVERB_DEFAULT_DAMP));
         assert(float_eq(synth->reverb->level, FLUID_REVERB_DEFAULT_LEVEL));
         assert(float_eq(synth->reverb->roomsize, FLUID_REVERB_DEFAULT_ROOMSIZE));
