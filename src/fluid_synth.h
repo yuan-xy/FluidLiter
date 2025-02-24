@@ -157,5 +157,10 @@ fluid_sfont_t *fluid_synth_get_sfont_by_name(fluid_synth_t *synth, char *name);
 
 int fluid_synth_set_gen2(fluid_synth_t *synth, int chan, int param, float value,
                          int normalized);
+        
+
+void fluid_synth_init(); // need by testing GEN_TABLE_RUNTIME
+
+
 
 #endif /* _FLUID_SYNTH_H */

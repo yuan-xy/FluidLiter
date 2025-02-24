@@ -12,6 +12,10 @@ else
         make EMPTY_CHORUS=1 EMPTY_REVERB=1 -j
         make test
 
+        make clean
+        make EMPTY_CHORUS=1 EMPTY_REVERB=1 GEN_TABLE_RUNTIME=1 -j
+        make test
+
         rm -rf Release
         make run_test BUILD=Release
 

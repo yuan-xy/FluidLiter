@@ -24,8 +24,11 @@ void task(){
     for(int i=0;i<100;i++) fluid_ct2hz(7000.0+i);
 }
 
+
 int main(int argc, char *argv[])
 {
+    fluid_synth_init();
+
     // echo | arm-none-eabi-gcc -dM -E -
     #ifdef __linux__
     {

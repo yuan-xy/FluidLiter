@@ -11,7 +11,6 @@
 
 /* has the synth module been initialized? */
 static int fluid_synth_initialized = 0;
-static void fluid_synth_init(void);
 
 static int fluid_synth_sysex_midi_tuning(fluid_synth_t *synth, const char *data,
                                          int len, char *response,
@@ -57,13 +56,19 @@ int fluid_synth_set_reverb_preset(fluid_synth_t *synth, int i) {
 }
 #endif
 
-/*
- * void fluid_synth_init
- *
- * Does all the initialization for this module.
- */
-static void fluid_synth_init() {
+
+#ifdef GEN_TABLE_RUNTIME
+    extern void fluid_conversion_config();
+    extern void fluid_dsp_float_config();
+#endif
+
+void fluid_synth_init() {
     fluid_synth_initialized++;
+
+#ifdef GEN_TABLE_RUNTIME
+    fluid_conversion_config();
+    fluid_dsp_float_config();
+#endif
 
     /* SF2.01 page 53 section 8.4.1: MIDI Note-On Velocity to Initial
      * Attenuation */

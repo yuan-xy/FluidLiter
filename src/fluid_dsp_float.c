@@ -25,8 +25,44 @@
  * - dsp_buf: Output buffer of floating point values (FLUID_BUFSIZE in length)
  */
 
+#ifdef GEN_TABLE_RUNTIME
+
 /* Interpolation (find a value between two samples of the original waveform) */
 
+/* Linear interpolation table (2 coefficients centered on 1st) */
+static fluid_real_t interp_coeff_linear[FLUID_INTERP_MAX][2];
+
+/* 4th order (cubic) interpolation table (4 coefficients centered on 2nd) */
+static fluid_real_t interp_coeff[FLUID_INTERP_MAX][4];
+
+
+/* Initializes interpolation tables */
+void fluid_dsp_float_config (void)
+{
+  int i, i2;
+  double x, v;
+  double i_shifted;
+
+  /* Initialize the coefficients for the interpolation. The math comes
+   * from a mail, posted by Olli Niemitalo to the music-dsp mailing
+   * list (I found it in the music-dsp archives
+   * http://www.smartelectronix.com/musicdsp/).  */
+
+  for (i = 0; i < FLUID_INTERP_MAX; i++)
+  {
+    x = (double) i / (double) FLUID_INTERP_MAX;
+
+    interp_coeff[i][0] = (fluid_real_t)(x * (-0.5 + x * (1 - 0.5 * x)));
+    interp_coeff[i][1] = (fluid_real_t)(1.0 + x * x * (1.5 * x - 2.5));
+    interp_coeff[i][2] = (fluid_real_t)(x * (0.5 + x * (2.0 - 1.5 * x)));
+    interp_coeff[i][3] = (fluid_real_t)(0.5 * x * x * (x - 1.0));
+
+    interp_coeff_linear[i][0] = (fluid_real_t)(1.0 - x);
+    interp_coeff_linear[i][1] = (fluid_real_t)x;
+  }
+}
+
+#else
 /* Linear interpolation table (2 coefficients centered on 1st) */
 static const fluid_real_t interp_coeff_linear[FLUID_INTERP_MAX][2] = {
     {
@@ -2592,6 +2628,8 @@ static const fluid_real_t interp_coeff[FLUID_INTERP_MAX][4] = {
         9.999619424343109e-01,  /* 1022 */
         -1.937896013259888e-03, /* 1023 */
     }};
+
+#endif //GEN_TABLE_RUNTIME
 
 /* No interpolation. Just take the sample, which is closest to
  * the playback pointer.  Questionable quality, but very

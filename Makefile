@@ -23,6 +23,10 @@ ifneq ($(EMPTY_CHORUS), )
 	CFLAGS += -DEMPTY_CHORUS
 endif
 
+ifneq ($(GEN_TABLE_RUNTIME), )
+	CFLAGS += -DGEN_TABLE_RUNTIME
+endif
+
 CC = gcc
 AS = gcc -x assembler-with-cpp
 CP = objcopy

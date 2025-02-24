@@ -13,6 +13,10 @@
 
 int main(int argc, char *argv[])
 {
+#ifndef ENABLE_7th_DSP
+    return 0;
+#endif
+
 
     char *fname = "7th.pcm";
     FILE* file = fopen(fname, "wb");
