@@ -20,7 +20,10 @@ fluid_conversion_config(void)
   double x;
 
   for (i = 0; i < FLUID_CENTS_HZ_SIZE; i++) {
-    fluid_ct2hz_tab[i] = (fluid_real_t) pow(2.0, (double) i / 1200.0);
+    // 6,875 is just a factor that we already multiply into the lookup table to save
+    // that multiplication in fluid_ct2hz_real()
+    // 6.875 Hz because 440Hz / 2^6
+    fluid_ct2hz_tab[i] = (fluid_real_t) 6.875 *  pow(2.0, (double) i / 1200.0);
   }
 
   /* centibels to amplitude conversion
