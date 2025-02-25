@@ -12,9 +12,9 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: init
-      run: sh ./ubuntu_init.sh
+      run: bash ./ubuntu_init.sh
     - name: make_then_test
-      run: sh ./clean_then_test.sh all
+      run: bash ./clean_then_test.sh all
   
   windows_test:
     runs-on: windows-latest
