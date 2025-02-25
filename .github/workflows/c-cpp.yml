@@ -13,5 +13,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: init
+      run: sh ./ubuntu_init.sh
     - name: make_then_test
       run: sh ./clean_then_test.sh
