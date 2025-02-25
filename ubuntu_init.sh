@@ -9,3 +9,13 @@ sudo dpkg --add-architecture i386
 sudo apt-get update
 sudo apt install gcc-multilib g++-multilib libc6-dbg:i386
 
+sudo apt install cmake default-jre git python3
+git clone https://github.com/emscripten-core/emsdk.git
+cd emsdk
+./emsdk install latest
+./emsdk activate latest
+source ./emsdk_env.sh
+emcc --version
+
+sudo apt-get install gcc-arm-none-eabi
+arm-none-eabi-gcc -v

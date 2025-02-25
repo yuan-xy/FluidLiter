@@ -2,7 +2,11 @@ TARGET = fluidliter
 ARCH = i386
 BUILD = Debug
 
-C_DEFS = -DWITH_FLOAT
+ifeq ($(WITH_FLOAT), 0)
+	C_DEFS = 
+else
+	C_DEFS = -DWITH_FLOAT
+endif
 
 ifeq ($(BUILD), Debug)
 	BUILD_DIR ?= Debug
@@ -15,16 +19,20 @@ else
 	OPT = -O2
 endif
 
-ifneq ($(EMPTY_REVERB), )
+ifeq ($(EMPTY_REVERB), 1)
 	CFLAGS += -DEMPTY_REVERB
 endif
 
-ifneq ($(EMPTY_CHORUS), )
+ifeq ($(EMPTY_CHORUS), 1)
 	CFLAGS += -DEMPTY_CHORUS
 endif
 
-ifneq ($(GEN_TABLE_RUNTIME), )
+ifeq ($(GEN_TABLE_RUNTIME), 1)
 	CFLAGS += -DGEN_TABLE_RUNTIME
+endif
+
+ifeq ($(ENABLE_7th_DSP), 1)
+	CFLAGS += -DENABLE_7th_DSP
 endif
 
 CC = gcc

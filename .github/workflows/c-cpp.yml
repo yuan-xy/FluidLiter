@@ -22,10 +22,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up MinGW environment
+      - name: Set up environment
         shell: powershell
         run: |
-          choco install mingw -y
+          choco install llvm -y
           choco install ffmpeg -y
           refreshenv
           gcc --version
