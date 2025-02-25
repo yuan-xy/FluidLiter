@@ -65,8 +65,10 @@ endif
 
 ifeq ($(OS), Windows_NT)
 	LIBS =
+	TARGET_LIB = $(TARGET).lib
 else
 	LIBS = -lc -lm
+	TARGET_LIB = lib$(TARGET).a
 endif
 
 ifeq ($(ARCH), arm)
@@ -116,7 +118,7 @@ C_DEPEND = -MMD -MP -MF"$(@:%.o=%.d)"
 
 
 # default action: build all
-all: $(BUILD_DIR)/lib$(TARGET).a
+all: $(BUILD_DIR)/$(TARGET_LIB)
 	@echo "done!"
 	
 
@@ -153,7 +155,7 @@ $(BUILD_DIR)/fluidsynth.js: $(OBJECTS) $(BUILD_DIR)/fluid_wasm.o
 # wasm-objdump Release/fluidsynth.wasm -s
 # wasm-interp Release/fluidsynth.wasm --run-all-exports
 
-$(BUILD_DIR)/lib$(TARGET).a: $(OBJECTS)
+$(BUILD_DIR)/$(TARGET_LIB): $(OBJECTS)
 	$(AR) rcs $@ $(OBJECTS)
 	$(SZ) -t $@
 	
@@ -197,8 +199,8 @@ TEST_INCLUDES =  \
 TEST_EXECS = $(patsubst $(TEST_DIR)/%.c, %, $(TEST_SOURCES))
 
 
-${BUILD_DIR}/%: $(TEST_DIR)/%.c  $(BUILD_DIR)/lib$(TARGET).a #将每个 .c 文件编译为同名的可执行文件
-	$(CC) $<  $(CFLAGS) -Wno-unused-result -L${BUILD_DIR} -l${TARGET} ${LDFLAGS} -o $@ 
+${BUILD_DIR}/%: $(TEST_DIR)/%.c  $(BUILD_DIR)/$(TARGET_LIB) #将每个 .c 文件编译为同名的可执行文件
+	$(CC) $<  $(CFLAGS) -Wno-unused-result -L${BUILD_DIR} -l$(TARGET) ${LDFLAGS} -o $@ 
 
 # 规则名如test2, 而生成的文件是${BUILD}/test2, 导致每次运行make test2都会重新编译。
 

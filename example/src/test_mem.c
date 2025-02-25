@@ -179,9 +179,6 @@ int main(int argc, char *argv[]) {
     }
 
     fclose(file);
-    #ifndef __ARM_EABI__
-    sleep(1);
-    #endif
     free(buffer);
 
 
