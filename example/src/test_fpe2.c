@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-#include <unistd.h>
+
 #include <assert.h>
 #include <stdbool.h>
 #include "fluidliter.h"
@@ -15,9 +15,10 @@
 #include <fenv.h>
 
 #ifdef __linux__
+#include <unistd.h>
 #include <execinfo.h>  // 用于 backtrace
 #include <signal.h>    // 用于信号处理
-// #include <unistd.h>    // 用于 getpid
+//     // 用于 getpid
 
 void print_stack_trace() {
     void *buffer[100];  // 存储调用栈地址

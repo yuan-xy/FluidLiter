@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-#include <unistd.h>
+
 #include <assert.h>
 #include <stdbool.h>
 #include "fluidliter.h"
@@ -12,6 +12,10 @@
 #define __USE_GNU
 #include <fenv.h>
 #include <signal.h>
+#ifdef __linux__
+    #include <unistd.h>
+#endif
+    
 
 void handle_fpe(int sig) {
     printf("Floating point exception caught: %d!\n", sig);

@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-#include <unistd.h>
+
 #include <assert.h>
 #include <stdbool.h>
 #include "fluidliter.h"
