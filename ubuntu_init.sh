@@ -17,5 +17,8 @@ cd emsdk
 source ./emsdk_env.sh
 emcc --version
 
+make js BUILD_DIR=build_js -j #test wasm
+
+
 sudo apt-get install gcc-arm-none-eabi
 arm-none-eabi-gcc -v

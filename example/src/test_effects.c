@@ -62,7 +62,12 @@ int main(){
     fluid_synth_write_s16(synth, frame, buffer, 0, 2, buffer, 1, 2);
     fwrite(buffer, sizeof(int16_t), samples, file);
 
-    assert(synth->voice[0]->volenv_count == 2755);
+    if(sizeof(fluid_real_t) == 4){
+        assert(synth->voice[0]->volenv_count == 2755);
+    }else{
+        assert(synth->voice[0]->volenv_count == 2756);
+    }
+    
     assert(synth->voice[0]->modenv_count == 2755);
     assert(synth->voice[0]->volenv_section == FLUID_VOICE_ENVSUSTAIN);
     assert(synth->voice[0]->modenv_section == FLUID_VOICE_ENVSUSTAIN);

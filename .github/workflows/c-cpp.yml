@@ -13,12 +13,8 @@ jobs:
     - uses: actions/checkout@v4
     - name: init
       run: bash ./ubuntu_init.sh
-    - name: Set up Emscripten
-      shell: bash
-      run: |
-          empath=$(pwd)/emsdk_env.sh && echo "source $(empath)" >> ~/.bash_profile
-    - name: make_then_test
-      run: bash ./clean_then_test.sh all
+    - name: test-all-combinations
+      run: bash ./test_combination.sh
   
   windows_test:
     runs-on: windows-latest
