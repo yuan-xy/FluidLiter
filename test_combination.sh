@@ -15,13 +15,27 @@ ARCH_OPTS=("x86_64" "i386" "arm")
 for build in "${BUILD_OPTS[@]}"; do
     for arch in "${ARCH_OPTS[@]}"; do
         for with_float in "${WITH_FLOAT_OPTS[@]}"; do
-            echo "Building with options: BUILD=$build, ARCH=$arch, WITH_FLOAT=$with_float"
-            make BUILD=$build ARCH=$arch WITH_FLOAT=$with_float DEFAULT_LOG_LEVEL=2 clean
-            make BUILD=$build ARCH=$arch WITH_FLOAT=$with_float DEFAULT_LOG_LEVEL=2
+        for eco in "${EMPTY_CHORUS_OPTS[@]}"; do
+         for ero in "${EMPTY_REVERB_OPTS[@]}"; do
+          for gtro in "${GEN_TABLE_RUNTIME_OPTS[@]}"; do
+           for e7do in "${ENABLE_7th_DSP_OPTS[@]}"; do
+        
+            echo "Building with options: BUILD=$build, ARCH=$arch, WITH_FLOAT=$with_float, EMPTY_CHORUS_OPTS=$eco EMPTY_REVERB_OPTS=$ero GEN_TABLE_RUNTIME_OPTS=$gtro ENABLE_7th_DSP_OPTS=$e7do"
+
+            make BUILD=$build ARCH=$arch clean
+
+            make BUILD=$build ARCH=$arch WITH_FLOAT=$with_float \
+             EMPTY_CHORUS_OPTS=$eco EMPTY_REVERB_OPTS=$ero \
+             GEN_TABLE_RUNTIME_OPTS=$gtro ENABLE_7th_DSP_OPTS=$e7do \
+             DEFAULT_LOG_LEVEL=2
 
             if [ "$arch"  !=  "arm" ]; then
                 make BUILD=$build ARCH=$arch WITH_FLOAT=$with_float OPT=-O0 test
             fi
+            done
+           done
+          done
+         done
         done
     done
 done
