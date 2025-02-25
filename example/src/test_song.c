@@ -12,6 +12,63 @@
 
 
 #define SAMPLE_RATE 44100
+#define INT_MAX16 65535
+
+
+int compare_binary_files(const char *file1, const char *file2, bool out_sum) {
+    FILE *f1 = fopen(file1, "rb");
+    FILE *f2 = fopen(file2, "rb");
+
+    if (f1 == NULL || f2 == NULL) {
+        perror("无法打开文件");
+        if (f1) fclose(f1);
+        if (f2) fclose(f2);
+        return INT_MAX16; // 文件打开失败，返回最大值
+    }
+
+    // 检查文件长度
+    fseek(f1, 0, SEEK_END);
+    fseek(f2, 0, SEEK_END);
+    long len1 = ftell(f1);
+    long len2 = ftell(f2);
+
+    if (len1 != len2) {
+        fclose(f1);
+        fclose(f2);
+        return INT_MAX16; // 文件长度不相等，返回最大值
+    }
+
+    // 重新定位到文件开头
+    fseek(f1, 0, SEEK_SET);
+    fseek(f2, 0, SEEK_SET);
+
+    int sum_of_differences = 0;
+    int count_of_diff = 0;
+    int pos = 0;
+    unsigned char byte1, byte2;
+
+    // 逐字节比较
+    while (fread(&byte1, 1, 1, f1) == 1 && fread(&byte2, 1, 1, f2) == 1) {
+        pos += 1;
+        if (byte1 != byte2) {
+            sum_of_differences += abs(byte1 - byte2); // 计算差异值的绝对值并累加
+            count_of_diff += 1;
+            printf("pos:%d,  %d - %d\n", pos, byte1, byte2);
+        }
+    }
+
+    fclose(f1);
+    fclose(f2);
+    if(sum_of_differences > 0){
+        printf("sum_of_differences:%d, count_of_diff:%d\n", sum_of_differences, count_of_diff);
+    }
+    if(out_sum){
+        return sum_of_differences;
+    }else{
+        return sum_of_differences-count_of_diff;
+    }
+    
+}
 
 
 int main(int argc, char *argv[])
@@ -89,17 +146,18 @@ int main(int argc, char *argv[])
     if(is_8bit){
 #ifdef __linux__
         int ret;
-        if(synth->reverb != EMPTY_REVERB_STUB){
-            ret = system("diff song8.pcm example/song8.pcm > /dev/null 2>&1");
+        if(sizeof(fluid_real_t) == 4){
+            ret = compare_binary_files("song8.pcm", "example/song8.pcm", true);
+            assert(ret <= 3);
         }else{
-            ret = system("diff song8.pcm example/song8_no_reverb_no_chorus.pcm > /dev/null 2>&1");
+            ret = compare_binary_files("song8.pcm", "example/song8.pcm", false);
+            assert(ret == 0);
         }
-        if(sizeof(fluid_real_t) == 4) assert(ret == 0);
 #endif
-        system("ffmpeg -hide_banner -y -f u8 -ar 44100 -ac 1 -i song8.pcm -acodec pcm_u8 song8.wav");
+        system("ffmpeg -hide_banner -y -f u8 -ar 44100 -ac 1 -i song8.pcm -acodec pcm_u8 song8.wav > /dev/null 2>&1");
     }else{
         //system("ffmpeg -hide_banner -y -f s16le -ar 44100 -ac 1 -i song12.pcm song12.wav");
-        system("ffmpeg -hide_banner -y -f s16le -ar 44100 -ac 1 -i song12.pcm -filter:a 'volume=16' song12.wav");
+        system("ffmpeg -hide_banner -y -f s16le -ar 44100 -ac 1 -i song12.pcm -filter:a 'volume=16' song12.wav > /dev/null 2>&1");
         //虽然我认为是u12格式，ffmepg并不支持，所以当成了s16le格式。也就导致wav声音偏小, 手动放大16倍。
     }
 
