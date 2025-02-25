@@ -194,7 +194,7 @@ TEST_EXECS = $(patsubst $(TEST_DIR)/%.c, %, $(TEST_SOURCES))
 
 
 ${BUILD_DIR}/%: $(TEST_DIR)/%.c  $(BUILD_DIR)/lib$(TARGET).a #将每个 .c 文件编译为同名的可执行文件
-	$(CC) $<  $(CFLAGS) -Wno-unused-result -L${BUILD_DIR} -l${TARGET} ${LDFLAGS} -o $@
+	$(CC) $<  $(CFLAGS) -Wno-unused-result -L${BUILD_DIR} -l${TARGET} ${LDFLAGS} -o $@  $(BUILD_DIR)/lib$(TARGET).a
 
 # 规则名如test2, 而生成的文件是${BUILD}/test2, 导致每次运行make test2都会重新编译。
 
