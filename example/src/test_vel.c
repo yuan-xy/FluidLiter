@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
             FILE* file = fopen(fname, "wb");
             fwrite(buffer, sizeof(uint16_t), NUM_SAMPLES, file);
             char cmd[256];
-            snprintf(cmd, sizeof(cmd), "ffmpeg -hide_banner -y -f s16le -ar 44100 -ac 2 -i velocity.pcm velocity%d.wav", i);
+            snprintf(cmd, sizeof(cmd), "ffmpeg -hide_banner -y -f s16le -ar 44100 -ac 2 -i velocity.pcm velocity%d.wav  >nul 2>&1", i);
             system(cmd);
         }
     }

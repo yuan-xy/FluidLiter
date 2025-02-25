@@ -11,3 +11,4 @@ massif*
 callgrind.out*
 .gdb_history
 .vscode/
+nul

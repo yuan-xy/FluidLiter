@@ -202,7 +202,7 @@ int main(){
 
     fclose(file);
     delete_fluid_synth(synth);
-    system("ffmpeg -hide_banner -y -f s16le -ar 44100 -ac 2 -i effects.pcm effects.wav");
+    system("ffmpeg -hide_banner -y -f s16le -ar 44100 -ac 2 -i effects.pcm effects.wav >nul 2>&1");
 
     return 0;
 }

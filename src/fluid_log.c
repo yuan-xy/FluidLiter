@@ -13,7 +13,11 @@ static char fluid_errbuf[0]; /* no buffer for error message when release */
 
 const char *fluid_libname = "FL";
 
+#ifdef DEFAULT_LOG_LEVEL
+enum fluid_log_level LOG_LEVEL = DEFAULT_LOG_LEVEL;
+#else
 enum fluid_log_level LOG_LEVEL = FLUID_INFO;
+#endif
 
 enum fluid_log_level get_log_level(void) {
     return LOG_LEVEL;

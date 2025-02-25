@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
     fclose(file);
     delete_fluid_synth(synth);
 
-    system("ffmpeg -hide_banner -y -f s16le -ar 44100 -ac 1 -i 7th.pcm  7th.wav");
+    system("ffmpeg -hide_banner -y -f s16le -ar 44100 -ac 1 -i 7th.pcm  7th.wav >nul 2>&1");
 
     return 0;
 }

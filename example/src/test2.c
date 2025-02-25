@@ -154,7 +154,7 @@ int main(int argc, char *argv[]) {
     fclose(file);
     // sleep(1);
     free(buffer);
-    system("ffmpeg -y -f s16le -ar 44100 -ac 2 -i test2.pcm test2.wav");
+    system("ffmpeg -y -f s16le -ar 44100 -ac 2 -i test2.pcm test2.wav >nul 2>&1");
 
 
 cleanup:

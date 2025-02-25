@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
 	}
 
     fluid_synth_t *synth = NEW_FLUID_SYNTH();
-    assert(get_log_level() == FLUID_INFO);
+    // assert(get_log_level() == FLUID_INFO);
     int sfont = fluid_synth_sfload(synth, filename, 1);
     fluid_synth_program_select(synth, 0, sfont, 0, 0);
 

@@ -16,8 +16,8 @@ for build in "${BUILD_OPTS[@]}"; do
     for arch in "${ARCH_OPTS[@]}"; do
         for with_float in "${WITH_FLOAT_OPTS[@]}"; do
             echo "Building with options: BUILD=$build, ARCH=$arch, WITH_FLOAT=$with_float"
-            make BUILD=$build ARCH=$arch WITH_FLOAT=$with_float clean
-            make BUILD=$build ARCH=$arch WITH_FLOAT=$with_float
+            make BUILD=$build ARCH=$arch WITH_FLOAT=$with_float DEFAULT_LOG_LEVEL=2 clean
+            make BUILD=$build ARCH=$arch WITH_FLOAT=$with_float DEFAULT_LOG_LEVEL=2
 
             if [ "$arch"  !=  "arm" ]; then
                 make BUILD=$build ARCH=$arch WITH_FLOAT=$with_float OPT=-O0 test

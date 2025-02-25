@@ -53,7 +53,7 @@ void gen_song(const char *name, fluid_synth_t *synth, const char *fontname){
     strcat(cmd, name);
     strcat(cmd, ".pcm ");
     strcat(cmd, name);
-    strcat(cmd, ".wav");
+    strcat(cmd, ".wav  >nul 2>&1");
     system(cmd);
 }
 

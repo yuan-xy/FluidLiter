@@ -52,9 +52,9 @@ int main(int argc, char *argv[])
     delete_fluid_synth(synth);
 
     if(is_8bit){
-        system("ffmpeg -hide_banner -y -f u8 -ar 48000 -ac 1 -i song8_48000.pcm -acodec pcm_u8 song8_48000.wav");
+        system("ffmpeg -hide_banner -y -f u8 -ar 48000 -ac 1 -i song8_48000.pcm -acodec pcm_u8 song8_48000.wav >nul 2>&1");
     }else{
-        system("ffmpeg -hide_banner -y -f s16le -ar 48000 -ac 1 -i song12_48000.pcm song12_48000.wav");
+        system("ffmpeg -hide_banner -y -f s16le -ar 48000 -ac 1 -i song12_48000.pcm song12_48000.wav >nul 2>&1");
         // system("ffmpeg -hide_banner -f s16le -ar 48000 -ac 1 -i song12_48000.pcm -filter:a 'volume=16' song12_48000.wav");
         //虽然我认为是u12格式，ffmepg并不支持，所以当成了s16le格式。也就导致wav声音偏小, 手动放大16倍, 音量放大后有失真。
     }

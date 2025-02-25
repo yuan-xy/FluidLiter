@@ -154,10 +154,10 @@ int main(int argc, char *argv[])
             assert(ret == 0);
         }
 #endif
-        system("ffmpeg -hide_banner -y -f u8 -ar 44100 -ac 1 -i song8.pcm -acodec pcm_u8 song8.wav > /dev/null 2>&1");
+        system("ffmpeg -hide_banner -y -f u8 -ar 44100 -ac 1 -i song8.pcm -acodec pcm_u8 song8.wav >nul 2>&1");
     }else{
         //system("ffmpeg -hide_banner -y -f s16le -ar 44100 -ac 1 -i song12.pcm song12.wav");
-        system("ffmpeg -hide_banner -y -f s16le -ar 44100 -ac 1 -i song12.pcm -filter:a 'volume=16' song12.wav > /dev/null 2>&1");
+        system("ffmpeg -hide_banner -y -f s16le -ar 44100 -ac 1 -i song12.pcm -filter:a 'volume=16' song12.wav >nul 2>&1");
         //虽然我认为是u12格式，ffmepg并不支持，所以当成了s16le格式。也就导致wav声音偏小, 手动放大16倍。
     }
 
