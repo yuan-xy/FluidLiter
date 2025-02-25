@@ -17,6 +17,7 @@ cd emsdk
 source ./emsdk_env.sh
 emcc --version
 
+cd ..
 make js BUILD_DIR=build_js -j #test wasm
 
 
