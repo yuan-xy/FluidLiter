@@ -20,7 +20,7 @@ for build in "${BUILD_OPTS[@]}"; do
             make BUILD=$build ARCH=$arch WITH_FLOAT=$with_float
 
             if [ "$arch"  !=  "arm" ]; then
-                make test
+                make BUILD=$build ARCH=$arch test
             fi
         done
     done
