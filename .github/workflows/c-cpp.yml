@@ -11,33 +11,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+    - name: init
+      run: sh ./ubuntu_init.sh
     - name: make_then_test
       run: sh ./clean_then_test.sh all
   
   windows_test:
     runs-on: windows-latest
-    strategy:
-      matrix:
-        compiler: [mingw, clang]
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Set up MinGW environment
-        if: matrix.compiler == 'mingw'
         shell: powershell
         run: |
           choco install mingw -y
+          choco install ffmpeg -y
           refreshenv
           gcc --version
-  
-      - name: Install Clang (if needed)
-        if: matrix.compiler == 'clang'
-        shell: powershell
-        run: |
-          choco install llvm -y
-          refreshenv
-          clang --version
 
       - name: Build project
         shell: cmd
