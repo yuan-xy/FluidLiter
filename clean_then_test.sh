@@ -4,7 +4,7 @@ set -x  # 启用命令打印
 
 if [ $# -eq 0 ]; then
     make clean
-    make -j
+    make -j V=1
     make test
 else
     if [ "$1" =  "all" ]; then

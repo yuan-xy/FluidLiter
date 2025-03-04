@@ -117,6 +117,14 @@ C_DEPEND = -MMD -MP -MF"$(@:%.o=%.d)"
 # 	因此，-MF"$(@:%.o=%.d)" 会将依赖文件的名称设置为与目标文件同名，但扩展名为 .d。例如，main.o 对应的依赖文件是 main.d。
 
 
+# Verbose mode
+ifeq ("$(V)","1")
+$(info CFLAGS  $(CFLAGS) ) $(info )
+$(info LDFLAGS $(LDFLAGS)) $(info )
+$(info ASFLAGS $(ASFLAGS)) $(info )
+endif
+
+
 # default action: build all
 all: $(BUILD_DIR)/$(TARGET_LIB)
 	@echo "done!"
@@ -127,10 +135,12 @@ vpath %.c $(sort $(dir $(C_SOURCES)))
 
 ifeq ($(ARCH), arm)
 $(BUILD_DIR)/%.o: %.c | $(BUILD_DIR) 
-	$(CC) -c $(CFLAGS) $(C_DEPEND) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst)) $< -o $@
+	@echo CC $(notdir $@)
+	@$(CC) -c $(CFLAGS) $(C_DEPEND) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst)) $< -o $@
 else
 $(BUILD_DIR)/%.o: %.c | $(BUILD_DIR) 
-	$(CC) -c $(CFLAGS) $(C_DEPEND) $< -o $@
+	@echo CC $(notdir $@)
+	@$(CC) -c $(CFLAGS) $(C_DEPEND) $< -o $@
 endif
 
 # -Wa 是 GCC 的选项，用于将后续参数传递给汇编器。
