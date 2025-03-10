@@ -63,12 +63,15 @@ else
 	# Default to native arch
 endif
 
+
+LIBS = -lc -lm
+TARGET_LIB = lib$(TARGET).a
+
 ifeq ($(OS), Windows_NT)
-	LIBS =
-	TARGET_LIB = $(TARGET).lib
-else
-	LIBS = -lc -lm
-	TARGET_LIB = lib$(TARGET).a
+	ifneq ($(ARCH), arm)
+		LIBS =
+		TARGET_LIB = $(TARGET).lib
+	endif
 endif
 
 ifeq ($(ARCH), arm)
