@@ -1,6 +1,6 @@
 TARGET = fluidliter
-ARCH = i386
-BUILD = Debug
+ARCH ?= i386
+BUILD ?= Debug
 
 ifeq ($(WITH_FLOAT), 0)
 	C_DEFS = 
