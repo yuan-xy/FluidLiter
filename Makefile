@@ -40,7 +40,6 @@ ifneq ($(DEFAULT_LOG_LEVEL),)
 endif
 
 CC = gcc
-AS = gcc -x assembler-with-cpp
 CP = objcopy
 SZ = size
 
@@ -53,7 +52,6 @@ ifeq ($(ARCH), i386)
 else ifeq ($(ARCH), arm)
 	PREFIX = arm-none-eabi-
 	CC = $(PREFIX)gcc
-	AS = $(PREFIX)gcc -x assembler-with-cpp
 	CP = $(PREFIX)objcopy
 	SZ = $(PREFIX)size
 else ifeq ($(ARCH), wasm)
@@ -92,18 +90,11 @@ endif
 C_SOURCES =  \
 $(wildcard src/*.c)
 
-AS_DEFS = 
-
-# AS includes
-AS_INCLUDES = 
 
 # C includes
 C_INCLUDES =  \
 -Iinclude \
 -Isrc
-
-# compile gcc flags
-ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
 
 CFLAGS += $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
 
@@ -124,7 +115,6 @@ C_DEPEND = -MMD -MP -MF"$(@:%.o=%.d)"
 ifeq ("$(V)","1")
 $(info CFLAGS  $(CFLAGS) ) $(info )
 $(info LDFLAGS $(LDFLAGS)) $(info )
-$(info ASFLAGS $(ASFLAGS)) $(info )
 endif
 
 
