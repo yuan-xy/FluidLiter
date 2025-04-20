@@ -230,7 +230,6 @@ int fluid_sfont_add_preset(fluid_sfont_t *sfont, fluid_preset_t *preset) {
  */
 int fluid_sfont_load_sampledata(fluid_sfont_t *sfont, fluid_fileapi_t *fapi) {
     fluid_file fd;
-    unsigned short endian;
     fd = fapi->fopen(fapi, sfont->filename);
     if (fd == NULL) {
         FLUID_LOG(FLUID_ERR, "Can't open soundfont file");
@@ -259,24 +258,6 @@ int fluid_sfont_load_sampledata(fluid_sfont_t *sfont, fluid_fileapi_t *fapi) {
             return FLUID_FAILED;
         }
         fapi->fclose(fd);
-    }
-
-    /* I'm not sure this endian test is waterproof...  */
-    endian = 0x0100;
-
-    /* If this machine is big endian, the sample have to byte swapped  */
-    if (((char *)&endian)[0]) {
-        unsigned char *cbuf;
-        unsigned char hi, lo;
-        unsigned int i, j;
-        short s;
-        cbuf = (unsigned char *)sfont->sampledata;
-        for (i = 0, j = 0; j < sfont->samplesize; i++) {
-            lo = cbuf[j++];
-            hi = cbuf[j++];
-            s = (hi << 8) | lo;
-            sfont->sampledata[i] = s;
-        }
     }
     return FLUID_OK;
 }
@@ -1269,9 +1250,6 @@ int fluid_inst_zone_inside_range(fluid_inst_zone_t *zone, int key, int vel) {
  *                           SAMPLE
  */
 
-/*
- * new_fluid_sample
- */
 fluid_sample_t *new_fluid_sample() {
     fluid_sample_t *sample = NULL;
 
@@ -1287,17 +1265,13 @@ fluid_sample_t *new_fluid_sample() {
     return sample;
 }
 
-/*
- * delete_fluid_sample
- */
+
 int delete_fluid_sample(fluid_sample_t *sample) {
     FLUID_FREE(sample);
     return FLUID_OK;
 }
 
-/*
- * fluid_sample_import_sfont
- */
+
 int fluid_sample_import_sfont(fluid_sample_t *sample, SFSample *sfsample, fluid_sfont_t *sfont) {
     FLUID_STRCPY(sample->name, sfsample->name);
     sample->data = sfont->sampledata;
