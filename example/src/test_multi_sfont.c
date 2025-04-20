@@ -41,6 +41,12 @@ int main(int argc, char *argv[])
     fluid_synth_noteoff(synth, 0, NOTE_C);
     fwrite(buffer, sizeof(uint16_t), NUM_FRAMES, file);
 
+    fluid_synth_program_select(synth, 0, sfont, 0, 0);
+    fluid_synth_noteon(synth, 0, NOTE_D, 127);
+	fluid_synth_write_s16_mono(synth, NUM_FRAMES, (uint16_t *)buffer);
+    fluid_synth_noteoff(synth, 0, NOTE_D);
+    fwrite(buffer, sizeof(uint16_t), NUM_FRAMES, file);
+
     system("ffmpeg -hide_banner -y -f s16le -ar 44100 -ac 1 -i test_multi_sfont.pcm test_multi_sfont.wav >nul 2>&1");
 
 

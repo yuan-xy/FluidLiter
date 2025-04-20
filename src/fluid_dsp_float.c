@@ -3,7 +3,13 @@
 #include "fluid_voice.h"
 #include "fluid_phase.h"
 
+
+#if defined(__arm__) && defined(SPI_READ_SAMPLE) 
+#define READ_SAMPLE(base, pos) \
+        ((base) > 0x08000000 ? base[pos] : SPI_READ_SAMPLE((base), (pos)))
+#else
 #define READ_SAMPLE(base, pos) base[pos]
+#endif
 
 /* Purpose:
  *

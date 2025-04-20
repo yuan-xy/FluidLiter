@@ -182,19 +182,11 @@ err_exit:
     return FLUID_FAILED;
 }
 
-/* fluid_sfont_add_sample
- *
- * Add a sample to the SoundFont
- */
 int fluid_sfont_add_sample(fluid_sfont_t *sfont, fluid_sample_t *sample) {
     sfont->sample = fluid_list_append(sfont->sample, sample);
     return FLUID_OK;
 }
 
-/* fluid_sfont_add_preset
- *
- * Add a preset to the SoundFont
- */
 int fluid_sfont_add_preset(fluid_sfont_t *sfont, fluid_preset_t *preset) {
     fluid_preset_t *cur, *prev;
     if (sfont->preset == NULL) {
@@ -225,9 +217,6 @@ int fluid_sfont_add_preset(fluid_sfont_t *sfont, fluid_preset_t *preset) {
     return FLUID_OK;
 }
 
-/*
- * fluid_sfont_load_sampledata
- */
 int fluid_sfont_load_sampledata(fluid_sfont_t *sfont, fluid_fileapi_t *fapi) {
     fluid_file fd;
     fd = fapi->fopen(fapi, sfont->filename);
@@ -262,9 +251,6 @@ int fluid_sfont_load_sampledata(fluid_sfont_t *sfont, fluid_fileapi_t *fapi) {
     return FLUID_OK;
 }
 
-/*
- * fluid_sfont_get_sample
- */
 fluid_sample_t *fluid_sfont_get_sample(fluid_sfont_t *sfont, char *s) {
     fluid_list_t *list;
     fluid_sample_t *sample;
@@ -304,14 +290,8 @@ fluid_preset_t * fluid_sfont_iteration_next(fluid_sfont_t *sfont) {
     return preset;
 }
 
-/***************************************************************
- *
- *                           PRESET
- */
 
-/*
- * new_fluid_preset
- */
+
 fluid_preset_t *new_fluid_preset(fluid_sfont_t *sfont) {
     fluid_preset_t *preset = FLUID_NEW(fluid_preset_t);
     if (preset == NULL) {
@@ -636,9 +616,7 @@ int fluid_preset_import_sfont(fluid_preset_t *preset, SFPreset *sfpreset,
     return FLUID_OK;
 }
 
-/*
- * fluid_preset_add_zone
- */
+
 int fluid_preset_add_zone(fluid_preset_t *preset, fluid_preset_zone_t *zone) {
     if (preset->zone == NULL) {
         zone->next = NULL;
@@ -650,16 +628,12 @@ int fluid_preset_add_zone(fluid_preset_t *preset, fluid_preset_zone_t *zone) {
     return FLUID_OK;
 }
 
-/*
- * fluid_preset_get_zone
- */
+
 fluid_preset_zone_t *fluid_preset_get_zone(fluid_preset_t *preset) {
     return preset->zone;
 }
 
-/*
- * fluid_preset_get_global_zone
- */
+
 fluid_preset_zone_t *fluid_preset_get_global_zone(fluid_preset_t *preset) {
     return preset->global_zone;
 }
