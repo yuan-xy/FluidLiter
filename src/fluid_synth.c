@@ -263,8 +263,6 @@ fluid_synth_t *new_fluid_synth(SynthParams sp) {
     synth->ticks = 0;
     synth->tuning = NULL;
 
-    synth->fileapi = fluid_get_default_fileapi();
-
     /* allocate all channel objects */
     synth->channel = FLUID_ARRAY(fluid_channel_t *, synth->midi_channels);
     if (synth->channel == NULL) {
@@ -412,8 +410,6 @@ int delete_fluid_synth(fluid_synth_t *synth) {
     }
 
     delete_fluid_list(synth->bank_offsets);
-
-    fluid_fileapi_delete(synth->fileapi);
 
     if (synth->channel != NULL) {
         for (i = 0; i < synth->midi_channels; i++) {
@@ -1952,7 +1948,7 @@ int fluid_synth_sfload(fluid_synth_t *synth, const char *filename,
         return FLUID_FAILED;
     }
 
-    sfont = fluid_soundfont_load(synth->fileapi, filename);
+    sfont = fluid_soundfont_load(fluid_get_default_fileapi(), filename);
     if (sfont == NULL) return -1;
 
     sfont->id = ++synth->sfont_id;

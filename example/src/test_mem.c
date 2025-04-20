@@ -117,6 +117,8 @@ static fluid_fileapi_t my_fileapi =
   my_tell
 };
 
+extern const fluid_fileapi_t default_fileapi;
+
 int main(int argc, char *argv[]) {
     assert(GEN_LAST==60);
     int err = 0;
@@ -152,7 +154,7 @@ int main(int argc, char *argv[]) {
 
     int16_t *buffer = calloc(SAMPLE_SIZE, NUM_SAMPLES);
 
-    FILE* file = argc > 1 ? fopen(argv[1], "wb") : fopen("mem.pcm", "wb");
+    FILE* file = fopen("mem.pcm", "wb");
 
     fluid_synth_noteon(synth, 0, 60, 127);
 
@@ -177,6 +179,37 @@ int main(int argc, char *argv[]) {
         fluid_synth_write_s16(synth, NUM_FRAMES, buffer, 0, NUM_CHANNELS, buffer, 1, NUM_CHANNELS);
         fwrite(buffer, SAMPLE_SIZE, NUM_SAMPLES, file);        
     }
+
+    fluid_set_default_fileapi((fluid_fileapi_t *)&default_fileapi);
+    int sfont = fluid_synth_sfload(synth, "example/sf_/GMGSx_1.sf2", 1);
+    assert(sfont == 2);
+    fluid_synth_program_select(synth, 0, sfont, 0, 0);
+
+    for(int j=1; j<10; j++){
+        fluid_synth_noteon(synth, 0, 60+j, 127);
+        for(int i=0; i<100; i++){
+            fluid_synth_write_s16(synth, NUM_FRAMES, buffer, 0, NUM_CHANNELS, buffer, 1, NUM_CHANNELS);
+            fwrite(buffer, SAMPLE_SIZE, NUM_SAMPLES, file);
+        }
+        fluid_synth_noteoff(synth, 0, 60+j);
+        fluid_synth_write_s16(synth, NUM_FRAMES, buffer, 0, NUM_CHANNELS, buffer, 1, NUM_CHANNELS);
+        fwrite(buffer, SAMPLE_SIZE, NUM_SAMPLES, file);        
+    }
+
+    fluid_synth_program_select(synth, 0, id, 0, 0);
+    for(int j=1; j<10; j++){
+        fluid_synth_noteon(synth, 0, 60+j, 127);
+        for(int i=0; i<100; i++){
+            fluid_synth_write_s16(synth, NUM_FRAMES, buffer, 0, NUM_CHANNELS, buffer, 1, NUM_CHANNELS);
+            fwrite(buffer, SAMPLE_SIZE, NUM_SAMPLES, file);
+        }
+        fluid_synth_noteoff(synth, 0, 60+j);
+        fluid_synth_write_s16(synth, NUM_FRAMES, buffer, 0, NUM_CHANNELS, buffer, 1, NUM_CHANNELS);
+        fwrite(buffer, SAMPLE_SIZE, NUM_SAMPLES, file);        
+    }
+
+    system("ffmpeg -hide_banner -y -f s16le -ar 44100 -ac 2 -i mem.pcm mem.wav >nul 2>&1");
+
 
     fclose(file);
     free(buffer);

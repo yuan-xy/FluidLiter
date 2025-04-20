@@ -38,7 +38,7 @@ static int safe_fseek(void *handle, long ofs, int whence) {
     return FLUID_OK;
 }
 
-static const fluid_fileapi_t default_fileapi = {NULL,       default_fopen,  safe_fread,   NULL,
+const fluid_fileapi_t default_fileapi = {NULL,       default_fopen,  safe_fread,   NULL,
                                                 safe_fseek, default_fclose, default_ftell};
 
 static fluid_fileapi_t *fluid_default_fileapi = (fluid_fileapi_t *)&default_fileapi;

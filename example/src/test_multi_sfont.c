@@ -23,6 +23,7 @@ int main(int argc, char *argv[])
 
     fluid_synth_t *synth = NEW_FLUID_SYNTH();
     int sfont = fluid_synth_sfload(synth, "example/sf_/GMGSx_1.sf2", 1);
+    assert(sfont == 1);
     fluid_synth_program_select(synth, 0, sfont, 0, 0);
 
     int16_t *buffer = calloc(sizeof(int16_t) , NUM_SAMPLES);
@@ -34,6 +35,7 @@ int main(int argc, char *argv[])
 
 
     int sfont2 = fluid_synth_sfload(synth, "example/sf_/Boomwhacker.sf2", 1);
+    assert(sfont2 == 2);
     fluid_synth_program_select(synth, 0, sfont2, 0, 0);
     
     fluid_synth_noteon(synth, 0, NOTE_C, 127);
