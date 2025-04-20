@@ -34,5 +34,6 @@ else
         rm -rf Release
         make run_test BUILD=Release -j
     fi
+
 fi
 

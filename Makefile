@@ -2,10 +2,10 @@ TARGET = fluidliter
 ARCH ?= i386
 BUILD ?= Debug
 
-ifeq ($(WITH_FLOAT), 0)
-	C_DEFS = 
-else
-	C_DEFS = -DWITH_FLOAT
+C_DEFS = -DTEST=test2  -DARCH=$(ARCH)
+
+ifneq ($(WITH_FLOAT), 0)
+	C_DEFS += -DWITH_FLOAT
 endif
 
 ifeq ($(BUILD), Debug)

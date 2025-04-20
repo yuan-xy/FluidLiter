@@ -1484,7 +1484,7 @@ int fluid_synth_write_float(fluid_synth_t *synth, int len, void *lout, int loff,
 /* A portable replacement for roundf(), seems it may actually be faster too! */
 // removed inline
 int roundi(float x) {
-#ifdef STM32F407xx
+#if defined(__arm__) || defined(__riscv) 
     if (isnan(x)) return 0;
 #endif
     if (x >= 0.0f)
