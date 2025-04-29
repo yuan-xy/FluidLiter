@@ -30,14 +30,15 @@ uint32_t sample_single_us(void)
 
 int main(int argc, char *argv[])
 {
-	char *filename = "example/sf_/GMGSx_1.sf2";
+    FILE* file = fopen("test_10ms.pcm", "wb");
+	char *sfont_fname = "example/sf_/GMGSx_1.sf2";
 	if (argc >= 2) {
-		filename = argv[1];
+		sfont_fname = argv[1];
 	}
 
-    fluid_synth_t *synth = NEW_FLUID_SYNTH();
+    fluid_synth_t *synth = NEW_FLUID_SYNTH(.gain=4.0f);
     
-    int sfont = fluid_synth_sfload(synth, filename, 1);
+    int sfont = fluid_synth_sfload(synth, sfont_fname, 1);
     fluid_synth_program_select(synth, 0, sfont, 0, 0);
 
     int16_t *buffer = calloc(SAMPLE_SIZE, NUM_SAMPLES);
@@ -61,11 +62,16 @@ int main(int argc, char *argv[])
         }
 
         fluid_synth_write_s16_mono(synth, NUM_FRAMES, buffer);
+        fwrite(buffer, SAMPLE_SIZE, NUM_FRAMES, file);
     }
 
     fluid_synth_noteoff(synth, 0, NOTE_C);
+    
+    
 
     free(buffer);
+    fclose(file);
+    system("ffmpeg -hide_banner -y -f s16le -ar 44100 -ac 1 -i test_10ms.pcm test_10ms.wav >nul 2>&1");
 
     delete_fluid_synth(synth);
     return 0;
