@@ -1933,3 +1933,14 @@ int fluid_voice_optimize_sample(fluid_sample_t *s) {
     };
     return FLUID_OK;
 }
+
+
+void
+fluid_voice_set_output_rate(fluid_voice_t *voice, fluid_real_t value)
+{
+    if(fluid_voice_is_playing(voice))
+    {
+        fluid_voice_off(voice);
+    }
+    voice->output_rate = value;
+}

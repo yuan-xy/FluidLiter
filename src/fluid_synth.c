@@ -4,6 +4,28 @@
 #include "fluid_chan.h"
 #include "fluid_tuning.h"
 
+
+static FLUID_INLINE unsigned int fluid_synth_get_min_note_length_LOCAL(fluid_synth_t *synth)
+{
+    return (unsigned int)(10 * synth->sample_rate / 1000.0f);
+}
+
+void
+fluid_synth_set_sample_rate(fluid_synth_t *synth, float sample_rate)
+{
+    int i;
+    fluid_clip(sample_rate, 8000.0f, 96000.0f);
+    synth->sample_rate = sample_rate;
+
+    synth->min_note_length_ticks = fluid_synth_get_min_note_length_LOCAL(synth);
+
+    for(i = 0; i < synth->polyphony; i++)
+    {
+        fluid_voice_set_output_rate(synth->voice[i], sample_rate);
+    }
+}
+
+
 /***************************************************************
  *
  *                         GLOBAL
@@ -253,8 +275,7 @@ fluid_synth_t *new_fluid_synth(SynthParams sp) {
     synth->polyphony = sp.polyphony;
     synth->gain = sp.gain;
     synth->midi_channels = sp.midi_channels;
-    synth->min_note_length_ticks =
-        (unsigned int)(10 * synth->sample_rate / 1000.0f);
+    synth->min_note_length_ticks = fluid_synth_get_min_note_length_LOCAL(synth);
 
     /* as soon as the synth is created it starts playing. */
     synth->state = FLUID_SYNTH_PLAYING;
@@ -2591,3 +2612,4 @@ void fluid_synth_remove_bank_offset(fluid_synth_t *synth, int sfont_id) {
             fluid_list_remove(synth->bank_offsets, bank_offset);
     }
 }
+
