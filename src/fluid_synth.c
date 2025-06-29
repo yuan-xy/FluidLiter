@@ -1592,6 +1592,14 @@ int fluid_synth_write_s16_mono(fluid_synth_t *synth, int len, void *lout) {
     return fluid_synth_write_s16(synth, len, lout, 0, 1, NULL, 0, 0);
 }
 
+
+#if defined(__arm__)
+extern void cooperative_task();
+#else
+void cooperative_task(){}
+#endif
+
+
 /**
  * Synthesize a block of 16 bit audio samples to audio buffers.
  * @param synth FluidSynth instance
@@ -1635,6 +1643,7 @@ int fluid_synth_write_s16(fluid_synth_t *synth, int len, void *lout, int loff,
         if (cur == FLUID_BUFSIZE) {
             fluid_synth_one_block(synth, 0);
             cur = 0;
+            cooperative_task();
         }
 
         left_sample = roundi(left_in[cur] * 32766.0f);
