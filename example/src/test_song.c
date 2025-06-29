@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
 
     FILE* file = fopen(fname, "wb");
 
-    fluid_synth_t *synth = NEW_FLUID_SYNTH();
+    fluid_synth_t *synth = NEW_FLUID_SYNTH(.with_reverb=false);
     printf("sizeof(fluid_voice_t)=%u\n", sizeof(fluid_voice_t));
     //double:assert(2712 == sizeof(fluid_voice_t));
     //float: sizeof(fluid_voice_t)=1752   

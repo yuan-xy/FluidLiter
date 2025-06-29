@@ -2706,7 +2706,7 @@ int fluid_dsp_float_interpolate_none(fluid_voice_t *voice) {
  * Returns number of samples processed (usually FLUID_BUFSIZE but could be
  * smaller if end of sample occurs).
  */
-int fluid_dsp_float_interpolate_linear(fluid_voice_t *voice) {
+_RAMFUNC int fluid_dsp_float_interpolate_linear(fluid_voice_t *voice) {
     fluid_phase_t dsp_phase = voice->phase;
     fluid_phase_t dsp_phase_incr;
     short int *dsp_data = voice->sample->data;
@@ -2797,7 +2797,7 @@ int fluid_dsp_float_interpolate_linear(fluid_voice_t *voice) {
  * Returns number of samples processed (usually FLUID_BUFSIZE but could be
  * smaller if end of sample occurs).
  */
-int fluid_dsp_float_interpolate_4th_order(fluid_voice_t *voice) {
+_RAMFUNC int fluid_dsp_float_interpolate_4th_order(fluid_voice_t *voice) {
     fluid_phase_t dsp_phase = voice->phase;
     fluid_phase_t dsp_phase_incr;
     short int *dsp_data = voice->sample->data;

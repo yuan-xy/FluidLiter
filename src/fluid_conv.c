@@ -4002,7 +4002,7 @@ static const fluid_real_t fluid_pan_tab[FLUID_PAN_SIZE] = {
  * is always an int. This is the case when using 440/2^6 Hz rather than 440Hz
  * reference.
  */
-fluid_real_t fluid_ct2hz_real(fluid_real_t cents) {
+_RAMFUNC fluid_real_t fluid_ct2hz_real(fluid_real_t cents) {
     if (cents < 0.0001) {
         if (cents < 0)
             return (fluid_real_t)1.0;
@@ -4033,7 +4033,7 @@ fluid_real_t fluid_ct2hz_real(fluid_real_t cents) {
     }
 }
 
-fluid_real_t fluid_ct2hz(fluid_real_t cents) {
+_RAMFUNC fluid_real_t fluid_ct2hz(fluid_real_t cents) {
     /* Filter fc limit: SF2.01 page 48 # 8 */
     if (cents > 13500) {
         return 20000; /* 20 kHz */
@@ -4049,7 +4049,7 @@ fluid_real_t fluid_ct2hz(fluid_real_t cents) {
  * in: a value between 0 and 1440, 0 is no attenuation
  * out: a value between 1 and 0
  */
-fluid_real_t fluid_cb2amp(fluid_real_t cb) {
+_RAMFUNC fluid_real_t fluid_cb2amp(fluid_real_t cb) {
     /*
      * cb: an attenuation in 'centibels' (1/10 dB)
      * SF2.01 page 49 # 48 limits it to 144 dB.
@@ -4069,7 +4069,7 @@ fluid_real_t fluid_cb2amp(fluid_real_t cb) {
 /*
  * fluid_tc2sec_delay
  */
-fluid_real_t fluid_tc2sec_delay(fluid_real_t tc) {
+_RAMFUNC fluid_real_t fluid_tc2sec_delay(fluid_real_t tc) {
     /* SF2.01 section 8.1.2 items 21, 23, 25, 33
      * SF2.01 section 8.1.3 items 21, 23, 25, 33
      *
@@ -4090,7 +4090,7 @@ fluid_real_t fluid_tc2sec_delay(fluid_real_t tc) {
 /*
  * fluid_tc2sec_attack
  */
-fluid_real_t fluid_tc2sec_attack(fluid_real_t tc) {
+_RAMFUNC fluid_real_t fluid_tc2sec_attack(fluid_real_t tc) {
     /* SF2.01 section 8.1.2 items 26, 34
      * SF2.01 section 8.1.3 items 26, 34
      * The most negative number indicates a delay of 0
@@ -4110,7 +4110,7 @@ fluid_real_t fluid_tc2sec_attack(fluid_real_t tc) {
 /*
  * fluid_tc2sec
  */
-fluid_real_t fluid_tc2sec(fluid_real_t tc) {
+_RAMFUNC fluid_real_t fluid_tc2sec(fluid_real_t tc) {
     /* No range checking here! */
     return (fluid_real_t)pow(2.0, (double)tc / 1200.0);
 }
@@ -4118,7 +4118,7 @@ fluid_real_t fluid_tc2sec(fluid_real_t tc) {
 /*
  * fluid_tc2sec_release
  */
-fluid_real_t fluid_tc2sec_release(fluid_real_t tc) {
+_RAMFUNC fluid_real_t fluid_tc2sec_release(fluid_real_t tc) {
     /* SF2.01 section 8.1.2 items 30, 38
      * SF2.01 section 8.1.3 items 30, 38
      * No 'most negative number' rule here!
@@ -4140,7 +4140,7 @@ fluid_real_t fluid_tc2sec_release(fluid_real_t tc) {
  *
  * Convert from absolute cents to Hertz
  */
-fluid_real_t fluid_act2hz(fluid_real_t c) {
+_RAMFUNC fluid_real_t fluid_act2hz(fluid_real_t c) {
     return (fluid_real_t)(8.1757989156437 * pow(2.0, (double)c / 1200.0));
 }
 
@@ -4149,14 +4149,14 @@ fluid_real_t fluid_act2hz(fluid_real_t c) {
  *
  * Convert from Hertz to cents
  */
-fluid_real_t fluid_hz2ct(fluid_real_t f) {
+_RAMFUNC fluid_real_t fluid_hz2ct(fluid_real_t f) {
     return (fluid_real_t)(6900 + 1200 * log(f / 440.0) / log(2.0));
 }
 
 /*
  * fluid_pan
  */
-fluid_real_t fluid_pan(fluid_real_t c, int left) {
+_RAMFUNC fluid_real_t fluid_pan(fluid_real_t c, int left) {
     if (left) {
         c = -c;
     }
@@ -4172,7 +4172,7 @@ fluid_real_t fluid_pan(fluid_real_t c, int left) {
 /*
  * fluid_concave
  */
-fluid_real_t fluid_concave(fluid_real_t val) {
+_RAMFUNC fluid_real_t fluid_concave(fluid_real_t val) {
     if (val < 0) {
         return 0;
     } else if (val > 127) {
@@ -4184,7 +4184,7 @@ fluid_real_t fluid_concave(fluid_real_t val) {
 /*
  * fluid_convex
  */
-fluid_real_t fluid_convex(fluid_real_t val) {
+_RAMFUNC fluid_real_t fluid_convex(fluid_real_t val) {
     if (val < 0) {
         return 0;
     } else if (val > 127) {

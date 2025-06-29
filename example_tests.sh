@@ -32,7 +32,7 @@ valgrind --tool=massif ./fluidlite-test ./example/sf_/GMGSx_1.sf2 output.pcm
 # SPL 和 dBFS 之间没有直接的数学关系，因为 SPL 取决于播放设备的增益和环境的声学特性。
 
 
-# valgrind --dsymutil=yes --tool=callgrind --dump-instr=yes --collect-jumps=yes ./test_song u12
+# valgrind --dsymutil=yes --tool=callgrind --dump-instr=yes --collect-jumps=yes Debug/test_song u12
 # export QT_SCALE_FACTOR=2
 # kcachegrind callgrind.out.xx
 

@@ -200,7 +200,7 @@ fluid_real_t fluid_voice_gen_value(fluid_voice_t *voice, int num) {
  * dsp parameters). The dsp routine is #included in several places
  * (fluid_dsp_core.c).
  */
-int fluid_voice_write(fluid_voice_t *voice, fluid_real_t *dsp_left_buf,
+_RAMFUNC int fluid_voice_write(fluid_voice_t *voice, fluid_real_t *dsp_left_buf,
                       fluid_real_t *dsp_right_buf,
                       fluid_real_t *dsp_reverb_buf, fluid_real_t *dsp_chorus_buf) {
     fluid_real_t fres;
@@ -500,6 +500,7 @@ int fluid_voice_write(fluid_voice_t *voice, fluid_real_t *dsp_left_buf,
         }
         voice->last_fres = fres;
     }
+    cooperative_task();
 
     /*********************** run the dsp chain ************************
      * The sample is mixed with the output buffer.
@@ -524,6 +525,7 @@ int fluid_voice_write(fluid_voice_t *voice, fluid_real_t *dsp_left_buf,
         count = fluid_dsp_float_interpolate_7th_order (voice);
         break;
     }
+    cooperative_task();
 
     if (count > 0)
         fluid_voice_effects(voice, count, dsp_left_buf, dsp_right_buf,
@@ -570,7 +572,7 @@ post_process:
  * - dsp_hist2: same
  *
  */
-static void fluid_voice_effects(fluid_voice_t *voice, int count,
+_RAMFUNC static void fluid_voice_effects(fluid_voice_t *voice, int count,
                                 fluid_real_t *dsp_left_buf,
                                 fluid_real_t *dsp_right_buf,
                                 fluid_real_t* dsp_reverb_buf, 
@@ -658,7 +660,7 @@ static void fluid_voice_effects(fluid_voice_t *voice, int count,
             for (dsp_i = 0; dsp_i < count; dsp_i++)
                 dsp_left_buf[dsp_i] += voice->amp_left * dsp_buf[dsp_i];
         }
-
+        cooperative_task();
         if (voice->amp_right != 0.0) {
             for (dsp_i = 0; dsp_i < count; dsp_i++)
                 dsp_right_buf[dsp_i] += voice->amp_right * dsp_buf[dsp_i];
@@ -669,12 +671,14 @@ static void fluid_voice_effects(fluid_voice_t *voice, int count,
     if ((dsp_reverb_buf != NULL) && (voice->amp_reverb != 0.0)) {
         for (dsp_i = 0; dsp_i < count; dsp_i++)
             dsp_reverb_buf[dsp_i] += voice->amp_reverb * dsp_buf[dsp_i];
+        cooperative_task();
     }
 
    /* chorus send. Buffer may be NULL. */
    if ((dsp_chorus_buf != NULL) && (voice->amp_chorus != 0)){
-     for (dsp_i = 0; dsp_i < count; dsp_i++)
-       dsp_chorus_buf[dsp_i] += voice->amp_chorus * dsp_buf[dsp_i];
+       for (dsp_i = 0; dsp_i < count; dsp_i++)
+           dsp_chorus_buf[dsp_i] += voice->amp_chorus * dsp_buf[dsp_i];
+       cooperative_task();
    }
 
     voice->hist1 = dsp_hist1;
@@ -1472,7 +1476,7 @@ int fluid_voice_modulate_all(fluid_voice_t *voice) {
 /*
  * fluid_voice_noteoff
  */
-int fluid_voice_noteoff(fluid_voice_t *voice) {
+_RAMFUNC int fluid_voice_noteoff(fluid_voice_t *voice) {
     unsigned int at_tick;
 
     at_tick = fluid_channel_get_min_note_length_ticks(voice->channel);
@@ -1559,7 +1563,7 @@ int fluid_voice_kill_excl(fluid_voice_t *voice) {
  * Turns off a voice, meaning that it is not processed
  * anymore by the DSP loop.
  */
-int fluid_voice_off(fluid_voice_t *voice) {
+_RAMFUNC int fluid_voice_off(fluid_voice_t *voice) {
     voice->chan = NO_CHANNEL;
     voice->volenv_section = FLUID_VOICE_ENVFINISHED;
     voice->volenv_count = 0;

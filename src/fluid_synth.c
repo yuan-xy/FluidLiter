@@ -495,7 +495,7 @@ int delete_fluid_synth(fluid_synth_t *synth) {
     return FLUID_OK;
 }
 
-int fluid_synth_noteon(fluid_synth_t *synth, int chan, int key, int vel) {
+_RAMFUNC int fluid_synth_noteon(fluid_synth_t *synth, int chan, int key, int vel) {
     fluid_channel_t *channel;
 
     /* check the ranges of the arguments */
@@ -526,7 +526,7 @@ int fluid_synth_noteon(fluid_synth_t *synth, int chan, int key, int vel) {
                              key, vel);
 }
 
-int fluid_synth_noteoff(fluid_synth_t *synth, int chan, int key) {
+_RAMFUNC int fluid_synth_noteoff(fluid_synth_t *synth, int chan, int key) {
     int i;
     fluid_voice_t *voice;
     int status = FLUID_FAILED;
@@ -1500,9 +1500,9 @@ int fluid_synth_write_float(fluid_synth_t *synth, int len, void *lout, int loff,
 
 /* A portable replacement for roundf(), seems it may actually be faster too! */
 // removed inline
-int roundi(float x) {
+FLUID_INLINE int roundi(float x) {
 #if defined(__arm__) || defined(__riscv) 
-    if (isnan(x)) return 0;
+    // if (isnan(x)) return 0;
 #endif
     if (x >= 0.0f)
         return (int)(x + 0.5f);
@@ -1592,14 +1592,6 @@ int fluid_synth_write_s16_mono(fluid_synth_t *synth, int len, void *lout) {
     return fluid_synth_write_s16(synth, len, lout, 0, 1, NULL, 0, 0);
 }
 
-
-#if defined(__arm__)
-extern void cooperative_task();
-#else
-void cooperative_task(){}
-#endif
-
-
 /**
  * Synthesize a block of 16 bit audio samples to audio buffers.
  * @param synth FluidSynth instance
@@ -1620,7 +1612,7 @@ void cooperative_task(){}
  * @note Dithering is performed when converting from internal floating point to
  * 16 bit audio.
  */
-int fluid_synth_write_s16(fluid_synth_t *synth, int len, void *lout, int loff,
+_RAMFUNC int fluid_synth_write_s16(fluid_synth_t *synth, int len, void *lout, int loff,
                           int lincr, void *rout, int roff, int rincr) {
     int i, j, k, cur;
     int16_t *left_out = (int16_t *)lout;
@@ -1663,7 +1655,7 @@ int fluid_synth_write_s16(fluid_synth_t *synth, int len, void *lout, int loff,
     return 0;
 }
 
-int fluid_synth_one_block(fluid_synth_t *synth, int do_not_mix_fx_to_out) {
+_RAMFUNC int fluid_synth_one_block(fluid_synth_t *synth, int do_not_mix_fx_to_out) {
     int i;
     fluid_voice_t *voice;
     fluid_real_t *reverb_buf;
@@ -1696,6 +1688,7 @@ int fluid_synth_one_block(fluid_synth_t *synth, int do_not_mix_fx_to_out) {
         if (_PLAYING(voice)) {
             fluid_voice_write(voice, synth->left_buf, synth->right_buf,
                               reverb_buf, chorus_buf);
+            cooperative_task();
         }
     }
 
