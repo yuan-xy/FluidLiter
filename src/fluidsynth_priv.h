@@ -84,7 +84,12 @@ typedef FILE *fluid_file;
 #define FLUID_STRCHR(_s, _c) strchr(_s, _c)
 #define FLUID_STRDUP(s)                                                        \
     strcpy((char *)calloc(1, FLUID_STRLEN(s) + 1), s)
+
+#ifdef FLUID_NO_LOG
+#define FLUID_FPRINTF(...)
+#else
 #define FLUID_FPRINTF fprintf
+#endif
 
 #define fluid_clip(_val, _min, _max)                                           \
     {                                                                          \

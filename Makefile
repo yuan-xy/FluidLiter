@@ -17,6 +17,7 @@ else
 	BUILD_DIR ?= Release
 	CFLAGS = 
 	OPT = -O2
+	C_DEFS += -DFLUID_NO_LOG
 endif
 
 ifeq ($(EMPTY_REVERB), 1)
