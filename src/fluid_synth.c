@@ -2419,7 +2419,7 @@ int fluid_synth_tuning_dump(fluid_synth_t *synth, int bank, int prog,
     }
 
     if (name) {
-        snprintf(name, len - 1, "%s", fluid_tuning_get_name(tuning));
+        strncpy(name, fluid_tuning_get_name(tuning), len-1);
         name[len - 1] = 0; /* make sure the string is null terminated */
     }
     if (pitch) {

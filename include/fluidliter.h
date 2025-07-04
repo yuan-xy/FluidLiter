@@ -770,11 +770,10 @@ enum fluid_log_level {
 enum fluid_log_level get_log_level(void);
 void set_log_level(enum fluid_log_level level);
 
-int fluid_log(enum fluid_log_level level, char *fmt, ...);
-
 #ifdef FLUID_NO_LOG
 #define FLUID_LOG(...) (void)0;
 #else
+int fluid_log(enum fluid_log_level level, char *fmt, ...);
 #define FLUID_LOG fluid_log
 #endif
 

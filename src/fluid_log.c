@@ -27,6 +27,7 @@ void set_log_level(enum fluid_log_level level) {
     LOG_LEVEL = level;
 }
 
+#ifndef FLUID_NO_LOG
 /**
  * Default log function which prints to the stderr.
  * @param level Log level
@@ -86,3 +87,4 @@ int fluid_log(enum fluid_log_level level, char *fmt, ...) {
     }
     return FLUID_FAILED;
 }
+#endif

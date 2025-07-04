@@ -602,10 +602,12 @@ int fluid_preset_import_sfont(fluid_preset_t *preset, SFPreset *sfpreset,
     fluid_preset_zone_t *zone;
     int count;
     if (FLUID_STRLEN(sfpreset->name) > 0) {
-        FLUID_STRCPY(preset->name, sfpreset->name);
+        strncpy(preset->name, sfpreset->name, sizeof(preset->name));
     } else {
+        #if DEBUG
         snprintf(preset->name, sizeof(preset->name), "Bank%d,Preset%d", sfpreset->bank,
                  sfpreset->prenum);
+        #endif
     }
     preset->bank = sfpreset->bank;
     preset->num = sfpreset->prenum;
@@ -1262,7 +1264,7 @@ int delete_fluid_sample(fluid_sample_t *sample) {
 
 
 int fluid_sample_import_sfont(fluid_sample_t *sample, SFSample *sfsample, fluid_sfont_t *sfont) {
-    FLUID_STRCPY(sample->name, sfsample->name);
+    strncpy(sample->name, sfsample->name, sizeof(sample->name));
     sample->data = sfont->sampledata;
     sample->start = sfsample->start;
     sample->end = sfsample->start + sfsample->end;
