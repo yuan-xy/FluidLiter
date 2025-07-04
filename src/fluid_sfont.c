@@ -1,6 +1,14 @@
 #include "fluid_sfont.h"
 #include "fluid_gen.h"
 
+int gerr(int ev, char *fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    FLUID_LOG(FLUID_ERR, fmt, args);
+    va_end(args);
+    return (FAIL);
+}
+
 /***************************************************************
  *
  *                           SFONT LOADER
@@ -2535,19 +2543,4 @@ int gen_validp(int gen) { /* is preset generator valid? */
     if (!gen_valid(gen)) return (FALSE);
     while (badpgen[i] && badpgen[i] != (unsigned short)gen) i++;
     return (badpgen[i] == 0);
-}
-
-/*================================util.c===========================*/
-
-/* Logging function, returns FAIL to use as a return value in calling funcs */
-int gerr(int ev, char *fmt, ...) {
-    va_list args;
-
-    va_start(args, fmt);
-    vprintf(fmt, args);
-    va_end(args);
-
-    printf("\n");
-
-    return (FAIL);
 }

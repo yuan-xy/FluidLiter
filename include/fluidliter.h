@@ -755,8 +755,6 @@ struct _fluid_sample_t {
 
 
 
-// #include "log.h"
-
 /**
  * FluidSynth log levels.
  */
@@ -774,7 +772,11 @@ void set_log_level(enum fluid_log_level level);
 
 int fluid_log(enum fluid_log_level level, char *fmt, ...);
 
-
+#ifdef FLUID_NO_LOG
+#define FLUID_LOG(...) (void)0;
+#else
+#define FLUID_LOG fluid_log
+#endif
 
 // #include "mod.h"
 

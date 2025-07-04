@@ -85,11 +85,7 @@ typedef FILE *fluid_file;
 #define FLUID_STRDUP(s)                                                        \
     strcpy((char *)calloc(1, FLUID_STRLEN(s) + 1), s)
 
-#ifdef FLUID_NO_LOG
-#define FLUID_FPRINTF(...)
-#else
 #define FLUID_FPRINTF fprintf
-#endif
 
 #define fluid_clip(_val, _min, _max)                                           \
     {                                                                          \
@@ -103,12 +99,6 @@ typedef FILE *fluid_file;
 #else
 #define FLUID_PRINTF printf
 #define FLUID_FLUSH() fflush(stdout)
-#endif
-
-#if DEBUG
-#define FLUID_LOG fluid_log
-#else
-#define FLUID_LOG(...) (void)0;
 #endif
 
 #ifndef M_PI

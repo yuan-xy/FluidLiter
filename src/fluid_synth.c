@@ -1983,7 +1983,7 @@ int fluid_synth_sfload(fluid_synth_t *synth, const char *filename,
     return (int)sfont->id;
 
     FLUID_LOG(FLUID_ERR, "Failed to load SoundFont \"%s\"", filename);
-    return -1;
+    return FLUID_FAILED;
 }
 
 
