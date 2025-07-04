@@ -93,13 +93,6 @@ typedef FILE *fluid_file;
                                    : (((_val) > (_max)) ? (_max) : (_val));    \
     }
 
-#if WITH_FTS
-#define FLUID_PRINTF post
-#define FLUID_FLUSH()
-#else
-#define FLUID_PRINTF printf
-#define FLUID_FLUSH() fflush(stdout)
-#endif
 
 #ifndef M_PI
 #define M_PI 3.1415926535897932384626433832795
