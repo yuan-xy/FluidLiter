@@ -2,7 +2,7 @@
 #include "fluid_gen.h"
 
 #ifdef FLUID_NO_LOG
-#define gerr(...) (return (FAIL);)
+#define gerr(...)  (FAIL)
 #else
 int gerr(int ev, char *fmt, ...) {
     va_list args;
