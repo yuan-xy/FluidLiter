@@ -1,6 +1,9 @@
 #include "fluid_sfont.h"
 #include "fluid_gen.h"
 
+#ifdef FLUID_NO_LOG
+#define gerr(...) (return (FAIL);)
+#else
 int gerr(int ev, char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
@@ -8,6 +11,10 @@ int gerr(int ev, char *fmt, ...) {
     va_end(args);
     return (FAIL);
 }
+#endif
+
+
+
 
 /***************************************************************
  *
