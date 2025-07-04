@@ -35,11 +35,11 @@ static long default_ftell(void *handle) {
 
 static int safe_fread(void *buf, int count, void *handle) {
     if (FLUID_FREAD(buf, count, 1, (FILE *)handle) != 1) {
-        if (feof((FILE *)handle))
-            gerr(ErrEof, _("EOF while attemping to read %d bytes"), count);
-        else
+        if (feof((FILE *)handle)){
+            FLUID_LOG(FLUID_ERR, _("EOF while attemping to read %d bytes"), count);
+        }else{
             FLUID_LOG(FLUID_ERR, _("File read failed"));
-
+        }
         return FLUID_FAILED;
     }
     return FLUID_OK;
@@ -1492,7 +1492,7 @@ static int load_body(unsigned int size, SFData *sf, void *fd, fluid_fileapi_t *f
     }
 
     if (chunk.size != size - 8) {
-        gerr(ErrCorr, _("Sound font file size mismatch"));
+        FLUID_LOG(FLUID_ERR, _("Sound font file size mismatch"));
         return (FAIL);
     }
 
@@ -1633,6 +1633,7 @@ static int pdtahelper(unsigned int expid, unsigned int reclen, SFChunk *chunk, i
     const char *expstr;
 
     expstr = CHNKIDSTR(expid); /* in case we need it */
+    (void)expstr; // -Wunused-but-set-variable
 
     READCHUNK(chunk, fd, fapi);
     *size -= 8;
