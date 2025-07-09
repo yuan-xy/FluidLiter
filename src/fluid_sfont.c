@@ -1457,6 +1457,9 @@ SFData *sfload_file(const char *fname, fluid_fileapi_t *fapi) {
         sf->sffd = fd;
     }
 
+#if defined(__arm__) || defined(__riscv)
+    if (!err && !load_body(0, sf, fd, fapi)) err = TRUE; /* load_body skip size check */
+#else
     /* get size of file */
     if (!err && fapi->fseek(fd, 0L, SEEK_END) == FLUID_FAILED) { /* seek to end of file */
         err = TRUE;
@@ -1469,6 +1472,7 @@ SFData *sfload_file(const char *fname, fluid_fileapi_t *fapi) {
     if (!err) fapi->fseek(fd, 0, SEEK_SET);
 
     if (!err && !load_body(fsize, sf, fd, fapi)) err = TRUE; /* load the sfont */
+#endif
 
     if (err) {
         if (sf) sfont_close(sf, fapi);
@@ -1493,7 +1497,7 @@ static int load_body(unsigned int size, SFData *sf, void *fd, fluid_fileapi_t *f
         return (FAIL);
     }
 
-    if (chunk.size != size - 8) {
+    if (size != 0 && chunk.size != size - 8) {
         FLUID_LOG(FLUID_ERR, _("Sound font file size mismatch"));
         return (FAIL);
     }
