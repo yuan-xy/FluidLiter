@@ -1458,6 +1458,7 @@ SFData *sfload_file(const char *fname, fluid_fileapi_t *fapi) {
     }
 
 #if defined(__arm__) || defined(__riscv)
+    (void)fsize;
     if (!err && !load_body(0, sf, fd, fapi)) err = TRUE; /* load_body skip size check */
 #else
     /* get size of file */
