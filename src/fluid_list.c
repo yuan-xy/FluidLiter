@@ -26,14 +26,9 @@
 
 #include "fluid_list.h"
 
-#define FLUID_MALLOC_L(_n) malloc(_n)
-#define FLUID_NEW_L(_t) (_t *)malloc(sizeof(_t))
-#define FLUID_ARRAY_L(_t, _n) (_t *)malloc((_n) * sizeof(_t))
-#define FLUID_FREE_L(_p) free(_p)
-
 fluid_list_t *new_fluid_list(void) {
     fluid_list_t *list;
-    list = (fluid_list_t *)FLUID_MALLOC_L(sizeof(fluid_list_t));
+    list = (fluid_list_t *)FLUID_MALLOC(sizeof(fluid_list_t));
     list->data = NULL;
     list->next = NULL;
     return list;
@@ -43,14 +38,14 @@ void delete_fluid_list(fluid_list_t *list) {
     fluid_list_t *next;
     while (list) {
         next = list->next;
-        FLUID_FREE_L(list);
+        FLUID_FREE(list);
         list = next;
     }
 }
 
 void delete1_fluid_list(fluid_list_t *list) {
     if (list) {
-        FLUID_FREE_L(list);
+        FLUID_FREE(list);
     }
 }
 

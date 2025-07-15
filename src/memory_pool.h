@@ -10,5 +10,7 @@ void no_free(void* ptr);
 
 size_t memory_pool_used();
 
+uint8_t *memory_pool_base();
+
 #endif /* _MEMORY_POOL_H */
 
