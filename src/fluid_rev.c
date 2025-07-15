@@ -149,10 +149,6 @@
 #include "fluid_rev.h"
 
 // Use the default memory allocator for fluid_rev.c
-#define FLUID_MALLOC_REV(_n) malloc(_n)
-#define FLUID_NEW_REV(_t) (_t *)malloc(sizeof(_t))
-#define FLUID_ARRAY_REV(_t, _n) (_t *)malloc((_n) * sizeof(_t))
-#define FLUID_FREE_REV(_p) free(_p)
 
 #ifdef EMPTY_REVERB
 fluid_revmodel_t *
@@ -663,7 +659,7 @@ static void delete_fluid_rev_late(fluid_late *late)
     /* free the delay lines */
     for(i = 0; i < NBR_DELAYS; i++)
     {
-        FLUID_FREE_REV(late->mod_delay_lines[i].dl.line);
+        FLUID_FREE(late->mod_delay_lines[i].dl.line);
     }
 }
 
@@ -778,7 +774,7 @@ static int create_mod_delay_lines(fluid_late *late,
         /* real size of the line in use (in samples):
         size = INTERP_SAMPLES_NBR + mod_depth + delay_length */
         mdl->dl.size = delay_length + mod_depth + INTERP_SAMPLES_NBR;
-        mdl->dl.line = FLUID_ARRAY_REV(fluid_real_t, mdl->dl.size);
+        mdl->dl.line = FLUID_ARRAY(fluid_real_t, mdl->dl.size);
 
         if(! mdl->dl.line)
         {
@@ -963,7 +959,7 @@ new_fluid_revmodel(fluid_real_t sample_rate_max, fluid_real_t sample_rate)
         return NULL;
     }
 
-    rev = FLUID_NEW_REV(fluid_revmodel_t);
+    rev = FLUID_NEW(fluid_revmodel_t);
 
     if(rev == NULL)
     {
@@ -1018,7 +1014,7 @@ delete_fluid_revmodel(fluid_revmodel_t *rev)
 {
     fluid_return_if_fail(rev != NULL);
     delete_fluid_rev_late(&rev->late);
-    FLUID_FREE_REV(rev);
+    FLUID_FREE(rev);
 }
 
 /*

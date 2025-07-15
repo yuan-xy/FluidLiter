@@ -36,6 +36,10 @@ ifeq ($(ENABLE_7th_DSP), 1)
 	CFLAGS += -DENABLE_7th_DSP
 endif
 
+ifeq ($(SIMPLE_MEM_ALLOC), 1)
+	C_DEFS += -DSIMPLE_MEM_ALLOC=1
+endif
+
 ifneq ($(DEFAULT_LOG_LEVEL),)
 	CFLAGS += -DDEFAULT_LOG_LEVEL=$(DEFAULT_LOG_LEVEL)
 endif

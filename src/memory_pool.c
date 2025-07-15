@@ -1,4 +1,6 @@
+#include <stdlib.h>
 #include "memory_pool.h"
+#include "fluidliter.h"
 
 #if defined(__arm__) && defined(STM32F407xx)
     extern uint8_t _sccmram, _eccmram;
@@ -21,7 +23,8 @@ void* simple_malloc(size_t size) {
     #endif
 
     if (next_free + size > pool_size) {
-        return NULL;
+        FLUID_LOG(FLUID_WARN, "Memory pool overflow: %d > %d\n", next_free + size, pool_size);
+        return malloc(size);
     }
     
     void* ptr = &memory_pool[next_free];

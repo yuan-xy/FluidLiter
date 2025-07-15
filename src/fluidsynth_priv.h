@@ -63,9 +63,21 @@ typedef FILE *fluid_file;
 // #define SIMPLE_MEM_ALLOC 1
 
 #if SIMPLE_MEM_ALLOC
-    #define FLUID_MALLOC(_n) simple_malloc(_n)
-    #define FLUID_NEW(_t) (_t *)simple_malloc(sizeof(_t))
-    #define FLUID_ARRAY(_t, _n) (_t *)simple_malloc((_n) * sizeof(_t))
+    #define FLUID_MALLOC(_n) ({ \
+    printf("%s line %d, %s:%d\n", __FILE__, __LINE__, #_n, (_n)); \
+    simple_malloc(_n); \
+    })
+
+    #define FLUID_NEW(_t) ({ \
+    printf("%s line %d, %s:%d\n", __FILE__, __LINE__, #_t, sizeof(_t)); \
+    (_t *)simple_malloc(sizeof(_t)); \
+    })
+     
+    #define FLUID_ARRAY(_t, _n) ({ \
+    printf("%s line %d, %s:%d\n", __FILE__, __LINE__, #_t, (_n) * sizeof(_t)); \
+    (_t *)simple_malloc((_n) * sizeof(_t)); \
+    })
+
     #define FLUID_FREE(_p) no_free(_p)
 #else
     #ifdef USING_CALLOC
