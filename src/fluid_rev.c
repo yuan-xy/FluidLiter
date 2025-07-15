@@ -148,8 +148,6 @@
  */
 #include "fluid_rev.h"
 
-// Use the default memory allocator for fluid_rev.c
-
 #ifdef EMPTY_REVERB
 fluid_revmodel_t *
 new_fluid_revmodel(fluid_real_t sample_rate_max, fluid_real_t sample_rate){return EMPTY_REVERB_STUB;}
