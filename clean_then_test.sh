@@ -13,6 +13,7 @@ else
         make run_test -j
 
         make clean
+        make SIMPLE_MEM_ALLOC=1 -j
         make SIMPLE_MEM_ALLOC=1 test_reverb_chorus_run > log.txt
         make SIMPLE_MEM_ALLOC=1 test
         

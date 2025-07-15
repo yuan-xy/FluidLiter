@@ -94,4 +94,6 @@ int fluid_gen_init(fluid_gen_t *gen, fluid_channel_t *channel);
 fluid_sf_gen_t * fluid_sf_gen_create(SFGen *sfgen);
 fluid_sf_gen_t *fluid_sf_gen_get(fluid_list_t *gen_list, uint8_t num);
 
+void fluid_sf_gen_delete(fluid_sf_gen_t *gen);
+
 #endif /* _FLUID_GEN_H */

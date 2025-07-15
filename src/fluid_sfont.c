@@ -2498,7 +2498,7 @@ void sfont_free_zone(SFZone *zone) {
 
     p = zone->gen;
     while (p) { /* Free gen chunks for this zone */
-        if (p->data) FLUID_FREE(p->data);
+        fluid_sf_gen_delete((fluid_sf_gen_t *)p->data);
         p = fluid_list_next(p);
     }
     delete_fluid_list(zone->gen); /* free genlist */
