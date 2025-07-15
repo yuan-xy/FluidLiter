@@ -7,6 +7,7 @@
 
 #include "fluidliter.h"
 #include "utils.c"
+#include "memory_pool.h"
 
 
 #define SAMPLE_RATE 44100
@@ -226,6 +227,7 @@ int main(int argc, char *argv[]) {
 
     fluid_synth_write_s16_mono(synth, NUM_FRAMES/10, buffer);
     fwrite(buffer, SAMPLE_SIZE, NUM_SAMPLES/10, file);
+    printf("memory_pool_used: %d\n", memory_pool_used());
 
     fclose(file);
     free(buffer);

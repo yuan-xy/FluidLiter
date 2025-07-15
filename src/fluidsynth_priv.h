@@ -12,6 +12,7 @@
 
 #include <stdint.h>
 #include "fluidliter.h"
+#include "memory_pool.h"
 
 
 #define fluid_return_if_fail(cond) \
@@ -59,17 +60,26 @@ typedef FILE *fluid_file;
 
 #define FLUID_REALLOC(_p, _n) realloc(_p, _n)
 
-#ifdef USING_CALLOC
-    #define FLUID_MALLOC(_n) calloc(1, _n)
-    #define FLUID_NEW(_t) (_t *)calloc(1, sizeof(_t))
-    #define FLUID_ARRAY(_t, _n) (_t *)calloc((_n) , sizeof(_t))
-#else
-    #define FLUID_MALLOC(_n) malloc(_n)
-    #define FLUID_NEW(_t) (_t *)malloc(sizeof(_t))
-    #define FLUID_ARRAY(_t, _n) (_t *)malloc((_n) * sizeof(_t))
+// #define SIMPLE_MEM_ALLOC 1
 
+#if SIMPLE_MEM_ALLOC
+    #define FLUID_MALLOC(_n) simple_malloc(_n)
+    #define FLUID_NEW(_t) (_t *)simple_malloc(sizeof(_t))
+    #define FLUID_ARRAY(_t, _n) (_t *)simple_malloc((_n) * sizeof(_t))
+    #define FLUID_FREE(_p) no_free(_p)
+#else
+    #ifdef USING_CALLOC
+        #define FLUID_MALLOC(_n) calloc(1, _n)
+        #define FLUID_NEW(_t) (_t *)calloc(1, sizeof(_t))
+        #define FLUID_ARRAY(_t, _n) (_t *)calloc((_n) , sizeof(_t))
+    #else
+        #define FLUID_MALLOC(_n) malloc(_n)
+        #define FLUID_NEW(_t) (_t *)malloc(sizeof(_t))
+        #define FLUID_ARRAY(_t, _n) (_t *)malloc((_n) * sizeof(_t))
+    #endif
+    #define FLUID_FREE(_p) free(_p)
 #endif
-#define FLUID_FREE(_p) free(_p)
+
 #define FLUID_FOPEN(_f, _m) fopen(_f, _m)
 #define FLUID_FCLOSE(_f) fclose(_f)
 #define FLUID_FREAD(_p, _s, _n, _f) fread(_p, _s, _n, _f)

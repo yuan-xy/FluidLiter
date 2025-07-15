@@ -69,6 +69,11 @@
 
 #include "fluid_chorus.h"
 
+#define FLUID_MALLOC_CHORUS(_n) malloc(_n)
+#define FLUID_NEW_CHORUS(_t) (_t *)malloc(sizeof(_t))
+#define FLUID_ARRAY_CHORUS(_t, _n) (_t *)malloc((_n) * sizeof(_t))
+#define FLUID_FREE_CHORUS(_p) free(_p)
+
 #ifdef EMPTY_CHORUS
 fluid_chorus_t *new_fluid_chorus(fluid_real_t sample_rate){return EMPTY_CHORUS_STUB;}
 void delete_fluid_chorus(fluid_chorus_t *chorus){}
@@ -441,7 +446,7 @@ static int new_mod_delay_line(fluid_chorus_t *chorus, int delay_length)
     */
     /* total size of the line:  size = INTERP_SAMPLES_NBR + delay_length */
     chorus->size = delay_length + INTERP_SAMPLES_NBR;
-    chorus->line = FLUID_ARRAY(fluid_real_t, chorus->size);
+    chorus->line = FLUID_ARRAY_CHORUS(fluid_real_t, chorus->size);
 
     if(! chorus->line)
     {
@@ -486,7 +491,7 @@ new_fluid_chorus(fluid_real_t sample_rate)
 {
     fluid_chorus_t *chorus;
 
-    chorus = FLUID_NEW(fluid_chorus_t);
+    chorus = FLUID_NEW_CHORUS(fluid_chorus_t);
 
     if(chorus == NULL)
     {
@@ -525,8 +530,8 @@ delete_fluid_chorus(fluid_chorus_t *chorus)
 {
     fluid_return_if_fail(chorus != NULL);
 
-    FLUID_FREE(chorus->line);
-    FLUID_FREE(chorus);
+    FLUID_FREE_CHORUS(chorus->line);
+    FLUID_FREE_CHORUS(chorus);
 }
 
 /**

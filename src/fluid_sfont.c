@@ -2445,7 +2445,7 @@ void sfont_close(SFData *sf, fluid_fileapi_t *fapi) {
 
     p = sf->info;
     while (p) {
-        free(p->data);
+        FLUID_FREE(p->data);
         p = fluid_list_next(p);
     }
     delete_fluid_list(sf->info);
