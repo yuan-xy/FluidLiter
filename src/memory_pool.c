@@ -23,7 +23,7 @@ void* simple_malloc(size_t size) {
     #endif
 
     if (next_free + size > pool_size) {
-        FLUID_LOG(FLUID_WARN, "Memory pool overflow: %d > %d\n", next_free + size, pool_size);
+        FLUID_LOG(FLUID_WARN, "Memory pool overflow(%d): %d > %d\n", size, next_free + size, pool_size);
         return malloc(size);
     }
     

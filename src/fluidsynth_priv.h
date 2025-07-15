@@ -78,7 +78,10 @@ typedef FILE *fluid_file;
     (_t *)simple_malloc((_n) * sizeof(_t)); \
     })
 
-    #define FLUID_FREE(_p) no_free(_p)
+    #define FLUID_FREE(_p) ({ \
+    printf("%s line %d, Free %s:%p\n", __FILE__, __LINE__, #_p, (_p)); \
+    no_free(_p); \
+    })
 #else
     #ifdef USING_CALLOC
         #define FLUID_MALLOC(_n) calloc(1, _n)
