@@ -14,6 +14,7 @@ else
 
         make clean
         make SIMPLE_MEM_ALLOC=1 test_reverb_chorus_run > log.txt
+        make SIMPLE_MEM_ALLOC=1 test
         
         make clean
         make EMPTY_CHORUS=1 EMPTY_REVERB=1 -j

@@ -25,6 +25,7 @@ int main(){
     synth = NEW_FLUID_SYNTH(.with_reverb=false, .gain = 1.5);
     int sfid = fluid_synth_sfload(synth, "/mnt/c/SF2/GeneralUser-GS.sf2", 1);
     if(sfid == FLUID_FAILED) return 0;
+    printf("load sfont\n");
 
 //  http://archive.gamedev.net/archive/reference/articles/article445.html
 //  Each of the sound elements in an EMU8000 consists of the following:
@@ -40,7 +41,7 @@ int main(){
 //       87, Lead 7 (fifths).
 
     fluid_synth_program_select(synth, 0, sfid, 0, 86);
-
+    printf("fluid_synth_program_select86\n");
     int frame = 5*SAMPLE_RATE;
     int samples = frame * 2;
 
@@ -114,6 +115,7 @@ int main(){
     fluid_synth_write_s16(synth, frame, buffer, 0, 2, buffer, 1, 2);
     fwrite(buffer, sizeof(int16_t), samples, file);
     fluid_synth_noteoff(synth, 0, 70);
+    printf("fluid_synth_program_select44\n");
 
 // LFO1 to Filter Cutoff (Wah-Wah)
 //     The LFO1's output is routed to the filter, with the depth of

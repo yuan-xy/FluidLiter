@@ -19,7 +19,7 @@
         size_t size;     // 用户请求的分配大小
     } AllocRecord;
 
-    static AllocRecord alloc_list[10000] = {0}; //静态分配，保证AllocRecord不依赖内存分配器，否则容易产生循环依赖
+    static AllocRecord alloc_list[409600] = {0}; //静态分配，保证AllocRecord不依赖内存分配器，否则容易产生循环依赖
     static int alloc_index = 0;
 #endif
 
