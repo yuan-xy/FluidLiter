@@ -2,14 +2,6 @@
 #include "fluid_gen.h"
 #include "fluid_chan.h"
 
-#if defined(__arm__)
-    #define FLUID_NEW_G(_t) (_t *)malloc(sizeof(_t))
-    #define FLUID_FREE_G(_p) free(_p)
-#else
-    #define FLUID_NEW_G(_n) FLUID_NEW(_n)
-    #define FLUID_FREE_G(_p) FLUID_FREE(_p)
-#endif
-
 /**
  * Set an array of generators to their default values.
  * @param gen Array of generators (should be #GEN_LAST in size).
@@ -57,14 +49,14 @@ fluid_real_t fluid_gen_scale_nrpn(int gen, int data) {
 
 
 fluid_sf_gen_t * fluid_sf_gen_create(SFGen *sfgen) {
-    fluid_sf_gen_t *gen = FLUID_NEW_G(fluid_sf_gen_t);
+    fluid_sf_gen_t *gen = FLUID_NEW(fluid_sf_gen_t);
     gen->num = sfgen->id;
     gen->val = (fluid_real_t) sfgen->amount.sword;
     return gen;
 }
 
 void fluid_sf_gen_delete(fluid_sf_gen_t *gen) {
-    if(gen != NULL) FLUID_FREE_G(gen);
+    if(gen != NULL) FLUID_FREE(gen);
 }
 
 

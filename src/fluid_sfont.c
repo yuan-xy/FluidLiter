@@ -13,6 +13,15 @@ int gerr(int ev, char *fmt, ...) {
 }
 #endif
 
+// allocator for SFZone/SFGen/SFSample etc. which use FLUID_NEW_SF
+// Not apply to fluid_inst_zone_t/fluid_sf_gen_t/fluid_sample_t etc. which use FLUID_NEW
+#if defined(__arm__)
+    #define FLUID_NEW_SF(_t) (_t *)malloc(sizeof(_t))
+    #define FLUID_FREE_SF(_p) free(_p)
+#else
+    #define FLUID_NEW_SF(_n) FLUID_NEW(_n)
+    #define FLUID_FREE_SF(_p) FLUID_FREE(_p)
+#endif
 
 
 
@@ -1446,7 +1455,7 @@ SFData *sfload_file(const char *fname, fluid_fileapi_t *fapi) {
         return (NULL);
     }
 
-    if (!(sf = FLUID_NEW(SFData))) {
+    if (!(sf = FLUID_NEW_SF(SFData))) {
         FLUID_LOG(FLUID_ERR, "Out of memory");
         err = TRUE;
     }
@@ -1709,7 +1718,7 @@ static int load_phdr(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
     }
 
     for (; i > 0; i--) { /* load all preset headers */
-        p = FLUID_NEW(SFPreset);
+        p = FLUID_NEW_SF(SFPreset);
         sf->preset = fluid_list_append(sf->preset, p);
         p->zone = NULL;             /* In case of failure, sfont_close can cleanup */
         READSTR(p->name, fd, fapi); /* possible read failure ^ */
@@ -1762,7 +1771,7 @@ static int load_pbag(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
         while (p2) { /* traverse preset's zones */
             if ((size -= SFBAGSIZE) < 0)
                 return (gerr(ErrCorr, _("Preset bag chunk size mismatch")));
-            z = FLUID_NEW(SFZone);
+            z = FLUID_NEW_SF(SFZone);
             p2->data = z;
             z->gen = NULL;           /* Init gen and mod before possible failure, */
             z->mod = NULL;           /* to ensure proper cleanup (sfont_close) */
@@ -1823,7 +1832,7 @@ static int load_pmod(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
             while (p3) { /* load zone's modulators */
                 if ((size -= SFMODSIZE) < 0)
                     return (gerr(ErrCorr, _("Preset modulator chunk size mismatch")));
-                m = FLUID_NEW(SFMod);
+                m = FLUID_NEW_SF(SFMod);
                 p3->data = m;
                 READW(m->src, fd, fapi);
                 READW(m->dest, fd, fapi);
@@ -1919,7 +1928,7 @@ static int load_pgen(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
 
                 if (!skip) {
                     if (!dup) { /* if gen ! dup alloc new */
-                        g = FLUID_NEW(SFGen);
+                        g = FLUID_NEW_SF(SFGen);
                         p3->data = g;
                         g->id = genid;
                     } else {
@@ -2005,7 +2014,7 @@ static int load_ihdr(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
     }
 
     for (i = 0; i < size; i++) { /* load all instrument headers */
-        p = FLUID_NEW(SFInst);
+        p = FLUID_NEW_SF(SFInst);
         sf->inst = fluid_list_append(sf->inst, p);
         p->zone = NULL;             /* For proper cleanup if fail (sfont_close) */
         READSTR(p->name, fd, fapi); /* Possible read failure ^ */
@@ -2047,7 +2056,7 @@ static int load_ibag(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
         while (p2) { /* load this inst's zones */
             if ((size -= SFBAGSIZE) < 0)
                 return (gerr(ErrCorr, _("Instrument bag chunk size mismatch")));
-            z = FLUID_NEW(SFZone);
+            z = FLUID_NEW_SF(SFZone);
             p2->data = z;
             z->gen = NULL;           /* In case of failure, */
             z->mod = NULL;           /* sfont_close can clean up */
@@ -2110,7 +2119,7 @@ static int load_imod(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
             while (p3) { /* load zone's modulators */
                 if ((size -= SFMODSIZE) < 0)
                     return (gerr(ErrCorr, _("Instrument modulator chunk size mismatch")));
-                m = FLUID_NEW(SFMod);
+                m = FLUID_NEW_SF(SFMod);
                 p3->data = m;
                 READW(m->src, fd, fapi);
                 READW(m->dest, fd, fapi);
@@ -2194,7 +2203,7 @@ static int load_igen(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
 
                 if (!skip) {
                     if (!dup) { /* if gen ! dup alloc new */
-                        g = FLUID_NEW(SFGen);
+                        g = FLUID_NEW_SF(SFGen);
                         p3->data = g;
                         g->id = genid;
                     } else {
@@ -2282,7 +2291,7 @@ static int load_shdr(unsigned int size, SFData *sf, void *fd, fluid_fileapi_t *f
 
     /* load all sample headers */
     for (i = 0; i < size; i++) {
-        p = FLUID_NEW(SFSample);
+        p = FLUID_NEW_SF(SFSample);
         sf->sample = fluid_list_append(sf->sample, p);
         READSTR(p->name, fd, fapi);
         READD(p->start, fd, fapi);
@@ -2445,7 +2454,7 @@ void sfont_close(SFData *sf, fluid_fileapi_t *fapi) {
 
     p = sf->info;
     while (p) {
-        FLUID_FREE(p->data);
+        FLUID_FREE_SF(p->data);
         p = fluid_list_next(p);
     }
     delete_fluid_list(sf->info);
@@ -2459,7 +2468,7 @@ void sfont_close(SFData *sf, fluid_fileapi_t *fapi) {
             p2 = fluid_list_next(p2);
         } /* free preset's zone list */
         delete_fluid_list(((SFPreset *)(p->data))->zone);
-        FLUID_FREE(p->data); /* free preset chunk */
+        FLUID_FREE_SF(p->data); /* free preset chunk */
         p = fluid_list_next(p);
     }
     delete_fluid_list(sf->preset);
@@ -2473,7 +2482,7 @@ void sfont_close(SFData *sf, fluid_fileapi_t *fapi) {
             p2 = fluid_list_next(p2);
         } /* free inst's zone list */
         delete_fluid_list(((SFInst *)(p->data))->zone);
-        FLUID_FREE(p->data);
+        FLUID_FREE_SF(p->data);
         p = fluid_list_next(p);
     }
     delete_fluid_list(sf->inst);
@@ -2481,13 +2490,13 @@ void sfont_close(SFData *sf, fluid_fileapi_t *fapi) {
 
     p = sf->sample;
     while (p) {
-        FLUID_FREE(p->data);
+        FLUID_FREE_SF(p->data);
         p = fluid_list_next(p);
     }
     delete_fluid_list(sf->sample);
     sf->sample = NULL;
 
-    FLUID_FREE(sf);
+    FLUID_FREE_SF(sf);
 }
 
 /* free all elements of a zone (Preset or Instrument) */
@@ -2498,19 +2507,20 @@ void sfont_free_zone(SFZone *zone) {
 
     p = zone->gen;
     while (p) { /* Free gen chunks for this zone */
-        fluid_sf_gen_delete((fluid_sf_gen_t *)p->data);
+        if (p->data) FLUID_FREE_SF(p->data);
+        // fluid_sf_gen_delete((fluid_sf_gen_t *)p->data);
         p = fluid_list_next(p);
     }
     delete_fluid_list(zone->gen); /* free genlist */
 
     p = zone->mod;
     while (p) { /* Free mod chunks for this zone */
-        if (p->data) FLUID_FREE(p->data);
+        if (p->data) FLUID_FREE_SF(p->data);
         p = fluid_list_next(p);
     }
     delete_fluid_list(zone->mod); /* free modlist */
 
-    FLUID_FREE(zone); /* free zone chunk */
+    FLUID_FREE_SF(zone); /* free zone chunk */
 }
 
 /* preset sort function, first by bank, then by preset # */

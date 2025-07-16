@@ -26,7 +26,7 @@
 
 #include "fluid_list.h"
 
-#if defined(__arm__)
+#if defined(__arm__)    //fluid_list和SF开头的数据类型如（SFZone/SFGen/SFSample）不适合自定义的简单内存分配器
     #define FLUID_MALLOC_L(_n) malloc(_n)
     #define FLUID_FREE_L(_p) free(_p)
 #else
