@@ -500,7 +500,6 @@ _RAMFUNC int fluid_voice_write(fluid_voice_t *voice, fluid_real_t *dsp_left_buf,
         }
         voice->last_fres = fres;
     }
-    cooperative_task();
 
     /*********************** run the dsp chain ************************
      * The sample is mixed with the output buffer.
@@ -525,7 +524,6 @@ _RAMFUNC int fluid_voice_write(fluid_voice_t *voice, fluid_real_t *dsp_left_buf,
         count = fluid_dsp_float_interpolate_7th_order (voice);
         break;
     }
-    cooperative_task();
 
     if (count > 0)
         fluid_voice_effects(voice, count, dsp_left_buf, dsp_right_buf,
@@ -660,7 +658,6 @@ _RAMFUNC static void fluid_voice_effects(fluid_voice_t *voice, int count,
             for (dsp_i = 0; dsp_i < count; dsp_i++)
                 dsp_left_buf[dsp_i] += voice->amp_left * dsp_buf[dsp_i];
         }
-        cooperative_task();
         if (voice->amp_right != 0.0) {
             for (dsp_i = 0; dsp_i < count; dsp_i++)
                 dsp_right_buf[dsp_i] += voice->amp_right * dsp_buf[dsp_i];
@@ -671,14 +668,12 @@ _RAMFUNC static void fluid_voice_effects(fluid_voice_t *voice, int count,
     if ((dsp_reverb_buf != NULL) && (voice->amp_reverb != 0.0)) {
         for (dsp_i = 0; dsp_i < count; dsp_i++)
             dsp_reverb_buf[dsp_i] += voice->amp_reverb * dsp_buf[dsp_i];
-        cooperative_task();
     }
 
    /* chorus send. Buffer may be NULL. */
    if ((dsp_chorus_buf != NULL) && (voice->amp_chorus != 0)){
        for (dsp_i = 0; dsp_i < count; dsp_i++)
            dsp_chorus_buf[dsp_i] += voice->amp_chorus * dsp_buf[dsp_i];
-       cooperative_task();
    }
 
     voice->hist1 = dsp_hist1;

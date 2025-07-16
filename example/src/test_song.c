@@ -91,16 +91,20 @@ int main(int argc, char *argv[])
     fluid_synth_program_select(synth, 0, sfid, 0, 0);
 
     //颤音效果（Vibrato）
+    // fluid_synth_set_gen的实现很奇怪，很难用，建议直接调用fluid_channel_set_gen
+    // 下面的代码并不能正确运行，实际结果如下：
+        // GEN_6: GEN_VIBLFOTOPITCH, value=4788000.000000
+        // GEN_23: GEN_VIBLFODELAY, value=1688000.000000
+        // GEN_24: GEN_VIBLFOFREQ, value=107000.000000
     // fluid_synth_set_gen(synth, 0, GEN_VIBLFODELAY, 100);    // 延迟时间为 100 毫秒
     // fluid_synth_set_gen(synth, 0, GEN_VIBLFOFREQ, 6);       // LFO 频率为 6 Hz
     // fluid_synth_set_gen(synth, 0, GEN_VIBLFOTOPITCH, 200);  // 调制深度为 200 音分
 
     //两者的效果似乎是一样的：modLfoToPitch 和 vibLfoToPitch
-    fluid_synth_set_gen(synth, 0, GEN_MODLFODELAY, 100);    // 延迟时间为 100 毫秒
-    fluid_synth_set_gen(synth, 0, GEN_MODLFOFREQ, 6);       // LFO 频率为 6 Hz
+    // fluid_channel_set_gen(synth->channel[0], GEN_MODLFODELAY, 100.0f);    // 延迟时间为 100 毫秒
+    // fluid_channel_set_gen(synth->channel[0], GEN_MODLFOFREQ, 6.0f);       // LFO 频率为 6 Hz
+    // fluid_channel_set_gen(synth->channel[0], GEN_MODLFOTOPITCH, 200.0f);  // 调制深度为 200 音分
 
-
-    fluid_synth_set_gen(synth, 0, GEN_MODLFOTOPITCH, 0);  // 调制深度为 200 音分
     // fluid_synth_set_gen和fluid_synth_cc实现同样的效果？
     fluid_synth_cc(synth, 0, 1, 127); // CC 1（Modulation Wheel）通常映射到 GEN_MODLFOTOPITCH
     //从源代码看fluid_synth_cc首先会在cc保存设置的值：chan->cc[num] = value;
@@ -115,8 +119,8 @@ int main(int argc, char *argv[])
     print_cc_values(synth, 0);
     print_gen_values(synth, 0, false);
 
-    // float attack_time = fluid_synth_get_gen(synth, 0, GEN_VOLENVATTACK);
-    // printf("GEN_VOLENVATTACK: %f\n", attack_time);
+    float attack_time = fluid_synth_get_gen(synth, 0, GEN_VOLENVATTACK);
+    printf("GEN_VOLENVATTACK: %f\n", attack_time);
     // fluid_synth_set_gen(synth, 0, GEN_VOLENVATTACK, 300); // 设置起音时间为 300 毫秒，似乎没效果
 
     int notes[] = {NN3, NN6, NN1+12, NN7, NN6, NN1+12, NN6, NN7, NN6, NN4, NN5, NN3};
