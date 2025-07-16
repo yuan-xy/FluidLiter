@@ -16,9 +16,11 @@ int gerr(int ev, char *fmt, ...) {
 // allocator for SFZone/SFGen/SFSample etc. which use FLUID_NEW_SF
 // Not apply to fluid_inst_zone_t/fluid_sf_gen_t/fluid_sample_t etc. which use FLUID_NEW
 #if defined(__arm__)
+    #define FLUID_MALLOC_SF(_n) malloc(_n)
     #define FLUID_NEW_SF(_t) (_t *)malloc(sizeof(_t))
     #define FLUID_FREE_SF(_p) free(_p)
 #else
+    #define FLUID_MALLOC_SF(_n) FLUID_MALLOC(_n)
     #define FLUID_NEW_SF(_n) FLUID_NEW(_n)
     #define FLUID_FREE_SF(_p) FLUID_FREE(_p)
 #endif
@@ -259,7 +261,7 @@ int fluid_sfont_load_sampledata(fluid_sfont_t *sfont, fluid_fileapi_t *fapi) {
         sfont->is_rom = 1;
     } else {
         sfont->is_rom = 0;
-        sfont->sampledata = (short *)FLUID_MALLOC(sfont->samplesize);
+        sfont->sampledata = (short *)FLUID_MALLOC_SF(sfont->samplesize);
         FLUID_LOG(FLUID_INFO, "sfont->samplesize %d\n", sfont->samplesize);
 
         if (sfont->sampledata == NULL) {
@@ -1594,7 +1596,7 @@ static int process_info(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
                              &chunk.id, chunk.size));
 
             /* alloc for chunk id and da chunk */
-            if (!(item = FLUID_MALLOC(chunk.size + 1))) {
+            if (!(item = FLUID_MALLOC_SF(chunk.size + 1))) {
                 FLUID_LOG(FLUID_ERR, "Out of memory");
                 return (FAIL);
             }
