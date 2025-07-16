@@ -22,17 +22,17 @@ for build in "${BUILD_OPTS[@]}"; do
            for e7do in "${ENABLE_7th_DSP_OPTS[@]}"; do
            for malloc in "${SIMPLE_MEM_ALLOC_OPTS[@]}"; do
         
-            echo "Building with options: BUILD=$build, ARCH=$arch, WITH_FLOAT=$with_float, EMPTY_CHORUS_OPTS=$eco EMPTY_REVERB_OPTS=$ero GEN_TABLE_RUNTIME_OPTS=$gtro ENABLE_7th_DSP_OPTS=$e7do SIMPLE_MEM_ALLOC=$malloc"
+            echo "Building with options: BUILD=$build, ARCH=$arch, WITH_FLOAT=$with_float, EMPTY_CHORUS=$eco EMPTY_REVERB=$ero GEN_TABLE_RUNTIME=$gtro ENABLE_7th_DSP=$e7do SIMPLE_MEM_ALLOC=$malloc"
 
             make BUILD=$build ARCH=$arch clean
 
             make BUILD=$build ARCH=$arch WITH_FLOAT=$with_float \
-             EMPTY_CHORUS_OPTS=$eco EMPTY_REVERB_OPTS=$ero \
-             GEN_TABLE_RUNTIME_OPTS=$gtro ENABLE_7th_DSP_OPTS=$e7do \
+             EMPTY_CHORUS=$eco EMPTY_REVERB=$ero \
+             GEN_TABLE_RUNTIME=$gtro ENABLE_7th_DSP=$e7do \
              SIMPLE_MEM_ALLOC=$malloc DEFAULT_LOG_LEVEL=2
 
             if [ "$arch"  !=  "arm" ]; then
-                make BUILD=$build ARCH=$arch WITH_FLOAT=$with_float EMPTY_CHORUS_OPTS=$eco EMPTY_REVERB_OPTS=$ero GEN_TABLE_RUNTIME_OPTS=$gtro ENABLE_7th_DSP_OPTS=$e7do SIMPLE_MEM_ALLOC=$malloc OPT=-O0 test
+                make BUILD=$build ARCH=$arch WITH_FLOAT=$with_float EMPTY_CHORUS=$eco EMPTY_REVERB=$ero GEN_TABLE_RUNTIME=$gtro ENABLE_7th_DSP=$e7do SIMPLE_MEM_ALLOC=$malloc OPT=-O0 test
             fi
             done
             done
