@@ -1,3 +1,4 @@
+#include <assert.h>
 #include "fluidsynth_priv.h"
 #include "fluid_voice.h"
 #include "fluid_mod.h"
@@ -1707,17 +1708,16 @@ fluid_voice_get_lower_boundary_for_attenuation(fluid_voice_t *voice) {
  * proper order. When starting up, calculate the initial phase.
  */
 void fluid_voice_check_sample_sanity(fluid_voice_t *voice) {
+    if (!voice->check_sample_sanity_flag) {
+        return;
+    }
     int min_index_nonloop = (int)voice->sample->start;
     int max_index_nonloop = (int)voice->sample->end;
 
     /* make sure we have enough samples surrounding the loop */
     int min_index_loop = (int)voice->sample->start + FLUID_MIN_LOOP_PAD;
-    int max_index_loop = (int)voice->sample->end - FLUID_MIN_LOOP_PAD +
-                         1; /* 'end' is last valid sample, loopend can be + 1 */
-
-    if (!voice->check_sample_sanity_flag) {
-        return;
-    }
+    int max_index_loop = (int)voice->sample->end - FLUID_MIN_LOOP_PAD +1;
+    /* 'end' is last valid sample, loopend can be + 1 */
 
 #if 0
     printf("Sample from %i to %i\n",voice->sample->start, voice->sample->end);
@@ -1740,20 +1740,23 @@ void fluid_voice_check_sample_sanity(fluid_voice_t *voice) {
         voice->end = max_index_nonloop;
     }
 
+#if DEBUG
+    assert(voice->start < voice->end);
+#endif
     /* Keep start and end point in the right order */
-    if (voice->start > voice->end) {
-        int temp = voice->start;
-        voice->start = voice->end;
-        voice->end = temp;
-        /*FLUID_LOG(FLUID_DBG, "Loop / sample sanity check: Changing order of
-         * start / end points!"); */
-    }
+    // if (voice->start > voice->end) {
+    //     int temp = voice->start;
+    //     voice->start = voice->end;
+    //     voice->end = temp;
+    //     /*FLUID_LOG(FLUID_DBG, "Loop / sample sanity check: Changing order of
+    //      * start / end points!"); */
+    // }
 
     /* Zero length? */
-    if (voice->start == voice->end) {
-        fluid_voice_off(voice);
-        return;
-    }
+    // if (voice->start == voice->end) {
+    //     fluid_voice_off(voice);
+    //     return;
+    // }
 
     if ((_SAMPLEMODE(voice) == FLUID_LOOP_UNTIL_RELEASE) ||
         (_SAMPLEMODE(voice) == FLUID_LOOP_DURING_RELEASE)) {
@@ -1926,8 +1929,8 @@ int fluid_voice_optimize_sample(fluid_sample_t *s) {
         /* Store in sample */
         s->amplitude_that_reaches_noise_floor = (double)result;
         s->amplitude_that_reaches_noise_floor_is_valid = 1;
-#if 0
-    printf("Sample peak detection: factor %f\n", (double)result);
+#if DEBUG
+    FLUID_LOG(FLUID_DBG, "Sample peak detection: factor %f\n", (double)result);
 #endif
     };
     return FLUID_OK;
