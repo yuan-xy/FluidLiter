@@ -182,7 +182,9 @@ int fluid_sfont_load(fluid_sfont_t *sfont, const char *filename, fluid_fileapi_t
         if (fluid_sample_import_sfont(sample, sfsample, sfont) != FLUID_OK) goto err_exit;
 
         fluid_sfont_add_sample(sfont, sample);
+#if DEBUG
         fluid_voice_optimize_sample(sample);
+#endif
         p = fluid_list_next(p);
     }
 

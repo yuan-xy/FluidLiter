@@ -121,7 +121,7 @@ int main(int argc, char *argv[])
 
     float attack_time = fluid_synth_get_gen(synth, 0, GEN_VOLENVATTACK);
     printf("GEN_VOLENVATTACK: %f\n", attack_time);
-    // fluid_synth_set_gen(synth, 0, GEN_VOLENVATTACK, 300); // 设置起音时间为 300 毫秒，似乎没效果
+    // fluid_synth_set_gen(synth, 0, GEN_VOLENVATTACK, 300); // 设置起音时间为 300 毫秒，似乎没效果, 因为300不代表300ms
 
     int notes[] = {NN3, NN6, NN1+12, NN7, NN6, NN1+12, NN6, NN7, NN6, NN4, NN5, NN3};
                 //    ,NN3, NN6, NN1+12, NN7, NN6, NN1+12, NN6, NN7, NN6, NN3, NN3-1, NN2};

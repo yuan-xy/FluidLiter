@@ -1910,10 +1910,17 @@ int fluid_voice_optimize_sample(fluid_sample_t *s) {
         } else {
             peak = -peak_min;
         };
-        if (peak == 0) {
-            /* Avoid division by zero */
-            peak = 1;
-        };
+#if DEBUG
+        FLUID_LOG(FLUID_DBG, "sample %s, peak:%d\n", s->name, peak);
+        if(peak < 32768/3){
+            FLUID_LOG(FLUID_WARN, "sample volume too small: %s\n", s->name);
+        }
+        // if (peak == 0) {
+        //     /* Avoid division by zero */
+        //     peak = 1;
+        // };
+#endif
+
 
         /* Calculate what factor will make the loop inaudible
          * For example: Take a peak of 3277 (10 % of 32768).  The
@@ -1929,9 +1936,6 @@ int fluid_voice_optimize_sample(fluid_sample_t *s) {
         /* Store in sample */
         s->amplitude_that_reaches_noise_floor = (double)result;
         s->amplitude_that_reaches_noise_floor_is_valid = 1;
-#if DEBUG
-    FLUID_LOG(FLUID_DBG, "Sample peak detection: factor %f\n", (double)result);
-#endif
     };
     return FLUID_OK;
 }
