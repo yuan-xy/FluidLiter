@@ -720,12 +720,12 @@ int fluid_preset_zone_import_sfont(fluid_preset_zone_t *zone, SFZone *sfzone,
         sfgen = (SFGen *)r->data;
         switch (sfgen->id) {
         case GEN_KEYRANGE:
-            zone->keylo = (int)sfgen->amount.range.lo;
-            zone->keyhi = (int)sfgen->amount.range.hi;
+            zone->keylo = sfgen->amount.range.lo;
+            zone->keyhi = sfgen->amount.range.hi;
             break;
         case GEN_VELRANGE:
-            zone->vello = (int)sfgen->amount.range.lo;
-            zone->velhi = (int)sfgen->amount.range.hi;
+            zone->vello = sfgen->amount.range.lo;
+            zone->velhi = sfgen->amount.range.hi;
             break;
         default:
             if (fluid_gen_info[sfgen->id].def != (fluid_real_t)sfgen->amount.sword) {

@@ -496,10 +496,10 @@ int fluid_preset_noteon(fluid_preset_t *preset, fluid_synth_t *synth,
 struct _fluid_preset_zone_t {
     fluid_preset_zone_t *next;
     fluid_inst_t *inst;
-    int keylo;
-    int keyhi;
-    int vello;
-    int velhi;
+    uint8_t keylo;
+    uint8_t keyhi;
+    uint8_t vello;
+    uint8_t velhi;
     fluid_list_t *sf_gen;
     fluid_mod_list_t *mod; /* List of modulators */
 };
@@ -529,10 +529,10 @@ fluid_inst_zone_t *fluid_inst_get_global_zone(fluid_inst_t *inst);
 struct _fluid_inst_zone_t {
     fluid_inst_zone_t *next;
     fluid_sample_t *sample;
-    int keylo;
-    int keyhi;
-    int vello;
-    int velhi;
+    uint8_t keylo;
+    uint8_t keyhi;
+    uint8_t vello;
+    uint8_t velhi;
     fluid_list_t *sf_gen;
     fluid_mod_list_t *mod; /* List of modulators */
 };

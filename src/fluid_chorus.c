@@ -498,15 +498,6 @@ new_fluid_chorus(fluid_real_t sample_rate)
 
     chorus->sample_rate = sample_rate;
 
-#ifdef DEBUG_PRINT
-    printf("fluid_chorus_t:%u bytes\n", sizeof(fluid_chorus_t));
-    printf("fluid_real_t:%u bytes\n", sizeof(fluid_real_t));
-#endif
-
-#ifdef DEBUG_PRINT
-    printf("NEW_MOD\n");
-#endif
-
     if(new_mod_delay_line(chorus, MAX_SAMPLES) == FLUID_FAILED)
     {
         delete_fluid_chorus(chorus);
