@@ -99,6 +99,8 @@ int main(){
 
     assert(!synth->with_reverb);
     assert(!synth->with_chorus);
+    assert(!synth->enable_reverb);
+    assert(!synth->enable_chorus);    
     assert(synth->reverb == NULL);
     assert(synth->fx_left_buf == NULL);
     assert(synth->fx_left_buf2 == NULL);
@@ -117,6 +119,10 @@ int main(){
         assert(float_eq(synth->reverb->width, FLUID_REVERB_DEFAULT_WIDTH));
     }
     assert(synth->chorus == NULL);
+    assert(synth->enable_reverb);
+    fluid_synth_enable_reverb(synth, false);
+    assert(!synth->enable_reverb);    
+    assert(!synth->enable_chorus);    
     assert(synth->fx_left_buf != NULL);
     assert(synth->fx_left_buf2 == NULL);
     // fluid_revmodel_setlevel(synth->reverb, 0.9);

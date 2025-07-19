@@ -271,6 +271,8 @@ fluid_synth_t *new_fluid_synth(SynthParams sp) {
 
     synth->with_reverb = sp.with_reverb;
     synth->with_chorus = sp.with_chorus;
+    synth->enable_reverb = sp.with_reverb;
+    synth->enable_chorus = sp.with_chorus;
     synth->sample_rate = sp.sample_rate;
     synth->polyphony = sp.polyphony;
     synth->gain = sp.gain;
@@ -1665,11 +1667,11 @@ _RAMFUNC int fluid_synth_one_block(fluid_synth_t *synth, int do_not_mix_fx_to_ou
     FLUID_MEMSET(synth->left_buf, 0, byte_size);
     if (synth->right_buf != NULL) FLUID_MEMSET(synth->right_buf, 0, byte_size);
 
-    if(synth->with_reverb){
+    if(synth->enable_reverb){
         FLUID_MEMSET(synth->fx_left_buf, 0, byte_size);
         FLUID_MEMSET(synth->fx_right_buf, 0, byte_size);
     }
-    if(synth->with_chorus){
+    if(synth->enable_chorus){
         FLUID_MEMSET(synth->fx_left_buf2, 0, byte_size);
         FLUID_MEMSET(synth->fx_right_buf2, 0, byte_size);
     }
@@ -1678,8 +1680,8 @@ _RAMFUNC int fluid_synth_one_block(fluid_synth_t *synth, int do_not_mix_fx_to_ou
      * enabled on synth level.  Nonexisting buffers are detected in the
      * DSP loop. Not sending the reverb / chorus signal saves some time
      * in that case. */
-    reverb_buf = synth->with_reverb ? synth->fx_left_buf : NULL;
-    chorus_buf = synth->with_chorus ? synth->fx_left_buf2 : NULL;
+    reverb_buf = synth->enable_reverb ? synth->fx_left_buf : NULL;
+    chorus_buf = synth->enable_chorus ? synth->fx_left_buf2 : NULL;
 
     /* call all playing synthesis processes */
     for (i = 0; i < synth->polyphony; i++) {
@@ -2593,3 +2595,18 @@ void fluid_synth_remove_bank_offset(fluid_synth_t *synth, int sfont_id) {
     }
 }
 
+void fluid_synth_enable_reverb(fluid_synth_t *synth, bool enable_reverb){
+    if(enable_reverb && !synth->with_reverb){
+        FLUID_LOG(FLUID_ERR, "can't enable reverb without `with_reverb` support.\n");
+        return;
+    }
+    synth->enable_reverb = enable_reverb;
+}
+
+void fluid_synth_enable_chorus(fluid_synth_t *synth, bool enable_chorus){
+    if(enable_chorus && !synth->with_chorus){
+        FLUID_LOG(FLUID_ERR, "can't enable chorus without `with_chorus` support.\n");
+        return;
+    }
+    synth->enable_chorus = enable_chorus;
+}

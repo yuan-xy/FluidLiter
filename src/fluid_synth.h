@@ -89,8 +89,10 @@ struct _fluid_synth_t {
     unsigned int
         min_note_length_ticks; /**< If note-offs are triggered just after a
                                   note-on, they will be delayed */
-    bool with_reverb;   /** Should the synth use the built-in reverb unit? */
+    bool with_reverb;   /** initailize the built-in reverb unit */
     bool with_chorus;
+    bool enable_reverb;  /** activate reverb in runtime */
+    bool enable_chorus;
 };
 
 /** returns 1 if the value has been set, 0 otherwise */
@@ -161,5 +163,7 @@ int fluid_synth_set_gen2(fluid_synth_t *synth, int chan, int param, float value,
 void fluid_synth_init(); // need by testing GEN_TABLE_RUNTIME
 bool is_gentable_runtime();
 
+void fluid_synth_enable_reverb(fluid_synth_t *synth, bool enable_reverb);
+void fluid_synth_enable_chorus(fluid_synth_t *synth, bool enable_chorus);
 
 #endif /* _FLUID_SYNTH_H */
