@@ -175,6 +175,19 @@ typedef FILE *fluid_file;
 #endif
 
 
+#if SPI_FLASH == 1
+extern  int16_t spi_read_int16(uint32_t address);
+#define SPI_READ_SAMPLE(base, pos) spi_read_int16((uint32_t)(base+pos)) 
+#endif
+
+#if defined(__arm__) && defined(SPI_READ_SAMPLE) 
+#define READ_SAMPLE(base, pos) \
+        ((int)(base) > 0x08000000 ? base[pos] : SPI_READ_SAMPLE((base), (pos)))
+#else
+#define READ_SAMPLE(base, pos) base[pos]
+#endif
+
+
 /* Internationalization */
 #define _(s) s
 
