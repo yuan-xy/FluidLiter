@@ -188,6 +188,15 @@ extern  int16_t spi_read_int16(uint32_t address);
 #endif
 
 
+#ifdef G_LIKELY
+#define FLUID_LIKELY G_LIKELY
+#define FLUID_UNLIKELY G_UNLIKELY
+#else
+#define FLUID_LIKELY 
+#define FLUID_UNLIKELY 
+#endif
+
+
 /* Internationalization */
 #define _(s) s
 

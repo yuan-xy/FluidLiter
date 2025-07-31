@@ -1501,21 +1501,31 @@ int fluid_synth_write_float(fluid_synth_t *synth, int len, void *lout, int loff,
 }
 
 /* A portable replacement for roundf(), seems it may actually be faster too! */
-// removed inline
-FLUID_INLINE int roundi(float x) {
-#if defined(__arm__) || defined(__riscv) 
-    // if (isnan(x)) return 0;
-#endif
-    if (x >= 0.0f)
-        return (int)(x + 0.5f);
-    else
-        return (int)(x - 0.5f);
+static FLUID_INLINE int16_t
+round_clip_to_i16(float x)
+{
+    int32_t i;
+    if(x >= 0.0f){
+        i = (int32_t)(x + 0.5f);
+        if(FLUID_UNLIKELY(i > 32767)){
+            i = 32767;
+        }
+    }
+    else{
+        i = (int32_t)(x - 0.5f);
+        if(FLUID_UNLIKELY(i < -32768)){
+            i = -32768;
+        }
+    }
+    return (int16_t)i;
 }
+
 
 int fluid_synth_write_u8_mono(fluid_synth_t *synth, int len, uint8_t *out) {
     return fluid_synth_write_u8(synth, len, out, 1);
 }
 
+// deprecated
 int fluid_synth_write_u8(fluid_synth_t *synth, int len, uint8_t *out,
                          int channel) {
     int loff = 0, roff = 1;
@@ -1531,8 +1541,6 @@ int fluid_synth_write_u8(fluid_synth_t *synth, int len, uint8_t *out,
 
     fluid_real_t *left_in = synth->left_buf;
     fluid_real_t *right_in = synth->right_buf;
-    fluid_real_t left_sample;
-    fluid_real_t right_sample;
 
     /* make sure we're playing */
     if (synth->state != FLUID_SYNTH_PLAYING) {
@@ -1548,18 +1556,8 @@ int fluid_synth_write_u8(fluid_synth_t *synth, int len, uint8_t *out,
             fluid_synth_one_block(synth, 0);
             cur = 0;
         }
-
-        left_sample = roundi(left_in[cur] * 127.0f);
-        right_sample = roundi(right_in[cur] * 127.0f);
-
-        /* digital clipping */
-        if (left_sample > 127.0f) left_sample = 127.0f;
-        if (left_sample < -128.0f) left_sample = -128.0f;
-        if (right_sample > 127.0f) right_sample = 127.0f;
-        if (right_sample < -128.0f) right_sample = -128.0f;
-
-        left_out[j] = (uint8_t)left_sample + 128;
-        if (right_out != NULL) right_out[k] = (uint8_t)right_sample + 128;
+        left_out[j] = (uint8_t)round_clip_to_i16(left_in[cur] * 127.0f) + 128;
+        if (right_out != NULL) right_out[k] = (uint8_t)round_clip_to_i16(right_in[cur] * 127.0f) + 128;
     }
 
     synth->cur = cur;
@@ -1570,6 +1568,7 @@ int fluid_synth_write_u12_mono(fluid_synth_t *synth, int len, uint16_t *out) {
     return fluid_synth_write_u12(synth, len, out, 1);
 }
 
+// deprecated
 int fluid_synth_write_u12(fluid_synth_t *synth, int len, uint16_t *out,
                           int channel) {
     int ret;
@@ -1621,8 +1620,6 @@ _RAMFUNC int fluid_synth_write_s16(fluid_synth_t *synth, int len, void *lout, in
     int16_t *right_out = (int16_t *)rout;
     fluid_real_t *left_in = synth->left_buf;
     fluid_real_t *right_in = synth->right_buf;
-    fluid_real_t left_sample;
-    fluid_real_t right_sample;
 
     /* make sure we're playing */
     if (synth->state != FLUID_SYNTH_PLAYING) {
@@ -1639,18 +1636,8 @@ _RAMFUNC int fluid_synth_write_s16(fluid_synth_t *synth, int len, void *lout, in
             cur = 0;
             cooperative_task();
         }
-
-        left_sample = roundi(left_in[cur] * 32766.0f);
-        right_sample = roundi(right_in[cur] * 32766.0f);
-
-        /* digital clipping */
-        if (left_sample > 32767.0f) left_sample = 32767.0f;
-        if (left_sample < -32768.0f) left_sample = -32768.0f;
-        if (right_sample > 32767.0f) right_sample = 32767.0f;
-        if (right_sample < -32768.0f) right_sample = -32768.0f;
-
-        left_out[j] = (int16_t)left_sample;
-        if (right_out != NULL) right_out[k] = (int16_t)right_sample;
+        left_out[j] = round_clip_to_i16(left_in[cur] * 32766.0f);
+        if (right_out != NULL) right_out[k] = (int16_t)round_clip_to_i16(right_in[cur] * 32766.0f);
     }
 
     synth->cur = cur;
