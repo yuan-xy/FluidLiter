@@ -1434,8 +1434,6 @@ static int fixup_sample(SFData *sf);
 const static char idlist[] = {"RIFFLISTsfbkINFOsdtapdtaifilisngINAMiromiverICRDIENGIPRD"
                               "ICOPICMTISFTsnamsmplphdrpbagpmodpgeninstibagimodigenshdr"};
 
-static unsigned int sdtachunk_size;
-
 /* sound font file load functions */
 static int chunkid(unsigned int id) {
     unsigned int i;
@@ -1624,22 +1622,14 @@ static int process_info(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
 static int process_sdta(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
     SFChunk chunk;
 
-    if (size == 0) return (OK); /* no sample data? */
-
-    /* read sub chunk */
     READCHUNK(&chunk, fd, fapi);
-    size -= 8;
-
     if (chunkid(chunk.id) != SMPL_ID)
         return (gerr(ErrCorr, _("Expected SMPL chunk found invalid id instead")));
 
-    if ((size - chunk.size) != 0) return (gerr(ErrCorr, _("SDTA chunk size mismatch")));
+    if ((size - chunk.size) != 8) return (gerr(ErrCorr, _("SDTA chunk size mismatch")));
 
     /* sample data follows */
     sf->samplepos = fapi->ftell(fd);
-
-    /* used in fixup_sample() to check validity of sample headers */
-    sdtachunk_size = chunk.size;
     sf->samplesize = chunk.size;
 
     FSKIP(chunk.size, fd, fapi);
@@ -2379,7 +2369,7 @@ static int fixup_sample(SFData *sf) {
         /* if sample end is over the sample data chunk
            or sam start is greater than 4 less than the end (at least 4 samples)
          */
-        if (sam->end > sdtachunk_size || sam->start > (sam->end - 4)) {
+        if (sam->end > sf->samplesize || sam->start > (sam->end - 4)) {
             FLUID_LOG(FLUID_WARN,
                       _("Sample '%s' start/end file positions are invalid,"
                         " disabling and will not be saved"),
