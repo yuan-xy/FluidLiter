@@ -16,7 +16,7 @@ make -j BUILD=$BUILD
 
 
 rm fluidlite-test || true
-gcc example/src/main.c -m32 -DWITH_FLOAT -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidliter -lm -o fluidlite-test
+gcc example/src/main.c -m32 -DWITH_FLOAT -g -Iinclude -Isrc -L$BUILD -lfluidliter -lm -o fluidlite-test
 rm massif.out.* || true
 valgrind --tool=massif ./fluidlite-test ./example/sf_/GMGSx_1.sf2 output.pcm
 # ms_print massif.out.<pid>
@@ -36,4 +36,6 @@ valgrind --tool=massif ./fluidlite-test ./example/sf_/GMGSx_1.sf2 output.pcm
 # export QT_SCALE_FACTOR=2
 # kcachegrind callgrind.out.xx
 
-gcc example/src/sfont_load_test.c -m32 -DWITH_FLOAT -g -Iinclude -Isrc -I$BUILD -L$BUILD -lfluidliter -lm -o sfont_load_test
+gcc example/src/sfont_load_test.c -m32 -DWITH_FLOAT -g -Iinclude -Isrc -L$BUILD -lfluidliter -lm -o sfont_load_test
+
+# gcc example/src/sfont_truncate.c -m32 -DWITH_FLOAT -g -Iinclude -Isrc -L$BUILD -lfluidliter -lm -o sfont_truncate

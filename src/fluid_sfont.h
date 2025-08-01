@@ -94,6 +94,7 @@ typedef struct _SFData {     /* Sound font data structure */
     fluid_list_t *preset;    /* linked list of preset info */
     fluid_list_t *inst;      /* linked list of instrument info */
     fluid_list_t *sample;    /* linked list of sample info */
+    bool is_compressed;
 } SFData;
 
 /* sf file chunk IDs */
@@ -434,6 +435,7 @@ struct _fluid_sfont_t {
     fluid_preset_t *preset; /* the presets of this soundfont */
     fluid_preset_t *iter_cur; /* the current preset in the iteration */
     char is_rom;                 /* is the sample data loaded in rom */
+    char is_compressed;          /* is the sample data compressed */
 
     unsigned int id;
 };
@@ -549,5 +551,24 @@ fluid_sample_t *new_fluid_sample(void);
 int delete_fluid_sample(fluid_sample_t *sample);
 int fluid_sample_import_sfont(fluid_sample_t *sample, SFSample *sfsample,
                               fluid_sfont_t *sfont);
+
+
+
+#ifndef COMPRESS_RATIO
+    #define COMPRESS_RATIO 4
+#endif
+
+/**
+    \param buffer compressed data buffer
+    \param compressed_size pre computed buffer size
+    \param orig_buf original data
+    \param orig_size original data size
+ */
+typedef void compress_callback(char *buffer, int compressed_size, char *orig_buf, int orig_size);
+typedef void decompress_callback(char *buffer, int compressed_size, char *orig_buf, int orig_size);
+
+void fluid_sfont_set_decompress_callback(decompress_callback *d_cb);
+
+bool compress_sf2(const char *fname, const char *out_file, compress_callback ccb);
 
 #endif /* _FLUID_SFONT_H */

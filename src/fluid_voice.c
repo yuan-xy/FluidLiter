@@ -1890,7 +1890,7 @@ int fluid_voice_optimize_sample(fluid_sample_t *s) {
     double result;
     int i;
 
-    if (!s->valid || (s->sampletype & FLUID_SAMPLETYPE_OGG_VORBIS))
+    if (!s->valid)
         return (FLUID_OK);
 
     if (!s->amplitude_that_reaches_noise_floor_is_valid) { /* Only once */

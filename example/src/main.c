@@ -47,6 +47,7 @@ int main(int argc, char *argv[]) {
     }
 
     fwrite(buffer, SAMPLE_SIZE, NUM_SAMPLES, file);
+    printf("calculateVolumeDB(buffer, NUM_SAMPLES): %f\n", calculateVolumeDB(buffer, NUM_SAMPLES));
     assert(float_eq(calculateVolumeDB(buffer, NUM_SAMPLES), -14.874127));
 
 

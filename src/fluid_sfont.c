@@ -167,6 +167,7 @@ int fluid_sfont_load(fluid_sfont_t *sfont, const char *filename, fluid_fileapi_t
        it's loaded separately (and might be unoaded/reloaded in future) */
     sfont->samplepos = sfdata->samplepos;
     sfont->samplesize = sfdata->samplesize;
+    sfont->is_compressed = sfdata->is_compressed;
 
     /* load sample data in one block */
     if (fluid_sfont_load_sampledata(sfont, fapi) != FLUID_OK) goto err_exit;
@@ -245,6 +246,12 @@ int fluid_sfont_add_preset(fluid_sfont_t *sfont, fluid_preset_t *preset) {
     return FLUID_OK;
 }
 
+static decompress_callback *decompress_cb = NULL;
+void fluid_sfont_set_decompress_callback(decompress_callback *cb){
+    decompress_cb = cb;
+}
+
+
 int fluid_sfont_load_sampledata(fluid_sfont_t *sfont, fluid_fileapi_t *fapi) {
     fluid_file fd;
     fd = fapi->fopen(fapi, sfont->filename);
@@ -260,7 +267,7 @@ int fluid_sfont_load_sampledata(fluid_sfont_t *sfont, fluid_fileapi_t *fapi) {
 
     if (fapi->fread_zero_memcpy != NULL) {
         sfont->sampledata = fapi->fread_zero_memcpy(sfont->samplesize, fd);
-        sfont->is_rom = 1;
+        sfont->is_rom = 1; 
     } else {
         sfont->is_rom = 0;
         sfont->sampledata = (short *)FLUID_MALLOC_SF(sfont->samplesize);
@@ -270,10 +277,26 @@ int fluid_sfont_load_sampledata(fluid_sfont_t *sfont, fluid_fileapi_t *fapi) {
             FLUID_LOG(FLUID_ERR, "Out of memory");
             return FLUID_FAILED;
         }
-        if (fapi->fread(sfont->sampledata, sfont->samplesize, fd) == FLUID_FAILED) {
-            FLUID_LOG(FLUID_ERR, "Failed to read sample data");
-            return FLUID_FAILED;
+        if(sfont->is_compressed){
+            int compressed_size = sfont->samplesize/COMPRESS_RATIO;
+            char *buffer = malloc(compressed_size);
+            if (fapi->fread(buffer, compressed_size, fd) == FLUID_FAILED) {
+                FLUID_LOG(FLUID_ERR, "Failed to read sample data");
+                return FLUID_FAILED;
+            }
+            if(decompress_cb == NULL){
+                FLUID_LOG(FLUID_ERR, "Failed to get decompress_callback");
+                return FLUID_FAILED;
+            }
+            decompress_cb(buffer, compressed_size, (char *)sfont->sampledata, sfont->samplesize);
+            free(buffer);
+        }else{
+            if (fapi->fread(sfont->sampledata, sfont->samplesize, fd) == FLUID_FAILED) {
+                FLUID_LOG(FLUID_ERR, "Failed to read sample data");
+                return FLUID_FAILED;
+            }
         }
+
         fapi->fclose(fd);
     }
     return FLUID_OK;
@@ -1288,8 +1311,6 @@ int fluid_sample_import_sfont(fluid_sample_t *sample, SFSample *sfsample, fluid_
     sample->pitchadj = sfsample->pitchadj;
     sample->sampletype = sfsample->sampletype;
 
-    if (sample->sampletype & FLUID_SAMPLETYPE_OGG_VORBIS) {
-    }
     if (sample->end - sample->start < 8) {
         sample->valid = 0;
         FLUID_LOG(FLUID_WARN, "Ignoring sample %s: too few sample data points", sample->name);
@@ -1498,9 +1519,17 @@ static int load_body(unsigned int size, SFData *sf, void *fd, fluid_fileapi_t *f
     SFChunk chunk;
 
     READCHUNK(&chunk, fd, fapi);        /* load RIFF chunk */
-    if (chunkid(chunk.id) != RIFF_ID) { /* error if not RIFF */
+    if (chunkid(chunk.id) != RIFF_ID && chunkid(chunk.id) != LIST_ID) { /* error if not RIFF */
         FLUID_LOG(FLUID_ERR, _("Not a RIFF file"));
         return (FAIL);
+    }
+    if(chunkid(chunk.id) == LIST_ID){
+        // 下面两行是为了和read_listchunk行为一致
+        READID(&chunk.id, fd, fapi); /* read sdta */
+        chunk.size -= 4;
+
+        sf->is_compressed = true;
+        goto skip_header;
     }
 
     if (size != 0 && chunk.size != size - 8) {
@@ -1522,6 +1551,7 @@ static int load_body(unsigned int size, SFData *sf, void *fd, fluid_fileapi_t *f
 
     /* Process sample chunk */
     if (!read_listchunk(&chunk, fd, fapi)) return (FAIL);
+    skip_header:
     if (chunkid(chunk.id) != SDTA_ID)
         return (gerr(ErrCorr, _("Invalid ID found when expecting SAMPLE chunk")));
     if (!process_sdta(chunk.size, sf, fd, fapi)) return (FAIL);
@@ -1545,7 +1575,7 @@ static int load_body(unsigned int size, SFData *sf, void *fd, fluid_fileapi_t *f
 static int read_listchunk(SFChunk *chunk, void *fd, fluid_fileapi_t *fapi) {
     READCHUNK(chunk, fd, fapi);        /* read list chunk */
     if (chunkid(chunk->id) != LIST_ID) /* error if ! list chunk */
-        return (gerr(ErrCorr, _("Invalid chunk id in level 0 parse")));
+        return (gerr(ErrCorr, "expect LIST: %s\n", (char *)chunk->id));
     READID(&chunk->id, fd, fapi); /* read id string */
     chunk->size -= 4;
     return (OK);
@@ -1626,11 +1656,15 @@ static int process_sdta(int size, SFData *sf, void *fd, fluid_fileapi_t *fapi) {
     if (chunkid(chunk.id) != SMPL_ID)
         return (gerr(ErrCorr, _("Expected SMPL chunk found invalid id instead")));
 
-    if ((size - chunk.size) != 8) return (gerr(ErrCorr, _("SDTA chunk size mismatch")));
+    if ((size - chunk.size) != 8) return (gerr(ErrCorr, "SDTA chunk size mismatch:%d,%d\n", size, chunk.size));
 
     /* sample data follows */
     sf->samplepos = fapi->ftell(fd);
-    sf->samplesize = chunk.size;
+    if(sf->is_compressed){
+        sf->samplesize = chunk.size * COMPRESS_RATIO;
+    }else{
+        sf->samplesize = chunk.size;
+    }
 
     FSKIP(chunk.size, fd, fapi);
 
@@ -2380,9 +2414,7 @@ static int fixup_sample(SFData *sf) {
 
             return (OK);
         }
-        /* compressed samples get fixed up after decompression */
-        else if (sam->sampletype & FLUID_SAMPLETYPE_OGG_VORBIS) {
-        } else if (sam->loopend > sam->end || sam->loopstart >= sam->loopend ||
+        else if (sam->loopend > sam->end || sam->loopstart >= sam->loopend ||
                    sam->loopstart <= sam->start) { /* loop is fowled?? (cluck cluck :) */
             /* can pad loop by 8 samples and ensure at least 4 for loop (2*8+4)
              */
@@ -2562,4 +2594,103 @@ int gen_validp(int gen) { /* is preset generator valid? */
     if (!gen_valid(gen)) return (FALSE);
     while (badpgen[i] && badpgen[i] != (unsigned short)gen) i++;
     return (badpgen[i] == 0);
+}
+
+
+#define SKIP_sdtasmpl 12  // 12：4字节"sdta"+4字节"smpl"+4字节size
+
+bool compress_sf2(const char *fname, const char *out_file, compress_callback ccb) {
+    SFChunk chunk;
+    FILE *fd;
+    fluid_fileapi_t *fapi = fluid_get_default_fileapi();
+
+    if ((fd = fapi->fopen(fapi, fname)) == NULL) {
+        FLUID_LOG(FLUID_ERR, _("Unable to open file \"%s\""), fname);
+        return (FAIL);
+    }
+    FILE* out = fopen(out_file, "wb");
+    if (!out){
+        FLUID_LOG(FLUID_ERR, _("Unable to open file \"%s\""), out_file);
+        return (FAIL);
+    }
+
+    READCHUNK(&chunk, fd, fapi);        /* load RIFF chunk */
+    if (chunkid(chunk.id) != RIFF_ID) { /* error if not RIFF */
+        FLUID_LOG(FLUID_ERR, _("Not a RIFF file"));
+        return (FAIL);
+    }
+
+    READID(&chunk.id, fd, fapi);        /* load file ID */
+    if (chunkid(chunk.id) != SFBK_ID) { /* error if not SFBK_ID */
+        FLUID_LOG(FLUID_ERR, _("Not a sound font file"));
+        return (FAIL);
+    }
+
+    /* Process INFO block */
+    if (!read_listchunk(&chunk, fd, fapi)) return (FAIL);
+    if (chunkid(chunk.id) != INFO_ID)
+        return (gerr(ErrCorr, _("Invalid ID found when expecting INFO chunk")));
+
+    if (fapi->fseek(fd, chunk.size, SEEK_CUR) == FLUID_FAILED) {
+        return (gerr(ErrCorr, _("Failed to seek position in data file")));
+    }
+    //以上的都不写入out
+
+    /* Process sample chunk */
+    READCHUNK(&chunk, fd, fapi);        /* read list chunk */
+    if (chunkid(chunk.id) != LIST_ID) /* error if ! list chunk */
+        return (gerr(ErrCorr, _("Invalid ID found when expecting LIST chunk")));
+    
+    SFChunk list_sdta = chunk;
+    list_sdta.size = (chunk.size - SKIP_sdtasmpl)/COMPRESS_RATIO + SKIP_sdtasmpl;
+    fwrite(&list_sdta, sizeof(chunk), 1, out);
+
+    READID(&chunk.id, fd, fapi);
+    if (chunkid(chunk.id) != SDTA_ID)
+        return (gerr(ErrCorr, _("Invalid ID found when expecting SAMPLE chunk")));
+    fwrite(&chunk.id, sizeof(chunk.id), 1, out);
+
+    SFChunk chunk_smpl;
+    READCHUNK(&chunk_smpl, fd, fapi);
+    if (chunkid(chunk_smpl.id) != SMPL_ID)
+        return (gerr(ErrCorr, _("Expected SMPL chunk found invalid id instead")));
+
+    if ((chunk.size - chunk_smpl.size) != SKIP_sdtasmpl){
+        return (gerr(ErrCorr, "SDTA chunk size mismatch:%d,%d\n", chunk.size, chunk_smpl.size));
+    }
+        
+    {
+        int orig_size = chunk_smpl.size;
+        if(orig_size % COMPRESS_RATIO != 0) return (gerr(ErrCorr, "orig_size %d %% 4 != 0 \n", orig_size));
+        int compressed_size = chunk_smpl.size/COMPRESS_RATIO;
+        chunk_smpl.size = compressed_size;
+        fwrite(&chunk_smpl, sizeof(chunk_smpl), 1, out);
+
+        char *buffer = malloc(compressed_size);
+        char *orig_buf = malloc(orig_size);
+        fapi->fread(orig_buf, orig_size, fd);
+
+        ccb(buffer, compressed_size, orig_buf, orig_size);
+
+        free(buffer);
+        free(orig_buf);
+        fwrite(buffer, compressed_size, 1, out);
+    }
+
+    /* process HYDRA chunk */
+    READCHUNK(&chunk, fd, fapi);        /* read list chunk */
+    if (chunkid(chunk.id) != LIST_ID) /* error if ! list chunk */
+        return (gerr(ErrCorr, _("Invalid ID found when expecting LIST chunk")));
+
+    fwrite(&chunk, sizeof(chunk), 1, out);
+    {
+        int read_size = chunk.size;
+        char *buffer = malloc(read_size);
+        fapi->fread(buffer, read_size, fd);
+        fwrite(buffer, read_size, 1, out);
+        free(buffer);
+    }
+    fclose(out);
+    fclose(fd);
+    return (OK);
 }
