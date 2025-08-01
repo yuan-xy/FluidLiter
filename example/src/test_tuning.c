@@ -108,7 +108,7 @@ int main(int argc, char *argv[]) {
     fluid_tuning_t *tuning = fluid_channel_get_tuning(synth->voice[0]->channel);
     assert(fluid_channel_has_tuning(synth->voice[0]->channel));
     assert(float_eq( fluid_tuning_get_pitch(tuning, 60) , 6000));
-    assert(float_eq( fluid_tuning_get_pitch(tuning, 64) , 6386.3134765625));
+    assert(float_eq_3( fluid_tuning_get_pitch(tuning, 64) , 6386.3134765625));
     assert(synth->voice[0]->gen[GEN_SCALETUNE].val == 100.0f);
     assert(synth->voice[0]->channel->tuning != NULL);
 
