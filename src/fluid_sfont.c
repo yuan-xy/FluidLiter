@@ -1505,14 +1505,14 @@ static int load_body(unsigned int size, SFData *sf, void *fd, fluid_fileapi_t *f
         return (FAIL);
     }
 
-    READID(&chunk.id, fd, fapi);        /* load file ID */
-    if (chunkid(chunk.id) != SFBK_ID) { /* error if not SFBK_ID */
-        FLUID_LOG(FLUID_ERR, _("Not a sound font file"));
+    if (size != 0 && chunk.size != size - 8) {
+        FLUID_LOG(FLUID_ERR, _("Sound font file size mismatch"));
         return (FAIL);
     }
 
-    if (size != 0 && chunk.size != size - 8) {
-        FLUID_LOG(FLUID_ERR, _("Sound font file size mismatch"));
+    READID(&chunk.id, fd, fapi);        /* load file ID */
+    if (chunkid(chunk.id) != SFBK_ID) { /* error if not SFBK_ID */
+        FLUID_LOG(FLUID_ERR, _("Not a sound font file"));
         return (FAIL);
     }
 
