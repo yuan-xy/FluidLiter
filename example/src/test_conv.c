@@ -65,10 +65,10 @@ int main(int argc, char *argv[])
     assert(float_eq(fluid_act2hz(6000.0), 261.62557));
     assert(float_eq(fluid_act2hz(6900.0), 440));
 
-    assert(float_eq(fluid_act2hz(1500.0), 19.445));
+    assert(float_eq_3(fluid_act2hz(1500.0), 19.445));
     assert(float_eq(fluid_act2hz(13500), 19912.127));
 
-    assert(float_eq(fluid_ct2hz(1500.0), 19.445));
+    assert(float_eq_3(fluid_ct2hz(1500.0), 19.445));
     assert(float_eq(fluid_ct2hz(13500), 19912.127));
 
     for(int i = 1500; i < 13500; i++){

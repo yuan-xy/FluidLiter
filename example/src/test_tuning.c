@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
         double ct = 6000 + 100 * i + pitch[i];
         double hz = fluid_ct2hz(ct);
         double r = hz / 261.625565;
-        assert(float_eq(r, ratio[i]));
+        assert(float_eq_3(r, ratio[i]));
     }
 
     int notes[] = {NN1, NN3, NN5};

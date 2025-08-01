@@ -4,10 +4,14 @@
 #include <math.h>
 #include <float.h> // 用于定义 FLT_MIN
 
-#define EPSILON 1e-3
+#define EPSILON 1e-4
 
 bool float_eq(double a, double b) {
     return fabs(a - b) < EPSILON;
+}
+
+bool float_eq_3(double a, double b) {
+    return fabs(a - b) < 1e-3;
 }
 
 

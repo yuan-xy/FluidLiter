@@ -5,6 +5,7 @@
 
 bool float_eq(double a, double b);
 
+bool float_eq_3(double a, double b);
 
 #endif /* _MISC_H */
 
