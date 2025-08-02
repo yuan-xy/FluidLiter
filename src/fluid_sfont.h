@@ -567,8 +567,8 @@ int fluid_sample_import_sfont(fluid_sample_t *sample, SFSample *sfsample,
     \param orig_buf original data
     \param orig_size original data size
  */
-typedef void compress_callback(char *buffer, int compressed_size, char *orig_buf, int orig_size);
-typedef void decompress_callback(char *buffer, int compressed_size, char *orig_buf, int orig_size);
+typedef bool compress_callback(char *buffer, int compressed_size, char *orig_buf, int orig_size);
+typedef bool decompress_callback(char *buffer, int compressed_size, char *orig_buf, int orig_size);
 
 void fluid_sfont_set_decompress_callback(decompress_callback *d_cb);
 

@@ -9,15 +9,17 @@
 #include "fluid_sfont.h"
 #include "fluid_synth.h"
 
-void compress_cb(char *buffer, int compressed_size, char *orig_buf, int orig_size){
+bool compress_cb(char *buffer, int compressed_size, char *orig_buf, int orig_size){
     memcpy(buffer, orig_buf, compressed_size); //直接截取前compressed_size，实际未执行压缩
+    return true;
 }
 
-void decompress_cb(char *buffer, int compressed_size, char *orig_buf, int orig_size){
+bool decompress_cb(char *buffer, int compressed_size, char *orig_buf, int orig_size){
     memcpy(orig_buf, buffer, compressed_size);
     memcpy(orig_buf+compressed_size, buffer, compressed_size);
     memcpy(orig_buf+compressed_size*2, buffer, compressed_size);
     memcpy(orig_buf+compressed_size*3, buffer, compressed_size);
+    return true;
 }
 
 int main(int argc, char *argv[]) {

@@ -288,8 +288,9 @@ int fluid_sfont_load_sampledata(fluid_sfont_t *sfont, fluid_fileapi_t *fapi) {
                 FLUID_LOG(FLUID_ERR, "Failed to get decompress_callback");
                 return FLUID_FAILED;
             }
-            decompress_cb(buffer, compressed_size, (char *)sfont->sampledata, sfont->samplesize);
+            bool flag = decompress_cb(buffer, compressed_size, (char *)sfont->sampledata, sfont->samplesize);
             free(buffer);
+            if(!flag) return FLUID_FAILED;
         }else{
             if (fapi->fread(sfont->sampledata, sfont->samplesize, fd) == FLUID_FAILED) {
                 FLUID_LOG(FLUID_ERR, "Failed to read sample data");
@@ -2671,11 +2672,12 @@ bool compress_sf2(const char *fname, const char *out_file, compress_callback ccb
         char *orig_buf = malloc(orig_size);
         fapi->fread(orig_buf, orig_size, fd);
 
-        ccb(buffer, compressed_size, orig_buf, orig_size);
+        bool flag = ccb(buffer, compressed_size, orig_buf, orig_size);
+        if(!flag) return (gerr(ErrCorr, "compress error"));
 
+        fwrite(buffer, compressed_size, 1, out);
         free(buffer);
         free(orig_buf);
-        fwrite(buffer, compressed_size, 1, out);
     }
 
     /* process HYDRA chunk */
