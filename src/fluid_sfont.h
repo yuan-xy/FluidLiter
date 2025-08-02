@@ -558,6 +558,9 @@ int fluid_sample_import_sfont(fluid_sample_t *sample, SFSample *sfsample,
     #define COMPRESS_RATIO 4
 #endif
 
+#define COMPRESS_HEADER "zipx"
+#define COMPRESS_HEADER_INT 0x7870697A
+
 /**
     \param buffer compressed data buffer
     \param compressed_size pre computed buffer size

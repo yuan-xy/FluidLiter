@@ -1519,11 +1519,11 @@ static int load_body(unsigned int size, SFData *sf, void *fd, fluid_fileapi_t *f
     SFChunk chunk;
 
     READCHUNK(&chunk, fd, fapi);        /* load RIFF chunk */
-    if (chunkid(chunk.id) != RIFF_ID && chunkid(chunk.id) != LIST_ID) { /* error if not RIFF */
+    if (chunkid(chunk.id) != RIFF_ID && chunk.id != COMPRESS_HEADER_INT) { /* error if not RIFF */
         FLUID_LOG(FLUID_ERR, _("Not a RIFF file"));
         return (FAIL);
     }
-    if(chunkid(chunk.id) == LIST_ID){
+    if(chunk.id == COMPRESS_HEADER_INT){
         // 下面两行是为了和read_listchunk行为一致
         READID(&chunk.id, fd, fapi); /* read sdta */
         chunk.size -= 4;
@@ -2641,9 +2641,10 @@ bool compress_sf2(const char *fname, const char *out_file, compress_callback ccb
     if (chunkid(chunk.id) != LIST_ID) /* error if ! list chunk */
         return (gerr(ErrCorr, _("Invalid ID found when expecting LIST chunk")));
     
-    SFChunk list_sdta = chunk;
-    list_sdta.size = (chunk.size - SKIP_sdtasmpl)/COMPRESS_RATIO + SKIP_sdtasmpl;
-    fwrite(&list_sdta, sizeof(chunk), 1, out);
+    SFChunk zip_header;
+    zip_header.id = COMPRESS_HEADER_INT;
+    zip_header.size = (chunk.size - SKIP_sdtasmpl)/COMPRESS_RATIO + SKIP_sdtasmpl;
+    fwrite(&zip_header, sizeof(chunk), 1, out);
 
     READID(&chunk.id, fd, fapi);
     if (chunkid(chunk.id) != SDTA_ID)
