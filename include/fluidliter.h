@@ -288,16 +288,6 @@ void fluid_synth_remove_sfont(fluid_synth_t *synth,
 */
 int fluid_synth_sfcount(fluid_synth_t *synth);
 
-/** Get a SoundFont. The SoundFont is specified by its index on the
-    stack. The top of the stack has index zero.
-
-    \param synth The synthesizer object
-    \param num The number of the SoundFont (0 <= num < sfcount)
-    \returns A pointer to the SoundFont
-*/
-fluid_sfont_t *fluid_synth_get_sfont(fluid_synth_t *synth,
-                                                    unsigned int num);
-
 /** Get a SoundFont. The SoundFont is specified by its ID.
 
     \param synth The synthesizer object

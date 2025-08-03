@@ -2033,13 +2033,6 @@ int fluid_synth_sfcount(fluid_synth_t *synth) {
     return fluid_list_size(synth->sfont);
 }
 
-/* fluid_synth_get_sfont
- *
- * Returns SoundFont num
- */
-fluid_sfont_t *fluid_synth_get_sfont(fluid_synth_t *synth, unsigned int num) {
-    return (fluid_sfont_t *)fluid_list_get(fluid_list_nth(synth->sfont, num));
-}
 
 fluid_sfont_t *fluid_synth_get_sfont_by_id(fluid_synth_t *synth,
                                            unsigned int id) {
