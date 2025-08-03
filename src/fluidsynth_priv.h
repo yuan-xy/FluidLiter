@@ -136,55 +136,35 @@ typedef FILE *fluid_file;
 
 
 
-/* Math functions */
 #if defined WITH_FLOAT
-#define FLUID_SIN   sinf
+    #define FLUID_SIN   sinf
+    #define FLUID_COS   cosf
+    #define FLUID_FABS  fabsf
+    #define FLUID_POW   powf
+    #define FLUID_SQRT  sqrtf
+    #define FLUID_LOGF  logf
 #else
-#define FLUID_SIN   (fluid_real_t)sin
-#endif
-
-
-#if defined WITH_FLOAT
-#define FLUID_COS   cosf
-#else
-#define FLUID_COS   (fluid_real_t)cos
-#endif
-
-#if defined WITH_FLOAT
-#define FLUID_FABS  fabsf
-#else
-#define FLUID_FABS  (fluid_real_t)fabs
-#endif
-
-#if defined WITH_FLOAT
-#define FLUID_POW   powf
-#else
-#define FLUID_POW   (fluid_real_t)pow
-#endif
-
-#if defined WITH_FLOAT
-#define FLUID_SQRT  sqrtf
-#else
-#define FLUID_SQRT  (fluid_real_t)sqrt
-#endif
-
-#if defined WITH_FLOAT
-#define FLUID_LOGF  logf
-#else
-#define FLUID_LOGF  (fluid_real_t)log
+    #define FLUID_SIN   (fluid_real_t)sin
+    #define FLUID_COS   (fluid_real_t)cos
+    #define FLUID_FABS  (fluid_real_t)fabs
+    #define FLUID_POW   (fluid_real_t)pow
+    #define FLUID_SQRT  (fluid_real_t)sqrt
+    #define FLUID_LOGF  (fluid_real_t)log
 #endif
 
 
 #if SPI_FLASH == 1
-extern  int16_t spi_read_int16(uint32_t address);
-#define SPI_READ_SAMPLE(base, pos) spi_read_int16((uint32_t)(base+pos)) 
+extern  int16_t spi_read_int16(uint32_t base, uint16_t pos);
+#define SPI_READ_SAMPLE(base, pos) spi_read_int16(base, pos) 
 #endif
 
 #if defined(__arm__) && defined(SPI_READ_SAMPLE) 
-#define READ_SAMPLE(base, pos) \
+    #define READ_SAMPLE(base, pos) \
         ((int)(base) > 0x08000000 ? base[pos] : SPI_READ_SAMPLE((base), (pos)))
 #else
-#define READ_SAMPLE(base, pos) base[pos]
+    #ifndef READ_SAMPLE
+    #define READ_SAMPLE(base, pos) base[pos]
+    #endif
 #endif
 
 

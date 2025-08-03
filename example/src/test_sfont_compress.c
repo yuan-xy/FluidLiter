@@ -5,6 +5,9 @@
 #include <assert.h>
 #include <stdbool.h>
 
+// READ_SAMPLE这里定义无效，因为FluidLiter是做为库被引用的。
+// #define READ_SAMPLE(base, pos) (printf("sample:%d[%d]\n", base, pos), base[pos])
+
 #include "fluidliter.h"
 #include "fluid_sfont.h"
 #include "fluid_synth.h"
