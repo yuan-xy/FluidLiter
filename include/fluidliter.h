@@ -707,30 +707,6 @@ void fluid_set_default_fileapi(fluid_fileapi_t *fileapi);
 #define fluid_sfont_get_id(_sf) ((_sf)->id)
 
 
-struct _fluid_sample_t {
-    char name[21];
-    unsigned int start;
-    unsigned int
-        end; /* Note: Index of last valid sample point (contrary to SF spec) */
-    unsigned int loopstart;
-    unsigned int loopend; /* Note: first point following the loop (superimposed
-                             on loopstart) */
-    unsigned int samplerate;
-    int origpitch;
-    int pitchadj;
-    int sampletype;
-    int valid;
-    short *data;
-
-    /** The amplitude, that will lower the level of the sample's loop to
-        the noise floor. Needed for note turnoff optimization, will be
-        filled out automatically */
-    /* Set this to zero, when submitting a new sample. */
-    int amplitude_that_reaches_noise_floor_is_valid;
-    double amplitude_that_reaches_noise_floor;
-};
-
-
 /** Sample types */
 
 #define FLUID_SAMPLETYPE_MONO 1

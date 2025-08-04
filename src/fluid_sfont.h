@@ -434,10 +434,36 @@ struct _fluid_sfont_t {
     fluid_list_t *sample;      /* the samples in this soundfont */
     fluid_preset_t *preset; /* the presets of this soundfont */
     fluid_preset_t *iter_cur; /* the current preset in the iteration */
+    uint16_t sample_count;      /* how many samples in this soundfont */
     char is_rom;                 /* is the sample data loaded in rom */
     char is_compressed;          /* is the sample data compressed */
 
     unsigned int id;
+};
+
+
+
+struct _fluid_sample_t {
+    char name[21];
+    unsigned int start;
+    unsigned int
+        end; /* Note: Index of last valid sample point (contrary to SF spec) */
+    unsigned int loopstart;
+    unsigned int loopend; /* Note: first point following the loop (superimposed
+                             on loopstart) */
+    unsigned int samplerate;
+    int origpitch;
+    int pitchadj;
+    int sampletype;
+    int valid;
+    short *data;
+
+    /** The amplitude, that will lower the level of the sample's loop to
+        the noise floor. Needed for note turnoff optimization, will be
+        filled out automatically */
+    /* Set this to zero, when submitting a new sample. */
+    int amplitude_that_reaches_noise_floor_is_valid;
+    double amplitude_that_reaches_noise_floor;
 };
 
 /*

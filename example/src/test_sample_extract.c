@@ -27,6 +27,8 @@ int main(int argc, char *argv[])
     fluid_sfont_t *sfont = (fluid_sfont_t *)synth->sfont->data;
     short *sampledata = sfont->sampledata;
     printf("samplesize:%d\n", sfont->samplesize);
+    assert(sfont->sample_count == 10);
+    assert(sfont->samplesize == 185544);
     // fwrite(sampledata, sizeof(short), sfont->samplesize/sizeof(short), file);
 
     short out[185544];
