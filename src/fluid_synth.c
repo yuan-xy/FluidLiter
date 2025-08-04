@@ -1414,14 +1414,6 @@ float fluid_synth_get_gain(fluid_synth_t *synth) {
     return synth->gain;
 }
 
-/*
- * fluid_synth_update_polyphony
- */
-int fluid_synth_update_polyphony(fluid_synth_t *synth, char *name, int value) {
-    fluid_synth_set_polyphony(synth, value);
-    return 0;
-}
-
 int fluid_synth_set_polyphony(fluid_synth_t *synth, int polyphony) {
     int i;
 

@@ -144,7 +144,6 @@ void fluid_synth_release_voice_on_same_note(fluid_synth_t *synth, int chan,
 void fluid_synth_update_presets(fluid_synth_t *synth);
 
 int fluid_synth_update_gain(fluid_synth_t *synth, char *name, double value);
-int fluid_synth_update_polyphony(fluid_synth_t *synth, char *name, int value);
 
 fluid_bank_offset_t *fluid_synth_get_bank_offset0(fluid_synth_t *synth,
                                                   int sfont_id);
