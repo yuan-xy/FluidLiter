@@ -16,6 +16,19 @@
 #define NUM_SAMPLES (NUM_FRAMES * NUM_CHANNELS)
 
 
+void test_sample_index(fluid_sfont_t *sfont) {
+    fluid_list_t *list;
+    fluid_sample_t *sample;
+    int index = 0;
+    for (list = sfont->sample; list; list = fluid_list_next(list)) {
+        sample = (fluid_sample_t *)fluid_list_get(list);
+
+        assert(sample->idx_in_sfont == index);
+        index++;
+    }
+}
+
+
 int main(int argc, char *argv[])
 {
     char *fname = "test_sample.pcm";
@@ -29,6 +42,8 @@ int main(int argc, char *argv[])
     printf("samplesize:%d\n", sfont->samplesize);
     assert(sfont->sample_count == 10);
     assert(sfont->samplesize == 185544);
+    test_sample_index(sfont);
+
     // fwrite(sampledata, sizeof(short), sfont->samplesize/sizeof(short), file);
 
     short out[185544];

@@ -212,6 +212,7 @@ err_exit:
 }
 
 int fluid_sfont_add_sample(fluid_sfont_t *sfont, fluid_sample_t *sample) {
+    sample->idx_in_sfont = sfont->sample_count;
     sfont->sample = fluid_list_append(sfont->sample, sample);
     sfont->sample_count += 1;
     return FLUID_OK;

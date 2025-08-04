@@ -1896,7 +1896,7 @@ int fluid_voice_optimize_sample(fluid_sample_t *s) {
     if (!s->amplitude_that_reaches_noise_floor_is_valid) { /* Only once */
         /* Scan the loop */
         for (i = (int)s->loopstart; i < (int)s->loopend; i++) {
-            signed short val = READ_SAMPLE(s->data, i);
+            signed short val = READ_SAMPLE(s->data, i, s->idx_in_sfont);
             if (val > peak_max) {
                 peak_max = val;
             } else if (val < peak_min) {

@@ -154,16 +154,16 @@ typedef FILE *fluid_file;
 
 
 #if SPI_FLASH == 1
-extern  int16_t spi_read_int16(uint32_t base, uint16_t pos);
-#define SPI_READ_SAMPLE(base, pos) spi_read_int16(base, pos) 
+extern  int16_t spi_read_int16(uint32_t base, uint16_t pos, uint16_t idx_in_sfont);
+#define SPI_READ_SAMPLE(base, pos, idx_in_sfont) spi_read_int16(base, pos, idx_in_sfont) 
 #endif
 
 #if defined(__arm__) && defined(SPI_READ_SAMPLE) 
-    #define READ_SAMPLE(base, pos) \
-        ((int)(base) > 0x08000000 ? base[pos] : SPI_READ_SAMPLE((base), (pos)))
+    #define READ_SAMPLE(base, pos, idx_in_sfont) \
+        ((int)(base) > 0x08000000 ? base[pos] : SPI_READ_SAMPLE((base), (pos), (idx_in_sfont)))
 #else
     #ifndef READ_SAMPLE
-    #define READ_SAMPLE(base, pos) base[pos]
+    #define READ_SAMPLE(base, pos, idx_in_sfont) base[pos]
     #endif
 #endif
 

@@ -452,10 +452,11 @@ struct _fluid_sample_t {
     unsigned int loopend; /* Note: first point following the loop (superimposed
                              on loopstart) */
     unsigned int samplerate;
-    int origpitch;
-    int pitchadj;
-    int sampletype;
-    int valid;
+    uint8_t origpitch;
+    uint8_t pitchadj;
+    uint8_t sampletype;
+    uint8_t valid;
+    uint16_t idx_in_sfont;
     short *data;
 
     /** The amplitude, that will lower the level of the sample's loop to
