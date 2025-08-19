@@ -385,7 +385,7 @@ static void update_parameters_from_sample_rate(fluid_chorus_t *chorus)
 
     chorus->mod_depth /= 2; /* amplitude is peak to peek / 2 */
 #ifdef DEBUG_PRINT
-    printf("depth_ms:%f, depth_samples/2:%d\n", chorus->depth_ms, chorus->mod_depth);
+    FLUID_LOG(FLUID_DBG, "depth_ms:%f, depth_samples/2:%d\n", chorus->depth_ms, chorus->mod_depth);
 #endif
 
     /* Initializes the modulated center position:
@@ -393,7 +393,7 @@ static void update_parameters_from_sample_rate(fluid_chorus_t *chorus)
     */
     set_center_position(chorus); /* must be called before set_xxxx_frequency() */
 #ifdef DEBUG_PRINT
-    printf("mod_rate:%d\n", chorus->mod_rate);
+    FLUID_LOG(FLUID_DBG, "mod_rate:%d\n", chorus->mod_rate);
 #endif
 
     /* initialize modulator frequency */
@@ -635,8 +635,8 @@ fluid_chorus_set(fluid_chorus_t *chorus, int set, int nr, fluid_real_t level,
     update_parameters_from_sample_rate(chorus);
 
 #ifdef DEBUG_PRINT
-    printf("lfo type:%d\n", chorus->type);
-    printf("speed_Hz:%f\n", chorus->speed_Hz);
+    FLUID_LOG(FLUID_DBG, "lfo type:%d\n", chorus->type);
+    FLUID_LOG(FLUID_DBG, "speed_Hz:%f\n", chorus->speed_Hz);
 #endif
 
     /* Initialize the lfo waveform */
@@ -651,14 +651,14 @@ fluid_chorus_set(fluid_chorus_t *chorus, int set, int nr, fluid_real_t level,
 
     if(chorus->type == FLUID_CHORUS_MOD_SINE)
     {
-        printf("lfo: sinus\n");
+        FLUID_LOG(FLUID_DBG, "lfo: sinus\n");
     }
     else
     {
-        printf("lfo: triangle\n");
+        FLUID_LOG(FLUID_DBG, "lfo: triangle\n");
     }
 
-    printf("nr:%d\n", chorus->number_blocks);
+    FLUID_LOG(FLUID_DBG, "nr:%d\n", chorus->number_blocks);
 #endif
 
     /* Recalculate internal values after parameters change */
@@ -691,15 +691,15 @@ fluid_chorus_set(fluid_chorus_t *chorus, int set, int nr, fluid_real_t level,
             chorus->wet1 = wet * (chorus->width / 2.0f + 0.5f);
             chorus->wet2 = wet * ((1.0f - chorus->width) / 2.0f);
 #ifdef DEBUG_PRINT
-            printf("width:%f\n", chorus->width);
+            FLUID_LOG(FLUID_DBG, "width:%f\n", chorus->width);
 
             if(chorus->width > 0)
             {
-                printf("nr > 1, width > 0 => out stereo\n");
+                FLUID_LOG(FLUID_DBG, "nr > 1, width > 0 => out stereo\n");
             }
             else
             {
-                printf("nr > 1, width:0 =>out mono\n");
+                FLUID_LOG(FLUID_DBG, "nr > 1, width:0 =>out mono\n");
             }
 
 #endif
@@ -724,15 +724,15 @@ fluid_chorus_set(fluid_chorus_t *chorus, int set, int nr, fluid_real_t level,
             }
 
 #ifdef DEBUG_PRINT
-            printf("width:%f\n", chorus->width);
+            FLUID_LOG(FLUID_DBG, "width:%f\n", chorus->width);
 
             if(chorus->width != 0)
             {
-                printf("one block, width > 0 => out stereo\n");
+                FLUID_LOG(FLUID_DBG, "one block, width > 0 => out stereo\n");
             }
             else
             {
-                printf("one block,  width:0 => out mono\n");
+                FLUID_LOG(FLUID_DBG, "one block,  width:0 => out mono\n");
             }
 
 #endif

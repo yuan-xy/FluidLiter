@@ -64,22 +64,22 @@ typedef FILE *fluid_file;
 
 #if SIMPLE_MEM_ALLOC
     #define FLUID_MALLOC(_n) ({ \
-    printf("%s line %d, %s:%d\n", __FILE__, __LINE__, #_n, (_n)); \
+    FLUID_LOG(FLUID_DBG, "%s line %d, %s:%d\n", __FILE__, __LINE__, #_n, (_n)); \
     simple_malloc(_n); \
     })
 
     #define FLUID_NEW(_t) ({ \
-    printf("%s line %d, %s:%d\n", __FILE__, __LINE__, #_t, sizeof(_t)); \
+    FLUID_LOG(FLUID_DBG, "%s line %d, %s:%d\n", __FILE__, __LINE__, #_t, sizeof(_t)); \
     (_t *)simple_malloc(sizeof(_t)); \
     })
      
     #define FLUID_ARRAY(_t, _n) ({ \
-    printf("%s line %d, %s:%d\n", __FILE__, __LINE__, #_t, (_n) * sizeof(_t)); \
+    FLUID_LOG(FLUID_DBG, "%s line %d, %s:%d\n", __FILE__, __LINE__, #_t, (_n) * sizeof(_t)); \
     (_t *)simple_malloc((_n) * sizeof(_t)); \
     })
 
     #define FLUID_FREE(_p) ({ \
-    printf("%s line %d, Free %s:%p\n", __FILE__, __LINE__, #_p, (_p)); \
+    FLUID_LOG(FLUID_DBG, "%s line %d, Free %s:%p\n", __FILE__, __LINE__, #_p, (_p)); \
     no_free(_p); \
     })
 #else

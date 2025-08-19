@@ -170,10 +170,10 @@ int fluid_channel_cc(fluid_channel_t *chan, int num, int value) {
     switch (num) {
     case SUSTAIN_SWITCH: {
         if (value < 64) {
-            /*  	printf("** sustain off\n"); */
+            FLUID_LOG(FLUID_DBG, "** sustain off\n");
             fluid_synth_damp_voices(chan->synth, chan->channum);
         } else {
-            /*  	printf("** sustain on\n"); */
+            FLUID_LOG(FLUID_DBG, "** sustain on\n");
         }
     } break;
 

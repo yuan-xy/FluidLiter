@@ -569,8 +569,8 @@ int fluid_synth_damp_voices(fluid_synth_t *synth, int chan) {
     for (i = 0; i < synth->polyphony; i++) {
         voice = synth->voice[i];
         if ((voice->chan == chan) && _SUSTAINED(voice)) {
-            /*        printf("turned off sustained note: chan=%d, key=%d,
-             * vel=%d\n", voice->chan, voice->key, voice->vel); */
+            FLUID_LOG(FLUID_INFO, "turned off sustained note: chan=%d, key=%d, vel=%d\n",
+                voice->chan, voice->key, voice->vel);
             fluid_voice_noteoff(voice);
         }
     }

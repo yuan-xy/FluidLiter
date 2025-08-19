@@ -726,7 +726,7 @@ static int create_mod_delay_lines(fluid_late *late,
     late->sample_rate_max = sample_rate_max;
 
 #ifdef INFOS_PRINT // allows message to be printed on the console.
-    printf("length_factor:%f, mod_depth:%f\n", length_factor, mod_depth);
+    FLUID_LOG(FLUID_INFO, "length_factor:%f, mod_depth:%f\n", length_factor, mod_depth);
     /* Print: modal density and total memory bytes */
     {
         int i;
@@ -739,7 +739,7 @@ static int create_mod_delay_lines(fluid_late *late,
         }
 
         /* modal density and total memory bytes */
-        printf("modal density:%f, total delay:%d, total memory:%d bytes\n",
+        FLUID_LOG(FLUID_INFO, "modal density:%f, total delay:%d, total memory:%d bytes\n",
                 total_delay / sample_rate_max ,total_delay ,
                 total_delay * sizeof(fluid_real_t));
     }

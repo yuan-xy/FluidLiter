@@ -32,7 +32,7 @@ void* simple_malloc(size_t size) {
     #endif
 
     if (next_free + size > pool_size) {
-        FLUID_LOG(FLUID_WARN, "Memory pool overflow(%d): %d > %d\n", size, next_free + size, pool_size);
+        FLUID_LOG(FLUID_INFO, "Memory pool overflow(%d): %d > %d\n", size, next_free + size, pool_size);
         return malloc(size);
     }
     
@@ -58,12 +58,12 @@ void no_free(void* ptr) {
     #ifdef __linux__
         for(int i=0; i<alloc_index; i++){
             if (alloc_list[i].ptr == ptr) {
-                printf("Releasing allocation at %p of size %zu bytes\n", 
+                FLUID_LOG(FLUID_DBG, "Releasing allocation at %p of size %zu bytes\n", 
                     ptr, alloc_list[i].size);
                 return;
             }
         }
-        printf("Warning: Attempted to free unknown pointer %p\n", ptr);
+        FLUID_LOG(FLUID_WARN, "Warning: Attempted to free unknown pointer %p\n", ptr);
     #endif
 }
 
